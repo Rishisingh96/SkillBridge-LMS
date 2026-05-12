@@ -60,13 +60,16 @@ const Nav = () => {
         {/* User Icon login/logout profile , use hidden class to hide it on mobile */}
         <div className="w-[30%] lg:flex items-center justify-center gap-4 hidden">
 
-          {!userData && <IoPersonCircleSharp className="w-[50px] h-[50px] fill-black cursor-pointer" onClick={() => setShow(prev => !prev)} />}
-
           {/* show a Name or photo */}
-          {userData && <div className="w-[50px] h-[50px] rounded-full text-white flex items-center justify-center text-[20px] border-2 bg-black border-white cursor-pointer" onClick={() => setShow(prev => !prev)}>
-            {userData?.name.slice(0, 1).toUpperCase()}
-          </div>
-          }
+          {userData ? (
+            userData?.photoUrl ? 
+              <img src={userData?.photoUrl} alt="" className="w-[50px] h-[50px] rounded-full cursor-pointer" onClick={() => setShow(prev => !prev)} /> : 
+              <div className="w-[50px] h-[50px] rounded-full text-white flex items-center justify-center text-[20px] border-2 bg-black border-white cursor-pointer" onClick={() => setShow(prev => !prev)}>
+                {userData?.name?.slice(0, 1).toUpperCase() || 'U'}
+              </div>
+          ) : (
+            <IoPersonCircleSharp className="w-[50px] h-[50px] fill-black cursor-pointer" onClick={() => setShow(prev => !prev)} />
+          )}
           {userData?.role === "educator" && <div className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer">
             Dashboard
           </div>}
@@ -105,7 +108,7 @@ const Nav = () => {
           {userData && (
             <>
               {userData && <div className="w-[50px] h-[50px] rounded-full text-white flex items-center justify-center text-[20px] border-2 bg-black border-white cursor-pointer" onClick={() => setShow(prev => !prev)}>
-                {userData?.name.slice(0, 1).toUpperCase()}
+                {userData?.name?.slice(0, 1).toUpperCase() || 'U'}
               </div>
               }
               <span className="px-[20px] py-[10px] bg-white text-black rounded-[10px] shadow-sm shadow-black text-[18px] cursor-pointer" onClick={handleLogout}>

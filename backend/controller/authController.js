@@ -43,7 +43,10 @@ export const signUP = async (req, res) =>{
             maxAge: 7*24*60*60*1000 // chage in milisecont
         })
 
-        return res.status(201).json(user)
+        return res.status(201).json({
+            user: user,
+            token: token
+        })
 
 
     }catch(error){
@@ -78,7 +81,10 @@ export const login = async (req, res) =>{
             sameSite: "Strict", 
             maxAge: 7*24*60*60*1000
         })
-        return res.status(200).json(user)
+        return res.status(200).json({
+            user: user,
+            token: token
+        })
     } catch(error){
         return res.status(500).json({message:`Login error ${error}`})
     }
@@ -171,7 +177,7 @@ export const resetPassword = async (req, res) =>{
 
 export const googleAuth = async (req, res) =>{
         try {
-            const {name, email, role} = req.body
+            const {name, email, photoUrl, role} = req.body
             
             let user = await User.findOne({email})
             
@@ -180,8 +186,15 @@ export const googleAuth = async (req, res) =>{
                 user = await User.create({
                     name, 
                     email , 
+                    photoUrl,
                     role: role || "student",
                 })
+            } else {
+                // Update existing user with Google photo if not present
+                if(!user.photoUrl && photoUrl){
+                    user.photoUrl = photoUrl
+                    await user.save()
+                }
             }
 
             let token = await genToken(user._id)
@@ -193,7 +206,10 @@ export const googleAuth = async (req, res) =>{
                 maxAge: 7*24*60*60*1000 // chage in milisecont
             })
 
-            return res.status(201).json(user)
+            return res.status(201).json({
+                user: user,
+                token: token
+            })
             
         } catch (error) {
             return res.status(500).json({message: `Google auth error: ${error.message}`})

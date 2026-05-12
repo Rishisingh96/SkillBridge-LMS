@@ -47,11 +47,12 @@ const Login = () => {
         let user = response.user
         let name = user.displayName
         let email = user.email
+        let photoUrl = user.photoURL
         let role = "student" // Default role for Google login
   
-        const result = await axios.post(serverUrl + "/api/auth/googleauth", {name, email, role}, {withCredentials:true})
+        const result = await axios.post(serverUrl + "/api/auth/googleauth", {name, email, photoUrl, role}, {withCredentials:true})
         console.log(result.data)
-        dispatch(setUserData(result.data))
+        dispatch(setUserData(result.data.user || result.data))
   
         setLoading(false)
         navigate("/")
