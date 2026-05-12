@@ -12,17 +12,25 @@ import { useSelector } from 'react-redux'
 import Profile from './page/Profile'
 import ForgetPassword from './page/ForgetPassword'
 import EditProfile from './page/EditProfile'
+import Dashboard from './page/Educator/Dashboard'
+import Courses from './page/Educator/Courses'
+import CreateCourse from './page/Educator/CreateCourse'
+import EditCourse from './page/Educator/EditCourse'
+import getCreatorCourse from './customHooks/getCreatorCourse'
 
 
 
 function App() {
     getCurrentUser()
+    getCreatorCourse()
     const {userData} = useSelector(state => state.user)
     console.log("App.jsx userData:", userData)
   return (
     <>
     <ToastContainer />
       <Routes>
+
+        {/* this is for Authentication */}
         <Route path='/' element = {<Home/>}/>
         <Route path='/signup' element = {!userData? <SignUp/> : <Navigate to='/' />}/>
         <Route path='/login' element = {<Login/>}/>
@@ -33,6 +41,16 @@ function App() {
 
          <Route path='/editprofile' element = {userData ? <EditProfile/> : <Navigate to='/signup' />}/>
 
+        {/* For Educators */}
+         <Route path='/dashboard' element = {userData ?.role === 'educator' ? <Dashboard/> : <Navigate to='/signup' />}/>
+
+        <Route path='/courses' element = {userData ?.role === 'educator' ? <Courses/> : <Navigate to='/signup' />}/>
+
+        <Route path='/create-course' element = {userData ?.role === 'educator' ? <CreateCourse/> : <Navigate to='/signup' />}/>
+
+        <Route path='/edit-course/:courseId' element = {userData ?.role === 'educator' ? <EditCourse/> : <Navigate to='/signup' />}/>
+
+         
       </Routes>
     </>
   )

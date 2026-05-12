@@ -70,7 +70,7 @@ const Nav = () => {
           ) : (
             <IoPersonCircleSharp className="w-[50px] h-[50px] fill-black cursor-pointer" onClick={() => setShow(prev => !prev)} />
           )}
-          {userData?.role === "educator" && <div className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer">
+          {userData?.role === "educator" && <div className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer" onClick={()=>navigate("/dashboard")}>
             Dashboard
           </div>}
 
@@ -115,7 +115,7 @@ const Nav = () => {
                 Logout
               </span>
 
-              {userData?.role === "educator" && <span className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer">
+              {userData?.role === "educator" && <span className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer" onClick={()=>navigate("/dashboard")}>
                 Dashboard
               </span>}
 
