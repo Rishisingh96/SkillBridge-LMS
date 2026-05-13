@@ -13,6 +13,7 @@ import {
 
 import { motion } from "framer-motion";
 import { SiViaplay } from "react-icons/si";
+import { useNavigate } from "react-router-dom";
 
 const courses = [
   {
@@ -66,6 +67,7 @@ const courses = [
 ];
 
 const ExploreCourses = () => {
+  const navigate = useNavigate();
   return (
     <section className="w-full min-h-screen bg-[#f7f7f7] flex items-center justify-center px-6 py-14">
       <div className="max-w-7xl w-full flex flex-col lg:flex-row items-center justify-between gap-14">
@@ -86,6 +88,7 @@ const ExploreCourses = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-[20px] py-[10px] border-2 border-white text-white rounded-[10px] text-[18px] font-light flex items-center gap-2 cursor-pointer bg-black hover:bg-gray-900 transition-all"
+            onClick={() => navigate("/allcourses")}
           >
             View All Courses
             <SiViaplay className="w-[28px] h-[28px] text-white" />
@@ -102,6 +105,7 @@ const ExploreCourses = () => {
               {/* ICON BOX */}
               <div
                 className={`w-[110px] h-[110px] rounded-2xl ${course.bg} flex items-center justify-center shadow-sm hover:scale-105 duration-300 cursor-pointer`}
+                onClick={() => navigate("/allcourses")}
               >
                 {course.icon}
               </div>

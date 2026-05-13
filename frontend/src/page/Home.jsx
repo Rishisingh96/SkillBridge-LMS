@@ -7,8 +7,11 @@ import { SiViaplay } from "react-icons/si";
 import Logos from "../component/Logos";
 import { motion } from 'framer-motion';
 import ExploreCourses from "../component/ExploreCourses";
+import CardPage from "../component/CardPage";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const navigate = useNavigate();
   return (
     <div className="w-[100%] overflow-hidden">
       
@@ -54,6 +57,7 @@ function Home() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-[20px] py-[10px] border-2 border-white text-white rounded-[10px] text-[18px] font-light flex gap-2 items-center cursor-pointer bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all"
+                onClick={() => navigate("/allcourses")}
               >
                 View All Courses
                 <SiViaplay className="w-[30px] h-[30px] fill-white" />
@@ -82,9 +86,9 @@ function Home() {
         <Logos />
       </div>
 
-
       {/* Explore Courses Section */}
       <ExploreCourses />
+      <CardPage />
 
     </div>
   );

@@ -45,20 +45,14 @@ export const getPublishedCourses = async (req, res) =>{
 // Get Courses by Creator
 export const getCreatorCourses = async (req, res) =>{
     try {
-        console.log("User ID from token:", req.userId)
+        
         const userId = req.userId
         
-        if(!userId) {
-            console.log("No userId found in request")
-            return res.status(401).json({message:"User not authenticated"})
-        }
-        
-        const courses = await Course.find({creator:userId})
+        const courses = await Course.find({})
         console.log("Found courses:", courses)
         
-        if(!courses || courses.length === 0){
-            console.log("No courses found for user:", userId)
-            return res.status(200).json([])
+        if(!courses){
+            return res.status(400).json({message:"Courses are not found"})
         }
         return res.status(200).json(courses)
 
@@ -117,18 +111,6 @@ export const getCourseById = async (req, res) =>{
     }
 }
 
-//get All courses
-export const getAllCourses = async (req, res) =>{
-    try {
-        const courses = await Course.find()
-        if(!courses){
-            return res.status(400).json({message:"Courses is not found"})
-        }
-        return res.status(200).json(courses)
-    } catch (error) {
-        return res.status(500).json({message:`failed to fetch courses ${error}`})
-    }
-}
 
 
 // Delete Course

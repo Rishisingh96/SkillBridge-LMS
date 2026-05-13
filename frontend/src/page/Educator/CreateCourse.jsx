@@ -13,6 +13,7 @@ import { serverUrl } from "../../App";
 const CreateCourse = () => {
   const navigate = useNavigate();
 
+
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
@@ -186,6 +187,18 @@ const CreateCourse = () => {
 
                 <option value="ui-ux-design">
                   UI/UX Design
+                </option>
+
+                <option value="digital-marketing">
+                  Digital-Marketing
+                </option>
+
+                <option value="ai-ml">
+                  AI/ML
+                </option>
+
+                <option value="ethical-hacking">
+                  Ethical Hacking
                 </option>
 
                 <option value="business">

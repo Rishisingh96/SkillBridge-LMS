@@ -17,12 +17,16 @@ import Courses from './page/Educator/Courses'
 import CreateCourse from './page/Educator/CreateCourse'
 import EditCourse from './page/Educator/EditCourse'
 import getCreatorCourse from './customHooks/getCreatorCourse'
+import getPublishedCourse from './customHooks/getPublishedCourse'
+import AllCourses from './page/AllCourses'
 
 
 
 function App() {
+
     getCurrentUser()
     getCreatorCourse()
+    getPublishedCourse()
     const {userData} = useSelector(state => state.user)
     console.log("App.jsx userData:", userData)
   return (
@@ -45,6 +49,8 @@ function App() {
          <Route path='/dashboard' element = {userData ?.role === 'educator' ? <Dashboard/> : <Navigate to='/signup' />}/>
 
         <Route path='/courses' element = {userData ?.role === 'educator' ? <Courses/> : <Navigate to='/signup' />}/>
+
+        <Route path='/allcourses' element = {userData ? <AllCourses/> : <Navigate to='/signup' />}/>
 
         <Route path='/create-course' element = {userData ?.role === 'educator' ? <CreateCourse/> : <Navigate to='/signup' />}/>
 
