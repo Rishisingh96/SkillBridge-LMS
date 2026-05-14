@@ -15,6 +15,8 @@ const EditCourse = () => {
 
   const [isPublished, setIsPublished] = useState(false);
 
+  const [selectCourse, setSelectCourse] = useState(null);
+
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -70,6 +72,9 @@ const EditCourse = () => {
       setLevel(course.level || "");
       setPrice(course.price || "");
       setIsPublished(course.isPublished || false);
+
+      setSelectCourse(result.data)
+      console.log(result.data)
 
       if (course.thumbnail) {
         setThumbnail(course.thumbnail);
@@ -146,6 +151,7 @@ const EditCourse = () => {
     }
   };
 
+  // handle remove course
   const handleRemoveCourse = async () => {
     setLoading1(true);
 
@@ -174,8 +180,17 @@ const EditCourse = () => {
           />
 
           <h2 className="text-2xl font-bold text-gray-800">
-            Edit Course Details
+            Add Detail Information regarding the Course
           </h2>
+
+          <div className="space-x-2 space-y-2">
+            <button className="bg-black text-white px-4 py-2 rounded-md cursor-pointer hover:bg-gray-800 transition-all"
+              onClick={()=>navigate(`/createlecture/${selectCourse._id}`)} 
+            >
+                 Go to Lecture Page
+            </button>
+          </div>
+
         </div>
 
         {/* Publish Section */}

@@ -69,7 +69,7 @@ const courses = [
 const ExploreCourses = () => {
   const navigate = useNavigate();
   return (
-    <section className="w-full min-h-screen bg-[#f7f7f7] flex items-center justify-center px-6 py-14">
+    <section className="w-full min-h-screen bg-[#f7f7f7] flex items-center justify-center px-9 py-20 ">
       <div className="max-w-7xl w-full flex flex-col lg:flex-row items-center justify-between gap-14">
         {/* LEFT SECTION */}
         <div className="w-full lg:w-[35%]">

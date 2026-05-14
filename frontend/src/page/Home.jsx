@@ -82,9 +82,7 @@ function Home() {
       </AnimatedBG>
 
       {/* Logos Section */}
-      <div className="relative z-20 bg-white">
-        <Logos />
-      </div>
+      <Logos />
 
       {/* Explore Courses Section */}
       <ExploreCourses />

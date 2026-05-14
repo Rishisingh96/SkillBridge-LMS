@@ -19,8 +19,8 @@ import EditCourse from './page/Educator/EditCourse'
 import getCreatorCourse from './customHooks/getCreatorCourse'
 import getPublishedCourse from './customHooks/getPublishedCourse'
 import AllCourses from './page/AllCourses'
-
-
+import CreateLecture from './page/Educator/CreateLecture'
+import EditLecture from './page/Educator/EditLecture'
 
 function App() {
 
@@ -56,7 +56,11 @@ function App() {
 
         <Route path='/edit-course/:courseId' element = {userData ?.role === 'educator' ? <EditCourse/> : <Navigate to='/signup' />}/>
 
-         
+        {/* Lectures */}
+        <Route path='/createlecture/:courseId' element = {userData ?.role === 'educator' ? <CreateLecture/> : <Navigate to='/signup' />}/>
+
+         <Route path='/editlecture/:courseId/:lectureId' element = {userData ?.role === 'educator' ? <EditLecture/> : <Navigate to='/signup' />}/>
+
       </Routes>
     </>
   )

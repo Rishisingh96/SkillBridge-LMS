@@ -3,7 +3,7 @@ import { MdCastForEducation, MdAttachMoney, MdSupportAgent, MdGroups } from "rea
 
 function Logos() {
   return (
-    <div className="w-[100vw] min-h-[90px] flex items-center justify-center flex-wrap gap-4 md:mb-[50px]">
+    <div className="w-[100vw] min-h-[90px] flex items-center justify-center flex-wrap gap-4 md:mb-[50px] px-9 py-20  ">
 
       <div className="flex items-center justify-center gap-2 px-5 py-3 rounded-3xl bg-gray-200 cursor-pointer text-[#03394b]">
         
