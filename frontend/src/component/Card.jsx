@@ -1,7 +1,9 @@
 import React from 'react'
 import { ImStarFull } from "react-icons/im";
+import { useNavigate } from 'react-router-dom';
 
 const Card = ({ thumbnail, title, category, price, id }) => {
+    const navigate = useNavigate()
     return (
         <div className='w-full bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer'>
 
@@ -11,6 +13,7 @@ const Card = ({ thumbnail, title, category, price, id }) => {
                     src={thumbnail}
                     alt={title}
                     className='w-full h-52 object-cover hover:scale-105 transition-all duration-300'
+                    onClick={()=>navigate(`/viewcourse/${id}`)}
                 />
             </div>
 

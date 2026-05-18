@@ -2,6 +2,7 @@
 import Course from "../model/courseModel.js";
 import uploadOnCloudinary from "../config/cloudinary.js";
 import Lecture from "../model/lectureModel.js";
+import User from "../model/userModel.js";
 
 // Create lecture
 export const createLecture = async (req, res) => {
@@ -106,3 +107,5 @@ export const removeLecture = async (req, res) => {
     return res.status(500).json({ message: `Remove lecture error ${error}` });
   }
 }
+
+

@@ -1,88 +1,195 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { setLectureData } from "../../redux/lectureSlice";
+import { toast } from "react-toastify";
+import {ClipLoader} from "react-spinners";
+import axios from "axios";
+import { serverUrl } from "../../App";
 
 const EditLecture = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { courseId, lectureId } = useParams();
 
   const { lectureData } = useSelector((state) => state.lecture);
 
   // Find Selected Lecture
-  const selectedLecture = lectureData.find(
-    (lecture) => lecture._id === lectureId
-  );
+  const selectedLecture = useMemo(() => {
+    return lectureData.find((lecture) => lecture._id === lectureId);
+  }, [lectureData, lectureId]);
 
   // States
-  const [lectureTitle, setLectureTitle] = useState(
-    selectedLecture?.lectureTitle || ""
-  );
+  const [lectureTitle, setLectureTitle] = useState("");
+  const [videoUrl, setVideoUrl] = useState(null);
+  const [isPreviewFree, setIsPreviewFree] = useState(false);
 
-  const [videoFile, setVideoFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
 
-  const [isPreviewFree, setIsPreviewFree] = useState(
-    selectedLecture?.isPreviewFree || false
-  );
+  const [progress, setProgress] = useState(0);
 
-  // Handle Video
+  // Sync State
+  useEffect(() => {
+    if (selectedLecture) {
+      setLectureTitle(selectedLecture.lectureTitle || "");
+      setIsPreviewFree(selectedLecture.isPreviewFree || false);
+    }
+  }, [selectedLecture]);
+
+  // Handle Video Change
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
 
-    if (file) {
-      setVideoFile(file);
+    if (!file) return;
+
+    // 500MB Limit
+    if (file.size > 500 * 1024 * 1024) {
+      toast.error("Video size should be less than 500MB");
+      return;
     }
+
+    setVideoUrl(file);
   };
 
   // Update Lecture
-  const handleUpdateLecture = () => {
-    console.log({
-      lectureTitle,
-      videoFile,
-      isPreviewFree,
-    });
+  const handleUpdateLecture = async () => {
+    if (!lectureTitle.trim()) {
+      return toast.error("Lecture title is required");
+    }
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+
+      formData.append("lectureTitle", lectureTitle);
+      formData.append("isPreviewFree", isPreviewFree);
+
+      if (videoUrl) {
+        formData.append("videoUrl", videoUrl);
+      }
+
+      const result = await axios.post(
+        `${serverUrl}/api/course/editlecture/${lectureId}`,
+        formData,
+        {
+          withCredentials: true,
+
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+
+            setProgress(percent);
+          },
+        }
+      );
+
+      // Update Redux State
+      const updatedLectures = lectureData.map((lecture) =>
+        lecture._id === lectureId ? result.data : lecture
+      );
+
+      dispatch(setLectureData(updatedLectures));
+
+      toast.success("Lecture Updated Successfully");
+
+      navigate(`/createlecture/${courseId}`);
+
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+
+      toast.error(
+        error?.response?.data?.message || "Something went wrong"
+      );
+
+      setLoading(false);
+    }
   };
 
   // Remove Lecture
-  const handleRemoveLecture = () => {
-    console.log("Lecture Removed");
+  const handleRemoveLecture = async () => {
+    try {
+      setLoading1(true);
+
+      await axios.delete(
+        `${serverUrl}/api/course/removelecture/${lectureId}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      // Remove from Redux
+      const filteredLectures = lectureData.filter(
+        (lecture) => lecture._id !== lectureId
+      );
+
+      dispatch(setLectureData(filteredLectures));
+
+      toast.success("Lecture Removed Successfully");
+
+      navigate(`/createlecture/${courseId}`);
+
+      setLoading1(false);
+    } catch (error) {
+      console.log(error);
+
+      toast.error(
+        error?.response?.data?.message || "Something went wrong"
+      );
+
+      setLoading1(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
 
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-lg p-8">
+      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-8">
 
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
 
-          <FaArrowLeftLong
-            onClick={() => navigate(`/edit-course/${courseId}`)}
-            className="text-xl cursor-pointer text-gray-700"
-          />
+          <div className="flex items-center gap-4">
 
-          <h2 className="text-3xl font-bold text-gray-800">
-            Update Your Lecture
-          </h2>
+            <FaArrowLeftLong
+              onClick={() => navigate(`/createlecture/${courseId}`)}
+              className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
+            />
+
+            <h2 className="text-3xl font-bold text-gray-800">
+              Edit Lecture
+            </h2>
+
+          </div>
+
+          {/* Remove Button */}
+          <button
+            onClick={handleRemoveLecture}
+            disabled={loading1}
+            className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
+          >
+            {loading1 ? (
+              <ClipLoader size={20} color="white" />
+            ) : (
+              "Remove Lecture"
+            )}
+          </button>
 
         </div>
 
-        {/* Remove Button */}
-        <button
-          onClick={handleRemoveLecture}
-          className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
-        >
-          Remove Lecture
-        </button>
-
         {/* Form */}
-        <div className="mt-10 space-y-6">
+        <div className="mt-10 space-y-7">
 
           {/* Lecture Title */}
           <div>
+
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Title
+              Lecture Title
             </label>
 
             <input
@@ -92,15 +199,17 @@ const EditLecture = () => {
               placeholder="Enter Lecture Title"
               className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all"
             />
+
           </div>
 
           {/* Video Upload */}
           <div>
+
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Video *
+              Upload Video
             </label>
 
-            <div className="border border-gray-300 rounded-xl p-4">
+            <div className="border border-dashed border-gray-300 rounded-2xl p-6 bg-gray-50">
 
               <input
                 type="file"
@@ -109,15 +218,22 @@ const EditLecture = () => {
                 className="cursor-pointer"
               />
 
-              {
-                videoFile && (
-                  <p className="text-sm text-gray-500 mt-2">
-                    Selected File : {videoFile.name}
+              {videoUrl && (
+                <div className="mt-4">
+
+                  <p className="text-green-600 text-sm font-medium">
+                    Selected File: {videoUrl.name}
                   </p>
-                )
-              }
+
+                  <p className="text-gray-500 text-sm mt-1">
+                    Size: {(videoUrl.size / (1024 * 1024)).toFixed(2)} MB
+                  </p>
+
+                </div>
+              )}
 
             </div>
+
           </div>
 
           {/* Free Preview */}
@@ -126,25 +242,54 @@ const EditLecture = () => {
             <input
               type="checkbox"
               checked={isPreviewFree}
-              onChange={(e) => setIsPreviewFree(e.target.checked)}
+              onChange={() => setIsPreviewFree((prev) => !prev)}
               className="w-5 h-5 cursor-pointer"
             />
 
-            <label className="text-gray-700 font-medium">
-              Is this video FREE
+            <label className="text-gray-700 font-medium cursor-pointer">
+              Is this lecture FREE preview?
             </label>
 
           </div>
 
+          {/* Upload Progress */}
+          {loading && (
+            <div>
+
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+
+                <div
+                  className="bg-black h-3 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+
+              </div>
+
+              <p className="text-sm text-gray-600 mt-2">
+                Uploading Video... {progress}%
+              </p>
+
+            </div>
+          )}
+
           {/* Update Button */}
           <button
             onClick={handleUpdateLecture}
-            className="w-full bg-black hover:bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg transition-all"
+            disabled={loading}
+            className="w-full bg-black hover:bg-gray-900 hover:scale-[1.01] active:scale-[0.99] disabled:bg-gray-700 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-3"
           >
-            Update Lecture
+            {loading ? (
+              <>
+                <ClipLoader size={24} color="white" />
+                Updating Lecture...
+              </>
+            ) : (
+              "Update Lecture"
+            )}
           </button>
 
         </div>
+
       </div>
     </div>
   );

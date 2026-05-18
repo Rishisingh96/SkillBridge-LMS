@@ -11,6 +11,17 @@ import {
 const Dashboard = () => {
   const { userData } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const {creatorCourseData} = useSelector(state=>state.course)
+
+  const CourseProgressData = creatorCourseData?.map((course)=>({
+    name:course.title?.slice(0,10) + "...",
+    lectures:course.lectures?.length || 0
+  })) || [];
+
+  const EnrollData = creatorCourseData?.map((course)=>({
+    name: course.title?.slice(0,10) + "...",
+    enrolled: course.enrolledStudents?.length || 0
+  })) || [];
 
   return (
     <div className="min-h-screen bg-[#f5f6fa] px-4 md:px-8 py-6">

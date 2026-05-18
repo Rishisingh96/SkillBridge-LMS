@@ -4,7 +4,7 @@ import User from "../model/userModel.js"
 export const getCurrentUser = async (req, res) => {
     try{
         //-password likha hi hoga compala
-        const user = await User.findById(req.userId).select("-password") 
+        const user = await User.findById(req.userId).select("-password").populate("enrolledCourses")
         if(!user){
             return res.status(404).json({message:"User not found"})
         }
@@ -13,7 +13,6 @@ export const getCurrentUser = async (req, res) => {
         return res.status(500).json({message:`GetCurrentUser error ${error}`})
     }
 }
-
 
 // Update Profile data me se photo bhi update karna hai to uske liye cloudinary ka use karna hoga
 export const updateProfile = async (req, res) =>{

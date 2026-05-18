@@ -1,13 +1,12 @@
 import express from "express";
-import { createCourse, deleteCourse, editCourse, getCourseById, getCreatorCourses, getPublishedCourses } from "../controller/courseController.js";
+import { createCourse, deleteCourse, editCourse, getCourseById, getCreatorById, getCreatorCourses, getPublishedCourses } from "../controller/courseController.js";
 import upload from "../middleware/multer.js";
 import isAuth from "../middleware/isAuth.js";
 import { createLecture, editLecture, getCourseLectures, removeLecture } from "../controller/lectureController.js";
-import { get } from "mongoose";
 
 const courseRoute = express.Router();
 
-courseRoute.post("/create", createCourse)
+courseRoute.post("/create", isAuth, createCourse)
 courseRoute.get("/getpublished", getPublishedCourses)
 courseRoute.get("/getcreator", isAuth, getCreatorCourses)
 courseRoute.put("/editcourse/:courseId", isAuth, upload.single("thumbnail"), editCourse)
@@ -20,6 +19,7 @@ courseRoute.get("/courselecture/:courseId", isAuth, getCourseLectures)
 courseRoute.post("/editlecture/:lectureId", isAuth, upload.single("videoUrl"), editLecture)
 courseRoute.delete("/removelecture/:lectureId", isAuth, removeLecture)
 
-
+//Creator
+courseRoute.post("/creator", isAuth, getCreatorById)
 
 export default courseRoute

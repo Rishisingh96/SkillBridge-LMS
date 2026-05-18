@@ -50,6 +50,5 @@ const courseSchema = new mongoose.Schema({
 }, {timestamps:true})
 
 // Create Model
-
 const Course = mongoose.model("Course", courseSchema)
 export default Course
