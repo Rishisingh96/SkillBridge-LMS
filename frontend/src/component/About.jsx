@@ -1,5 +1,5 @@
 import React from "react";
-import img from "../assets/About.png";
+import img from "../assets/myphoto.png";
 import video from "../assets/Pika.mp4";
 
 import { FaCheckCircle } from "react-icons/fa";

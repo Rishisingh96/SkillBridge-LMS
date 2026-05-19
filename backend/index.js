@@ -7,7 +7,10 @@ import cors from 'cors'
 import userRouter from './route/userRoute.js'
 import courseRoute from './route/courseRoute.js'
 import paymentRouter from './route/paymentRoute.js'
+import reviewRoter from './route/reviewRoute.js'
+
 dotenv.config()
+
 
 
 // const port = 8000
@@ -26,13 +29,12 @@ app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
 app.use("/api/course", courseRoute)
 app.use("/api/order",paymentRouter)
+app.use("/api/review", reviewRoter)
 
 
 app.get("/",(req, res)=>{
     res.send("Hello from Server")
 })
-
-
 
 app.listen(port, ()=>{
     console.log("Server Started")

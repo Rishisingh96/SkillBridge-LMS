@@ -2,8 +2,21 @@ import React from 'react'
 import { ImStarFull } from "react-icons/im";
 import { useNavigate } from 'react-router-dom';
 
-const Card = ({ thumbnail, title, category, price, id }) => {
+const Card = ({ thumbnail, title, category, price, id, reviews }) => {
     const navigate = useNavigate()
+
+     const calculateAvgReview = (reviews) =>{
+    if(!reviews || reviews.length === 0){
+      return 0;
+    }
+    const total = reviews.reduce((sum, review) => sum + review.rating, 0)
+    return (total/reviews.length).toFixed(1)
+  }
+
+  
+    const avgRating = calculateAvgReview(reviews)
+   
+    console.log("Avg in Card Component Rating:", avgRating)
     return (
         <div className='w-full bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer'>
 
@@ -39,7 +52,7 @@ const Card = ({ thumbnail, title, category, price, id }) => {
 
                     <div className='flex items-center gap-1 text-yellow-400'>
                         <ImStarFull />
-                        <span className='text-gray-700 font-medium'>0</span>
+                        <span className='text-gray-700 font-medium'>{avgRating}</span>
                     </div>
 
                 </div>

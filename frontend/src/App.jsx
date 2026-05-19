@@ -1,84 +1,233 @@
-import { useState } from 'react'
-import './App.css'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import Home from './page/Home'
-import SignUp from './page/SignUp'
-import Login from './page/Login'
+import "./App.css";
 
-export const serverUrl = "http://localhost:8000"
-import { ToastContainer } from 'react-toastify';
-import getCurrentUser from './customHooks/getCurrentUser'
-import { useSelector } from 'react-redux'
-import Profile from './page/Profile'
-import ForgetPassword from './page/ForgetPassword'
-import EditProfile from './page/EditProfile'
-import Dashboard from './page/Educator/Dashboard'
-import Courses from './page/Educator/Courses'
-import CreateCourse from './page/Educator/CreateCourse'
-import EditCourse from './page/Educator/EditCourse'
-import getCreatorCourse from './customHooks/getCreatorCourse'
-import getPublishedCourse from './customHooks/getPublishedCourse'
-import AllCourses from './page/AllCourses'
-import CreateLecture from './page/Educator/CreateLecture'
-import EditLecture from './page/Educator/EditLecture'
-import ViewCourse from './page/Educator/ViewCourse'
-import ScrollToTop from './component/ScrollToTop'
-import ViewLecture from './page/ViewLecture'
-import MyEnrolledCourses from './page/MyEnrolledCourses'
+import { Navigate, Route, Routes } from "react-router-dom";
+
+import Home from "./page/Home";
+
+import SignUp from "./page/SignUp";
+
+import Login from "./page/Login";
+
+import { ToastContainer } from "react-toastify";
+
+import { useSelector } from "react-redux";
+
+import Profile from "./page/Profile";
+
+import ForgetPassword from "./page/ForgetPassword";
+
+import EditProfile from "./page/EditProfile";
+
+import Dashboard from "./page/Educator/Dashboard";
+
+import Courses from "./page/Educator/Courses";
+
+import CreateCourse from "./page/Educator/CreateCourse";
+
+import EditCourse from "./page/Educator/EditCourse";
+
+import AllCourses from "./page/AllCourses";
+
+import CreateLecture from "./page/Educator/CreateLecture";
+
+import EditLecture from "./page/Educator/EditLecture";
+
+import ViewCourse from "./page/Educator/ViewCourse";
+
+import ScrollToTop from "./component/ScrollToTop";
+
+import ViewLecture from "./page/ViewLecture";
+
+import MyEnrolledCourses from "./page/MyEnrolledCourses";
+
+import getCurrentUser from "./customHooks/getCurrentUser";
+
+import getCreatorCourse from "./customHooks/getCreatorCourse";
+
+import getPublishedCourse from "./customHooks/getPublishedCourse";
+import getAllReviews from "./customHooks/getAllReviews";
+
+export const serverUrl =
+  "http://localhost:8000";
 
 function App() {
 
-    getCurrentUser()
-    getCreatorCourse()
-    getPublishedCourse()
-    
-    const {userData} = useSelector(state => state.user)
-    console.log("App.jsx userData:", userData)
+  getCurrentUser();
+
+  getCreatorCourse();
+
+  getPublishedCourse();
+
+  getAllReviews();
+
+  const { userData } = useSelector(
+    (state) => state.user
+  );
+
+  // loading state
+  if (userData === undefined) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-black text-white text-2xl">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <>
-    <ToastContainer />
-    <ScrollToTop />
+      <ToastContainer />
+
+      <ScrollToTop />
+
       <Routes>
 
-        {/* this is for Authentication */}
-        <Route path='/' element = {<Home/>}/>
-        <Route path='/signup' element = {!userData? <SignUp/> : <Navigate to='/' />}/>
-        <Route path='/login' element = {<Login/>}/>
+        {/* Public */}
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-        <Route path='/profile' element = {userData ? <Profile/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/signup"
+          element={
+            !userData
+              ? <SignUp />
+              : <Navigate to="/" />
+          }
+        />
 
-        <Route path='/forget-password' element = {userData ? <ForgetPassword/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/login"
+          element={
+            !userData
+              ? <Login />
+              : <Navigate to="/" />
+          }
+        />
 
-         <Route path='/editprofile' element = {userData ? <EditProfile/> : <Navigate to='/signup' />}/>
+        {/* Protected */}
+        <Route
+          path="/profile"
+          element={
+            userData
+              ? <Profile />
+              : <Navigate to="/login" />
+          }
+        />
 
-        {/* For Educators */}
-         <Route path='/dashboard' element = {userData ?.role === 'educator' ? <Dashboard/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/forget-password"
+          element={
+            userData
+              ? <ForgetPassword />
+              : <Navigate to="/login" />
+          }
+        />
 
-        <Route path='/courses' element = {userData ?.role === 'educator' ? <Courses/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/editprofile"
+          element={
+            userData
+              ? <EditProfile />
+              : <Navigate to="/login" />
+          }
+        />
 
-        <Route path='/allcourses' element = {userData ? <AllCourses/> : <Navigate to='/signup' />}/>
+        {/* Educator */}
+        <Route
+          path="/dashboard"
+          element={
+            userData?.role === "educator"
+              ? <Dashboard />
+              : <Navigate to="/login" />
+          }
+        />
 
-        <Route path='/create-course' element = {userData ?.role === 'educator' ? <CreateCourse/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/courses"
+          element={
+            userData?.role === "educator"
+              ? <Courses />
+              : <Navigate to="/login" />
+          }
+        />
 
-        <Route path='/edit-course/:courseId' element = {userData ?.role === 'educator' ? <EditCourse/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/create-course"
+          element={
+            userData?.role === "educator"
+              ? <CreateCourse />
+              : <Navigate to="/login" />
+          }
+        />
 
-        {/* Lectures */}
-        <Route path='/createlecture/:courseId' element = {userData ?.role === 'educator' ? <CreateLecture/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/edit-course/:courseId"
+          element={
+            userData?.role === "educator"
+              ? <EditCourse />
+              : <Navigate to="/login" />
+          }
+        />
 
-         <Route path='/editlecture/:courseId/:lectureId' element = {userData ?.role === 'educator' ? <EditLecture/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/createlecture/:courseId"
+          element={
+            userData?.role === "educator"
+              ? <CreateLecture />
+              : <Navigate to="/login" />
+          }
+        />
 
-         <Route path='/viewcourse/:courseId' element = {userData ?.role === 'educator' ? <ViewCourse/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/editlecture/:courseId/:lectureId"
+          element={
+            userData?.role === "educator"
+              ? <EditLecture />
+              : <Navigate to="/login" />
+          }
+        />
 
-         
-         {/* for User  */}
-         <Route path='/viewlecture/:courseId' element = {userData ? <ViewLecture/> : <Navigate to='/signup' />}/>
+        <Route
+          path="/viewcourse/:courseId"
+          element={
+            userData?.role === "educator"
+              ? <ViewCourse />
+              : <Navigate to="/login" />
+          }
+        />
 
-        <Route path='/mycourses' element = {userData ? <MyEnrolledCourses/> : <Navigate to='/signup' />}/>
-        
+        {/* Students */}
+        <Route
+          path="/allcourses"
+          element={
+            userData
+              ? <AllCourses />
+              : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/viewlecture/:courseId"
+          element={
+            userData
+              ? <ViewLecture />
+              : <Navigate to="/login" />
+          }
+        />
+
+        <Route
+          path="/mycourses"
+          element={
+            userData
+              ? <MyEnrolledCourses />
+              : <Navigate to="/login" />
+          }
+        />
 
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

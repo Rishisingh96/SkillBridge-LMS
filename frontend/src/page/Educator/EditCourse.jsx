@@ -60,7 +60,7 @@ const EditCourse = () => {
         }
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       // IMPORTANT
       const course = result.data.course || result.data;
@@ -74,7 +74,7 @@ const EditCourse = () => {
       setIsPublished(course.isPublished || false);
 
       setSelectCourse(result.data)
-      console.log(result.data)
+      // console.log(result.data)
 
       if (course.thumbnail) {
         setThumbnail(course.thumbnail);
@@ -120,7 +120,7 @@ const EditCourse = () => {
         formData.append("thumbnail", thumbnailFile);
       }
 
-      console.log("Updating Course Id:", courseId);
+      // console.log("Updating Course Id:", courseId);
 
       const result = await axios.put(
         `${serverUrl}/api/course/editcourse/${courseId}`,
@@ -133,7 +133,7 @@ const EditCourse = () => {
         }
       );
 
-      console.log(result.data);
+      // console.log(result.data);
 
       toast.success("Course updated successfully");
 

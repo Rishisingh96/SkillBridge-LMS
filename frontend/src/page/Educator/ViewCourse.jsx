@@ -16,6 +16,7 @@ import axios from "axios";
 import { serverUrl } from "../../App";
 import Card from "../../component/Card";
 import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
 const ViewCourse = () => {
   const navigate = useNavigate();
@@ -39,17 +40,20 @@ const ViewCourse = () => {
 
   const [isEnrolled, setIsEnrolled] = useState(false);
 
-  // ======================================================
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState("")
+  const [loading, setLoading] = useState(false)
+
+
   // Fetch Selected Course Data
-  // ======================================================
   const fetchCourseData = () => {
-    console.log("All Courses => ", courseData);
+    // console.log("All Courses => ", courseData);
 
     courseData.map((course) => {
-      console.log("Checking Course => ", course._id);
+      // console.log("Checking Course => ", course._id);
 
       if (course._id === courseId) {
-        console.log("Matched Course Found => ", course);
+        // console.log("Matched Course Found => ", course);
 
         dispatch(setSelectedCourse(course));
 
@@ -60,34 +64,7 @@ const ViewCourse = () => {
     });
   };
 
-  // useEffect(() => {
-  //   const handleCreator = async (userId) => {
-  //   //  console.log("User Id: " + userId);
-  //     if(selectedCourse?.creator){
-  //       try{
-  //        const result = await axios.post(
-  //         serverUrl + "/api/course/creator",
-  //         // { userId: selectedCourse?.creator },
-  //         { userId: selectedCourse?.userId },
-  //         { withCredentials: true },
-  //       );
-  //       console.log("Creator Data => ", result.data);
-  //       setCreatorData(result.data);
-
-  //       }catch(error){
-  //         console.log("Error fetching creator data => ", error);
-  //       }
-
-  //     }
-
-  //   };
-
-  //   handleCreator();
-  // }, [selectedCourse]);
-
-  // ======================================================
   // Fetch Course on Page Load
-  // ======================================================
 
   // check Enrollemnt true when enrollemnt success
 
@@ -106,19 +83,17 @@ const ViewCourse = () => {
     checkEnrollment();
   }, [courseData, courseId, userData]);
 
-  // ======================================================
+
+
   // Check Creator Data Updated
-  // ======================================================
   useEffect(() => {
-    console.log("Updated Creator Data => ", creatorData);
+    // console.log("Updated Creator Data => ", creatorData);
   }, [creatorData]);
 
-  // ======================================================
   // Fetch Other Courses (excluding current course)
-  // ======================================================
   useEffect(() => {
-    console.log("Course Data:", courseData);
-    console.log("Course ID:", courseId);
+    // console.log("Course Data:", courseData);
+    // console.log("Course ID:", courseId);
 
     if (courseData?.length > 0) {
       // Filter out current course and take top 5 latest
@@ -127,12 +102,12 @@ const ViewCourse = () => {
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 5);
 
-      console.log("Other Courses:", otherCourses);
-      console.log("Other Courses length:", otherCourses.length);
+      // console.log("Other Courses:", otherCourses);
+      // console.log("Other Courses length:", otherCourses.length);
 
       setCreatorCourses(otherCourses);
     } else {
-      console.log("Course Data is empty or null");
+      // console.log("Course Data is empty or null");
     }
   }, [courseData, courseId]);
 
@@ -147,7 +122,7 @@ const ViewCourse = () => {
         },
         { withCredentials: true },
       );
-      console.log(orderData.data);
+      // console.log(orderData.data);
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderData.data.amount,
@@ -156,7 +131,7 @@ const ViewCourse = () => {
         description: "COURSE ENROLMENT PAYMENT",
         order_id: orderData.data.id,
         handler: async function (response) {
-          console.log("RazorePay Response", response);
+            // console.log("RazorePay Response", response);
 
           try {
             const verifyPayment = await axios.post(
@@ -182,6 +157,56 @@ const ViewCourse = () => {
       toast.error("Something went wrong while enrollment.. ");
     }
   };
+
+  // Handle Review
+  const handleReview = async () => {
+
+    setLoading(true)
+
+    try {
+
+      const result = await axios.post(
+        serverUrl + "/api/review/createreview",
+        {
+          rating,
+          comment,
+          courseId
+        },
+        {
+          withCredentials: true
+        }
+      )
+
+      console.log("Handle Review :", result.data)
+
+      toast.success("Review submitted successfully")
+
+      setRating(0)
+      setComment("")
+
+    } catch (error) {
+
+      console.log(error)
+
+      toast.error(error.response.data.message)
+
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const calculateAvgReview = (reviews) =>{
+    if(!reviews || reviews.length === 0){
+      return 0;
+    }
+    const total = reviews.reduce((sum, review) => sum + review.rating, 0)
+    return (total/reviews.length).toFixed(1)
+  }
+
+  
+    const avgRating = calculateAvgReview(selectedCourse?.reviews)
+   
+    console.log("Avg Rating:", avgRating)
 
   return (
     <div className="min-h-screen bg-[#f4f4f5] p-4 md:p-8">
@@ -217,14 +242,11 @@ const ViewCourse = () => {
             {/* Rating */}
             <div className="flex items-center gap-2 mt-4">
               <div className="flex items-center gap-[2px] text-yellow-400 text-[14px]">
-                <FaStar />
-                <FaStar />
-                <FaStar />
-                <FaStar />
-                <FaStar />
+                <FaStar /> 
+                
               </div>
 
-              <span className="font-semibold text-gray-700 text-sm">5</span>
+              <span className="font-semibold text-gray-700 text-sm">{avgRating}</span>
 
               <span className="text-gray-400 text-sm">(1,200 Reviews)</span>
             </div>
@@ -351,17 +373,15 @@ const ViewCourse = () => {
                   }}
                   className={`w-full flex items-center justify-between gap-3 p-4 rounded-xl border transition-all duration-300 text-left
 
-                  ${
-                    lecture.isPreviewFree
+                  ${lecture.isPreviewFree
                       ? "bg-white hover:shadow-md border-gray-300"
                       : "bg-gray-100 border-gray-200 opacity-70 cursor-not-allowed"
-                  }
+                    }
 
-                  ${
-                    selectedLecture?.lectureTitle === lecture?.lectureTitle
+                  ${selectedLecture?.lectureTitle === lecture?.lectureTitle
                       ? "border-black shadow-md"
                       : ""
-                  }
+                    }
                   `}
                 >
                   {/* Left */}
@@ -435,7 +455,9 @@ const ViewCourse = () => {
               {[1, 2, 3, 4, 5].map((star) => (
                 <FaStar
                   key={star}
-                  className="text-[24px] cursor-pointer text-gray-300 hover:text-yellow-400 transition-all duration-200"
+                  onClick={() => setRating(star)}
+                  className={`cursor-pointer text-2xl ${star <= rating ? "fill-amber-300" : "fill-gray-300"
+                    }`}
                 />
               ))}
             </div>
@@ -444,10 +466,14 @@ const ViewCourse = () => {
               className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black resize-none text-sm"
               placeholder="Write your review here..."
               rows={5}
+              onChange={(e) => setComment(e.target.value)}
+              value={comment}
             />
 
-            <button className="mt-4 bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300">
-              Submit Review
+            <button className="mt-4 bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
+              onClick={handleReview}
+              disabled={loading}
+            > {loading ? <ClipLoader size={30} color="white" /> : "Submit Review"}
             </button>
           </div>
         </div>
@@ -489,7 +515,7 @@ const ViewCourse = () => {
         <div className="w-full transition-all duration-300 py-[20px] flex items-start justify-center lg:justify-start flex-wrap gap-6 ">
           {creatorCourse && creatorCourse.length > 0 ? (
             creatorCourse.map((course) => {
-              console.log("Rendering course:", course);
+              // console.log("Rendering course:", course);
               return (
                 <div key={course._id} className="w-[280px]">
                   <Card
