@@ -9,35 +9,71 @@ cloudinary.config({
 });
 
 // Upload File Function
-const uploadOnCloudinary = async (filePath) => {
+const uploadOnCloudinary = async (
+  filePath
+) => {
 
   try {
 
-    // Check File
     if (!filePath) return null;
 
-    // Upload File
+    // ==========================
+    // DETECT PDF
+    // ==========================
+    const isPdf =
+      filePath
+        .toLowerCase()
+        .endsWith(".pdf");
+
+    console.log("Cloudinary Upload - File Path:", filePath);
+    console.log("Cloudinary Upload - Is PDF:", isPdf);
+
+    // ==========================
+    // UPLOAD
+    // ==========================
     const uploadResult =
       await cloudinary.uploader.upload(
         filePath,
         {
-          resource_type: "auto",
+
+          resource_type: "raw",
+
+          folder:
+            "lecture-resources",
+
+          // For PDFs, ensure proper delivery
+          use_filename: true,
+          unique_filename: false,
+          overwrite: true,
+
         }
       );
 
-    // Delete Local File
-    if (fs.existsSync(filePath)) {
+    // ==========================
+    // DELETE LOCAL FILE
+    // ==========================
+    if (
+      fs.existsSync(filePath)
+    ) {
 
       fs.unlinkSync(filePath);
 
     }
 
-    // Return Uploaded Data
+    // ==========================
+    // RETURN DATA
+    // ==========================
+    // For PDFs, add fl_attachment to force download
+    const fileUrl = isPdf
+      ? `${uploadResult.secure_url}?fl_attachment`
+      : uploadResult.secure_url;
+
     return {
 
-      fileUrl: uploadResult.secure_url,
+      fileUrl,
 
-      publicId: uploadResult.public_id,
+      publicId:
+        uploadResult.public_id,
 
       resourceType:
         uploadResult.resource_type,
@@ -51,7 +87,7 @@ const uploadOnCloudinary = async (filePath) => {
       error
     );
 
-    // Delete Local File On Error
+    // delete local file
     if (
       filePath &&
       fs.existsSync(filePath)

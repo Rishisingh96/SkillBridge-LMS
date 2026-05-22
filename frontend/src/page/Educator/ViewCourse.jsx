@@ -4,6 +4,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 
 import { useDispatch, useSelector } from "react-redux";
+import { setModuleData } from "../../redux/moduleSlice";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { setSelectedCourse } from "../../redux/courseSlice";
@@ -17,6 +18,8 @@ import { serverUrl } from "../../App";
 import Card from "../../component/Card";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+import LectureResources from "../../component/Lecture/LectureResources";
+import QuizResult from "../../component/Lecture/QuizResult";
 
 const ViewCourse = () => {
   const navigate = useNavigate();
@@ -26,6 +29,7 @@ const ViewCourse = () => {
   const { courseId } = useParams();
 
   const { userData } = useSelector((state) => state.user);
+  const { moduleData } = useSelector((state) => state.module);
 
   // Redux Data
   const { courseData, selectedCourse } = useSelector((state) => state.course);
@@ -40,10 +44,10 @@ const ViewCourse = () => {
 
   const [isEnrolled, setIsEnrolled] = useState(false);
 
-  const [rating, setRating] = useState(0)
-  const [comment, setComment] = useState("")
-  const [loading, setLoading] = useState(false)
-
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [openModule, setOpenModule] = useState(null);
 
   // Fetch Selected Course Data
   const fetchCourseData = () => {
@@ -64,10 +68,25 @@ const ViewCourse = () => {
     });
   };
 
+  //FetchModule
+  const fetchModules = async () => {
+    try {
+      const response = await axios.get(
+        `${serverUrl}/api/course/course-modules/${courseId}`,
+        {
+          withCredentials: true,
+        },
+      );
 
+      dispatch(setModuleData(response.data.modules));
+
+      console.log("Modules:", response.data.modules);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // check Enrollemnt true when enrollemnt success
-
   const checkEnrollment = () => {
     const verify = userData?.enrolledCourses?.some(
       (c) =>
@@ -80,10 +99,9 @@ const ViewCourse = () => {
 
   useEffect(() => {
     fetchCourseData();
+    fetchModules();
     checkEnrollment();
   }, [courseData, courseId, userData]);
-
-
 
   // Check Creator Data Updated
   useEffect(() => {
@@ -112,101 +130,106 @@ const ViewCourse = () => {
   }, [courseData, courseId]);
 
   // handle Enrollment pyament service
-  const handleEnroll = async (userId, courseId) => {
+  const handleEnroll = async (courseId) => {
     try {
       const orderData = await axios.post(
-        serverUrl + `/api/order/razorpay-order`,
+        serverUrl + "/api/order/razorpay-order",
         {
-          userId,
           courseId,
         },
-        { withCredentials: true },
+        {
+          withCredentials: true,
+        },
       );
-      // console.log(orderData.data);
+
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: orderData.data.amount,
-        currency: "INR",
-        name: "LEARN SKILLS",
-        description: "COURSE ENROLMENT PAYMENT",
-        order_id: orderData.data.id,
-        handler: async function (response) {
-            // console.log("RazorePay Response", response);
 
+        amount: orderData.data.order.amount,
+
+        currency: "INR",
+
+        name: "LEARN SKILLS",
+
+        description: "COURSE ENROLMENT PAYMENT",
+
+        order_id: orderData.data.order.id,
+
+        handler: async function (response) {
           try {
             const verifyPayment = await axios.post(
               serverUrl + "/api/order/verifypayment",
               {
                 ...response,
                 courseId,
-                userId,
               },
-              { withCredentials: true },
+              {
+                withCredentials: true,
+              },
             );
+
             setIsEnrolled(true);
+
             toast.success(verifyPayment.data.message);
           } catch (error) {
             toast.error(error.response.data.message);
           }
         },
       };
+
       const rzp = new window.Razorpay(options);
+
       rzp.open();
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong while enrollment.. ");
+
+      toast.error(error.response?.data?.message || "Enrollment failed");
     }
   };
 
   // Handle Review
   const handleReview = async () => {
-
-    setLoading(true)
+    setLoading(true);
 
     try {
-
       const result = await axios.post(
         serverUrl + "/api/review/createreview",
         {
           rating,
           comment,
-          courseId
+          courseId,
         },
         {
-          withCredentials: true
-        }
-      )
+          withCredentials: true,
+        },
+      );
 
-      console.log("Handle Review :", result.data)
+      console.log("Handle Review :", result.data);
 
-      toast.success("Review submitted successfully")
+      toast.success("Review submitted successfully");
 
-      setRating(0)
-      setComment("")
-
+      setRating(0);
+      setComment("");
     } catch (error) {
+      console.log(error);
 
-      console.log(error)
-
-      toast.error(error.response.data.message)
-
+      toast.error(error.response.data.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const calculateAvgReview = (reviews) =>{
-    if(!reviews || reviews.length === 0){
+  const calculateAvgReview = (reviews) => {
+    if (!reviews || reviews.length === 0) {
       return 0;
     }
-    const total = reviews.reduce((sum, review) => sum + review.rating, 0)
-    return (total/reviews.length).toFixed(1)
-  }
+    const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+    return (total / reviews.length).toFixed(1);
+  };
 
-  
-    const avgRating = calculateAvgReview(selectedCourse?.reviews)
-   
-    console.log("Avg Rating:", avgRating)
+  const avgRating = calculateAvgReview(selectedCourse?.reviews);
+
+  // console.log("Avg Rating:", avgRating)
 
   return (
     <div className="min-h-screen bg-[#f4f4f5] p-4 md:p-8">
@@ -242,11 +265,12 @@ const ViewCourse = () => {
             {/* Rating */}
             <div className="flex items-center gap-2 mt-4">
               <div className="flex items-center gap-[2px] text-yellow-400 text-[14px]">
-                <FaStar /> 
-                
+                <FaStar />
               </div>
 
-              <span className="font-semibold text-gray-700 text-sm">{avgRating}</span>
+              <span className="font-semibold text-gray-700 text-sm">
+                {avgRating}
+              </span>
 
               <span className="text-gray-400 text-sm">(1,200 Reviews)</span>
             </div>
@@ -278,17 +302,17 @@ const ViewCourse = () => {
                 </p> */}
 
                 <p className="text-sm text-gray-700 font-medium">
-    {selectedCourse?.validity?.value}{" "}
-    {selectedCourse?.validity?.unit === "month"
-      ? selectedCourse?.validity?.value > 1
-        ? "Months Access"
-        : "Month Access"
-      : selectedCourse?.validity?.unit === "year"
-      ? selectedCourse?.validity?.value > 1
-        ? "Years Access"
-        : "Year Access"
-      : "Lifetime Access"}
-  </p>
+                  {selectedCourse?.validity?.value}{" "}
+                  {selectedCourse?.validity?.unit === "month"
+                    ? selectedCourse?.validity?.value > 1
+                      ? "Months Access"
+                      : "Month Access"
+                    : selectedCourse?.validity?.unit === "year"
+                      ? selectedCourse?.validity?.value > 1
+                        ? "Years Access"
+                        : "Year Access"
+                      : "Lifetime Access"}
+                </p>
               </div>
             </div>
 
@@ -307,7 +331,7 @@ const ViewCourse = () => {
       active:scale-[0.98]
       transition-all duration-300
     "
-                onClick={() => handleEnroll(userData._id, courseId)}
+                onClick={() => handleEnroll(courseId)}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   🚀 Enroll Now
@@ -369,84 +393,136 @@ const ViewCourse = () => {
               </h2>
 
               <p className="text-gray-500 text-sm mt-1">
-                {selectedCourse?.lectures?.length || 0} Lectures
+                {/* {selectedCourse?.lectures?.length || 0} Lectures */}
+                {moduleData?.reduce(
+                  (total, module) => total + module.lectures.length,
+                  0,
+                ) || 0}{" "}
+                Lectures
               </p>
             </div>
 
-            {/* Lectures */}
-            <div className="flex flex-col gap-3">
-              {selectedCourse?.lectures?.map((lecture, index) => (
-                <button
-                  key={index}
-                  disabled={!lecture.isPreviewFree}
-                  onClick={() => {
-                    if (lecture.isPreviewFree) {
-                      setSelectedLecture(lecture);
-                    }
-                  }}
-                  className={`w-full flex items-center justify-between gap-3 p-4 rounded-xl border transition-all duration-300 text-left
-
-                  ${lecture.isPreviewFree
-                      ? "bg-white hover:shadow-md border-gray-300"
-                      : "bg-gray-100 border-gray-200 opacity-70 cursor-not-allowed"
-                    }
-
-                  ${selectedLecture?.lectureTitle === lecture?.lectureTitle
-                      ? "border-black shadow-md"
-                      : ""
-                    }
-                  `}
+            {/* Module Section */}
+            <div className="flex flex-col gap-5">
+              {moduleData?.map((module, moduleIndex) => (
+                <div
+                  key={module._id}
+                  className="border rounded-2xl p-4 bg-white"
                 >
-                  {/* Left */}
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-[18px]
-                      ${lecture.isPreviewFree ? "text-black" : "text-gray-400"}
-                      `}
-                    >
-                      {lecture.isPreviewFree ? (
-                        <FaPlayCircle />
-                      ) : (
-                        <MdOutlineLock />
-                      )}
-                    </span>
+                  {/* Module Title */}
+                  {/* <h2 className="text-lg font-bold text-black mb-1">
+                    Module {moduleIndex + 1}: {module.title}
+                  </h2> */}
 
+                  {/* Module Header */}
+                  <div
+                    className="flex items-center justify-between cursor-pointer"
+                    onClick={() =>
+                      setOpenModule(
+                        openModule === module._id ? null : module._id,
+                      )
+                    }
+                  >
                     <div>
-                      <h3 className="text-[15px] font-semibold text-gray-800 leading-6">
-                        {lecture?.lectureTitle}
-                      </h3>
+                      <h2 className="text-lg font-bold text-black">
+                        Module {moduleIndex + 1}: {module.title}
+                      </h2>
 
-                      <p className="text-xs text-gray-500 mt-[2px]">
-                        Lecture {index + 1}
+                      <p className="text-sm text-gray-500">
+                        {module.description}
                       </p>
                     </div>
+
+                    <span className="text-2xl font-bold">
+                      {openModule === module._id ? "-" : "+"}
+                    </span>
                   </div>
 
-                  {/* Right */}
-                  <div>
-                    {lecture.isPreviewFree ? (
-                      <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
-                        Free
-                      </span>
-                    ) : (
-                      <span className="bg-gray-200 text-gray-500 text-xs font-semibold px-3 py-1 rounded-full">
-                        Locked
-                      </span>
-                    )}
-                  </div>
-                </button>
+                  {/* Lectures */}
+                  {openModule === module._id && (
+                    <div className="flex flex-col gap-3">
+                      {module.lectures?.map((lecture, lectureIndex) => (
+                        <button
+                          key={lecture._id}
+                          disabled={!lecture.isPreviewFree}
+                          onClick={() => {
+                            if (lecture.isPreviewFree) {
+                              setSelectedLecture(lecture);
+                            }
+                          }}
+                          className={`w-full flex items-center justify-between gap-3 p-4 rounded-xl border transition-all duration-300 text-left
+
+            ${
+              lecture.isPreviewFree
+                ? "bg-white hover:shadow-md border-gray-300"
+                : "bg-gray-100 border-gray-200 opacity-70 cursor-not-allowed"
+            }
+
+            ${
+              selectedLecture?._id === lecture?._id
+                ? "border-black shadow-md"
+                : ""
+            }
+            `}
+                        >
+                          {/* Left */}
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={`text-[18px]
+                ${lecture.isPreviewFree ? "text-black" : "text-gray-400"}
+                `}
+                            >
+                              {lecture.isPreviewFree ? (
+                                <FaPlayCircle />
+                              ) : (
+                                <MdOutlineLock />
+                              )}
+                            </span>
+
+                            <div>
+                              <h3 className="text-[15px] font-semibold text-gray-800 leading-6">
+                                {lecture.lectureTitle}
+                              </h3>
+
+                              <p className="text-xs text-gray-500 mt-[2px]">
+                                Lecture {lectureIndex + 1}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Right */}
+                          <div>
+                            {lecture.isPreviewFree ? (
+                              <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+                                Free
+                              </span>
+                            ) : (
+                              <span className="bg-gray-200 text-gray-500 text-xs font-semibold px-3 py-1 rounded-full">
+                                Locked
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
 
           {/* RIGHT */}
           <div className="bg-white w-full h-full p-5 rounded-[22px] shadow-lg border border-gray-200">
+            {/* VIDEO */}
             <div className="w-full h-[420px] rounded-[18px] overflow-hidden bg-black flex items-center justify-center">
-              {selectedLecture?.videoUrl ? (
+              {selectedLecture?.video?.fileUrl ? (
                 <video
                   className="w-full h-full object-cover"
-                  src={selectedLecture?.videoUrl}
+                  src={selectedLecture?.video?.fileUrl}
                   controls
+                  autoPlay
+                  muted
+                  playsInline
                 />
               ) : (
                 <span className="text-white text-sm">
@@ -454,6 +530,29 @@ const ViewCourse = () => {
                 </span>
               )}
             </div>
+
+            {/* Lecture Info */}
+            {selectedLecture && (
+              <div className="mt-5">
+                <h2 className="text-2xl font-bold text-black">
+                  {selectedLecture?.lectureTitle}
+                </h2>
+
+                <p className="text-gray-600 mt-3 leading-7">
+                  {selectedLecture?.description}
+                </p>
+
+                {/* Resources */}
+                <div className="mt-8">
+                  <LectureResources lecture={selectedLecture} />
+                </div>
+
+                {/* Quiz */}
+                <div className="mt-8">
+                  <QuizResult lectureId={selectedLecture?._id} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -469,8 +568,9 @@ const ViewCourse = () => {
                 <FaStar
                   key={star}
                   onClick={() => setRating(star)}
-                  className={`cursor-pointer text-2xl ${star <= rating ? "fill-amber-300" : "fill-gray-300"
-                    }`}
+                  className={`cursor-pointer text-2xl ${
+                    star <= rating ? "fill-amber-300" : "fill-gray-300"
+                  }`}
                 />
               ))}
             </div>
@@ -483,10 +583,17 @@ const ViewCourse = () => {
               value={comment}
             />
 
-            <button className="mt-4 bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
+            <button
+              className="mt-4 bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
               onClick={handleReview}
               disabled={loading}
-            > {loading ? <ClipLoader size={30} color="white" /> : "Submit Review"}
+            >
+              {" "}
+              {loading ? (
+                <ClipLoader size={30} color="white" />
+              ) : (
+                "Submit Review"
+              )}
             </button>
           </div>
         </div>

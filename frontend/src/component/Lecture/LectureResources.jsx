@@ -1,6 +1,5 @@
-// LectureResources.jsx
+import React, { useState } from "react";
 
-import React from "react";
 import {
   FaDownload,
   FaFilePdf,
@@ -9,26 +8,92 @@ import {
   FaImage,
 } from "react-icons/fa";
 
+import axios from "axios";
+
+import { toast } from "react-toastify";
+
+import { serverUrl } from "../../App";
+
+import { ClipLoader } from "react-spinners";
+
 const LectureResources = ({ selectedLecture }) => {
 
-  const resources = selectedLecture?.resources || [];
+  
+  // RESOURCES
+  const resources =
+    selectedLecture?.resources || [];
 
-  // File Icon
+  // LOADING STATE
+  const [loadingId, setLoadingId] =
+    useState(null);
+
+  // DOWNLOAD RESOURCE
+  const handleDownload = async (
+    lectureId,
+    resourceId
+  ) => {
+
+    try {
+
+      setLoadingId(resourceId);
+
+      const response = await axios.get(
+        `${serverUrl}/api/course/download-resource/${lectureId}/${resourceId}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      // open file
+      window.open(
+        response.data.fileUrl,
+        "_blank"
+      );
+
+      toast.success(
+        "Download started"
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      toast.error(
+        error.response?.data?.message ||
+        "Download failed"
+      );
+
+    } finally {
+
+      setLoadingId(null);
+
+    }
+  };
+
+  // FILE ICON
   const getFileIcon = (type) => {
 
     switch (type) {
 
       case "pdf":
-        return <FaFilePdf className="text-red-500 text-xl" />;
+        return (
+          <FaFilePdf className="text-red-500 text-xl" />
+        );
 
       case "image":
-        return <FaImage className="text-blue-500 text-xl" />;
+        return (
+          <FaImage className="text-blue-500 text-xl" />
+        );
 
       case "zip":
-        return <FaFileArchive className="text-yellow-500 text-xl" />;
+        return (
+          <FaFileArchive className="text-yellow-500 text-xl" />
+        );
 
       default:
-        return <FaFileCode className="text-green-500 text-xl" />;
+        return (
+          <FaFileCode className="text-green-500 text-xl" />
+        );
     }
   };
 
@@ -38,7 +103,9 @@ const LectureResources = ({ selectedLecture }) => {
 
       <div className="border-t border-gray-200 pt-7">
 
-        {/* Heading */}
+        {/* =========================
+            HEADING
+        ========================== */}
         <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
 
           <div>
@@ -48,26 +115,31 @@ const LectureResources = ({ selectedLecture }) => {
             </h2>
 
             <p className="text-sm text-gray-500 mt-1">
-              Download notes, source code, PDFs & lecture files
+              Download notes, source code,
+              PDFs & lecture files
             </p>
 
           </div>
 
           <div className="bg-gray-100 text-gray-700 text-xs font-semibold px-4 py-2 rounded-xl">
+
             {resources.length} Files
+
           </div>
 
         </div>
 
-        {/* Resources */}
+        {/* =========================
+            RESOURCE LIST
+        ========================== */}
         {resources.length > 0 ? (
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            {resources.map((resource, index) => (
+            {resources.map((resource) => (
 
               <div
-                key={index}
+                key={resource._id}
                 className="
                   bg-[#fafafa]
                   border border-gray-200
@@ -79,10 +151,12 @@ const LectureResources = ({ selectedLecture }) => {
                 "
               >
 
-                {/* LEFT */}
+                {/* =========================
+                    LEFT SECTION
+                ========================== */}
                 <div className="flex items-center gap-4 min-w-0">
 
-                  {/* Icon */}
+                  {/* FILE ICON */}
                   <div
                     className="
                       w-12 h-12
@@ -93,30 +167,48 @@ const LectureResources = ({ selectedLecture }) => {
                       shadow-sm
                     "
                   >
-                    {getFileIcon(resource.fileType)}
+
+                    {getFileIcon(
+                      resource.fileType
+                    )}
+
                   </div>
 
-                  {/* Text */}
+                  {/* FILE INFO */}
                   <div className="min-w-0">
 
                     <h3 className="font-semibold text-gray-800 truncate">
+
                       {resource.title}
+
                     </h3>
 
                     <p className="text-xs text-gray-500 mt-1 uppercase">
+
                       {resource.fileType}
+
                     </p>
 
                   </div>
 
                 </div>
 
-                {/* Download */}
-                <a
-                  href={resource.fileUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  download
+                {/* =========================
+                    DOWNLOAD BUTTON
+                ========================== */}
+                <button
+
+                  onClick={() =>
+                    handleDownload(
+                      selectedLecture?._id,
+                      resource._id
+                    )
+                  }
+
+                  disabled={
+                    loadingId === resource._id
+                  }
+
                   className="
                     min-w-[45px]
                     h-[45px]
@@ -126,10 +218,25 @@ const LectureResources = ({ selectedLecture }) => {
                     flex items-center justify-center
                     hover:scale-105
                     transition-all duration-300
+                    disabled:opacity-60
+                    disabled:cursor-not-allowed
                   "
                 >
-                  <FaDownload />
-                </a>
+
+                  {loadingId === resource._id ? (
+
+                    <ClipLoader
+                      size={18}
+                      color="white"
+                    />
+
+                  ) : (
+
+                    <FaDownload />
+
+                  )}
+
+                </button>
 
               </div>
 
@@ -139,6 +246,9 @@ const LectureResources = ({ selectedLecture }) => {
 
         ) : (
 
+          // =========================
+          // EMPTY STATE
+          // =========================
           <div
             className="
               bg-[#fafafa]
@@ -153,11 +263,16 @@ const LectureResources = ({ selectedLecture }) => {
             <div>
 
               <h3 className="text-lg font-semibold text-gray-700">
+
                 No Resources Available
+
               </h3>
 
               <p className="text-sm text-gray-500 mt-2">
-                Creator has not uploaded any resources yet.
+
+                Creator has not uploaded
+                any resources yet.
+
               </p>
 
             </div>

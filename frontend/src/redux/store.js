@@ -12,6 +12,7 @@
 // })
 
 
+
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
 import {
@@ -29,12 +30,14 @@ import userSlice from "./userSlice";
 import courseSlice from "./courseSlice";
 import lectureSlice from "./lectureSlice";
 import reviewSlice from "./reviewSlice";
+import moduleSlice from "./moduleSlice";
 
 // Combine Reducers
 const rootReducer = combineReducers({
   user: userSlice,
   course: courseSlice,
   lecture: lectureSlice,
+  module:moduleSlice,
   review: reviewSlice,
 });
 

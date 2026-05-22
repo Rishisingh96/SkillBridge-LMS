@@ -5,35 +5,62 @@ import User from "../model/userModel.js"
 import uploadOnCloudinary from "../config/cloudinary.js"
 
 // Create Course
-export const createCourse = async (req, res) =>{
-    try{
-        const {title, category, description, validity} = req.body
-        console.log("Request body:", req.body)
+export const createCourse = async (req, res) => {
 
-        const safeValidity = validity || {
-            value:6,
-            unit:"month"
-        }
+   try {
 
-        // Validation
-        if(!title || !category ){
-            return res.status(400).json({message:"Title and Category are required"})
-        }
+      const {
+         title,
+         category,
+         description,
+         validity
+      } = req.body;
 
-        // Create Course
-        const course = await Course.create({
-            title,
-            category,
-            description,
-            validity: safeValidity,
-            creator: req.userId   
-        })
-        res.status(201).json({message:"Course created successfully", course})
-    } catch(error){
-        console.log("Create Course Error :", error)
-        res.status(500).json({message:"Failed to create course"})
-    }
-}
+      const safeValidity = validity || {
+         value: 6,
+         unit: "month"
+      };
+
+      if (!title || !category) {
+
+         return res.status(400).json({
+            message: "Title and Category are required"
+         });
+
+      }
+
+      const course = await Course.create({
+
+         title,
+         category,
+         description,
+
+         validity: safeValidity,
+
+         creator: req.userId
+
+      });
+
+      return res.status(201).json({
+
+         success: true,
+         message: "Course created successfully",
+         course
+
+      });
+
+   } catch (error) {
+
+      console.log(error);
+
+      return res.status(500).json({
+         message: "Failed to create course"
+      });
+
+   }
+
+};
+
 
 // togglePublishCourse 
 export const togglePublishCourse = async (req, res) => {
@@ -64,7 +91,6 @@ export const togglePublishCourse = async (req, res) => {
   }
 };
 
-// Get Publiced course
 // Get Published Courses
 export const getPublishedCourses = async (req, res) => {
   try {
@@ -102,7 +128,6 @@ export const getPublishedCourses = async (req, res) => {
     });
   }
 };
-
 
 // Get Courses by Creator
 export const getCreatorCourses = async (req, res) =>{
@@ -152,7 +177,6 @@ export const getCreatorById = async (req, res) => {
     return res.status(500).json({ message: `Failed to Creator   ${error}` });
   }
 };
-
 
 // Get Course Edit
 export const editCourse = async (req, res) => {

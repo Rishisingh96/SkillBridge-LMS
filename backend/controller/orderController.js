@@ -11,10 +11,10 @@ const RazorPayInstance = new razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+// temporarily add this:
+console.log("Razorpay Key:", process.env.RAZORPAY_KEY_ID);
 
-// ===============================
 // 1. CREATE ORDER (DO NOT REMOVE)
-// ===============================
 export const RazorPayOrder = async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -30,7 +30,7 @@ export const RazorPayOrder = async (req, res) => {
     const options = {
       amount: course.price * 100, // paise
       currency: "INR",
-      receipt: `rcpt_${courseId}_${Date.now()}`,
+      receipt: `rcpt_${courseId.slice(-12)}_${Date.now().toString().slice(-8)}`,
     };
 
     const order = await RazorPayInstance.orders.create(options);
@@ -49,75 +49,6 @@ export const RazorPayOrder = async (req, res) => {
 };
 
 
-// ===============================
-// 2. VERIFY PAYMENT + ENROLL
-// ===============================
-// export const VerifyPayment = async (req, res) => {
-//   try {
-//     const { courseId, userId, razorpay_order_id } = req.body;
-
-//     const orderInfo = await RazorPayInstance.orders.fetch(razorpay_order_id);
-
-//     if (orderInfo.status !== "paid") {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Payment failed",
-//       });
-//     }
-
-//     const user = await User.findById(userId);
-//     const course = await Course.findById(courseId);
-
-//     if (!user || !course) {
-//       return res.status(404).json({
-//         message: "User or Course not found",
-//       });
-//     }
-
-//     // check duplicate enrollment
-//     const existing = await Enrollment.findOne({
-//       user: userId,
-//       course: courseId,
-//     });
-
-//     if (existing) {
-//       return res.status(400).json({
-//         message: "Already enrolled",
-//       });
-//     }
-
-//     // calculate validity
-//     const startDate = new Date();
-//     const endDate = new Date(startDate);
-
-//     const { value = 6, unit = "month" } = course.validity || {};
-
-//     if (unit === "day") endDate.setDate(endDate.getDate() + value);
-//     if (unit === "month") endDate.setMonth(endDate.getMonth() + value);
-//     if (unit === "year") endDate.setFullYear(endDate.getFullYear() + value);
-
-//     // create enrollment (MAIN STEP)
-//     const enrollment = await Enrollment.create({
-//       user: userId,
-//       course: courseId,
-//       pricePaid: course.price,
-//       startDate,
-//       endDate,
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Payment verified & enrollment successful",
-//       enrollment,
-//     });
-
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       message: `Internal server error: ${error.message}`,
-//     });
-//   }
-// };
 
 // ======================================
 // 2. VERIFY PAYMENT + ENROLL

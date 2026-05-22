@@ -17,7 +17,7 @@ const Card = ({ thumbnail, title, category, price, id, reviews }) => {
   
     const avgRating = calculateAvgReview(reviews)
    
-    console.log("Avg in Card Component Rating:", avgRating)
+    // console.log("Avg in Card Component Rating:", avgRating)
     return (
         <div className='w-full bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer'>
 

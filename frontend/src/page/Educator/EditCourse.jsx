@@ -33,9 +33,7 @@ const EditCourse = () => {
   const [validityValue, setValidityValue] = useState(6);
   const [validityUnit, setValidityUnit] = useState("month");
 
-  // =========================
   // Thumbnail Change
-  // =========================
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
 
@@ -48,9 +46,8 @@ const EditCourse = () => {
     setThumbnail(imageUrl);
   };
 
-  // =========================
+
   // Get Course By Id
-  // =========================
   const getCourseById = async () => {
     try {
       setLoading(true);
@@ -89,81 +86,126 @@ const EditCourse = () => {
 
       toast.error(
         error.response?.data?.message ||
-          "Failed to fetch course details"
+        "Failed to fetch course details"
       );
     } finally {
       setLoading(false);
     }
   };
+
+  // Auto Convert Validity
+const getFormattedValidity = () => {
+
+  let value = Number(validityValue);
+  let unit = validityUnit;
+
+  // 12+ months => convert to years
+  if (unit === "month" && value >= 12) {
+
+    value = value / 12;
+
+    // only whole years
+    if (Number.isInteger(value)) {
+      unit = "year";
+    } else {
+      value = validityValue;
+    }
+
+  }
+
+  return { value, unit };
+
+};
 
   useEffect(() => {
     getCourseById();
   }, []);
 
-  // =========================
+  
   // Update Course
-  // =========================
   const handleUpdateCourse = async (e) => {
-    e.preventDefault();
 
-    try {
-      setLoading(true);
+  e.preventDefault();
 
-      const formData = new FormData();
+  try {
 
-      formData.append("title", title);
-      formData.append("subTitle", subTitle);
-      formData.append("description", description);
-      formData.append("category", category);
-      formData.append("level", level);
-      formData.append("price", price);
-      formData.append("validity[value]", validityValue);
-      formData.append("validity[unit]", validityUnit);
-      formData.append("isPublished", isPublished);
-     
+    setLoading(true);
 
-      // Thumbnail
-      if (thumbnailFile) {
-        formData.append("thumbnail", thumbnailFile);
-      }
+    const formData = new FormData();
 
-      // console.log("Updating Course Id:", courseId);
+    formData.append("title", title);
+    formData.append("subTitle", subTitle);
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("level", level);
+    formData.append("price", price);
 
-      const result = await axios.put(
-        `${serverUrl}/api/course/editcourse/${courseId}`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+    // Validity
+    const formattedValidity = getFormattedValidity();
+
+    formData.append(
+      "validity[value]",
+      formattedValidity.value
+    );
+
+    formData.append(
+      "validity[unit]",
+      formattedValidity.unit
+    );
+
+    formData.append(
+      "isPublished",
+      isPublished
+    );
+
+    // Thumbnail
+    if (thumbnailFile) {
+
+      formData.append(
+        "thumbnail",
+        thumbnailFile
       );
 
-      // console.log(result.data);
-
-      toast.success("Course updated successfully");
-
-      navigate("/courses");
-
-    } catch (error) {
-      console.log(error);
-
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to update course"
-      );
-    } finally {
-      setLoading(false);
     }
-  };
+
+    const result = await axios.put(
+      `${serverUrl}/api/course/editcourse/${courseId}`,
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    toast.success("Course updated successfully");
+
+    navigate("/courses");
+
+  } catch (error) {
+
+    console.log(error);
+
+    toast.error(
+      error.response?.data?.message ||
+      "Failed to update course"
+    );
+
+  } finally {
+
+    setLoading(false);
+
+  }
+
+};
 
   // handle remove course
   const handleRemoveCourse = async () => {
     setLoading1(true);
 
     try {
-      const result = await axios.delete(serverUrl + `/api/course/remove/${courseId}`, {withCredentials:true})
+      const result = await axios.delete(serverUrl + `/api/course/remove/${courseId}`, { withCredentials: true })
       console.log(result.data)
       setLoading1(false)
       toast.success("Course Removed")
@@ -192,9 +234,9 @@ const EditCourse = () => {
 
           <div className="space-x-2 space-y-2">
             <button className="bg-black text-white px-4 py-2 rounded-md cursor-pointer hover:bg-gray-800 transition-all"
-              onClick={()=>navigate(`/createlecture/${selectCourse._id}`)} 
+              onClick={() => navigate(`/create-module/${selectCourse._id}`)}
             >
-                 Go to Lecture Page
+              Go to Module Page
             </button>
           </div>
 
@@ -206,11 +248,10 @@ const EditCourse = () => {
 
             <button
               type="button"
-              className={`px-5 py-2 rounded-lg font-medium text-sm transition-all ${
-                isPublished
+              className={`px-5 py-2 rounded-lg font-medium text-sm transition-all ${isPublished
                   ? "bg-orange-500 text-white hover:bg-orange-600"
                   : "bg-green-600 text-white hover:bg-green-700"
-              }`}
+                }`}
               onClick={() => setIsPublished(!isPublished)}
             >
               {isPublished
@@ -391,41 +432,41 @@ const EditCourse = () => {
           </div>
 
           {/* Validity */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
 
-  {/* Validity Value */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-2">
-      Course Validity
-    </label>
+            {/* Validity Value */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Course Validity
+              </label>
 
-    <input
-      type="number"
-      value={validityValue}
-      onChange={(e) => setValidityValue(e.target.value)}
-      placeholder="6"
-      className="w-full border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-black outline-none"
-    />
-  </div>
+              <input
+                type="number"
+                value={validityValue}
+                onChange={(e) => setValidityValue(e.target.value)}
+                placeholder="6"
+                className="w-full border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-black outline-none"
+              />
+            </div>
 
-  {/* Validity Unit */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-2">
-      Validity Unit
-    </label>
+            {/* Validity Unit */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Validity Unit
+              </label>
 
-    <select
-      value={validityUnit}
-      onChange={(e) => setValidityUnit(e.target.value)}
-      className="w-full border border-gray-300 rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none"
-    >
-      <option value="day">Day</option>
-      <option value="month">Month</option>
-      <option value="year">Year</option>
-    </select>
-  </div>
+              <select
+                value={validityUnit}
+                onChange={(e) => setValidityUnit(e.target.value)}
+                className="w-full border border-gray-300 rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none"
+              >
+                <option value="day">Day</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+              </select>
+            </div>
 
-</div>
+          </div>
 
           {/* Thumbnail */}
           <div className="mt-8">

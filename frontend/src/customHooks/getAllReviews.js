@@ -13,7 +13,7 @@ const getAllReviews = () => {
               const result = await axios.get(serverUrl + "/api/review/getreview",
                 {withCredentials:true});
              dispatch(setReviewData(result.data.review))
-             console.log(result.data)
+            //  console.log(result.data)
            } catch (error) {
             console.log(error);
            }

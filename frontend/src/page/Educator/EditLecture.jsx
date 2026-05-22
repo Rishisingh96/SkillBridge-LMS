@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { setLectureData } from "../../redux/lectureSlice";
+import { setLectureData, fetchLectures } from "../../redux/lectureSlice";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
@@ -14,7 +14,7 @@ const EditLecture = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { courseId, lectureId } = useParams();
+  const { courseId, moduleId, lectureId } = useParams();
 
   const { lectureData } = useSelector((state) => state.lecture);
 
@@ -51,6 +51,13 @@ const EditLecture = () => {
       setQuizData(selectedLecture.quiz || []);
     }
   }, [selectedLecture]);
+
+  // Fetch lectures for this module on component mount
+  useEffect(() => {
+    if (moduleId) {
+      dispatch(fetchLectures(moduleId));
+    }
+  }, [dispatch, moduleId]);
 
   // Handle Video Change
   const handleVideoChange = (e) => {
@@ -110,7 +117,7 @@ const EditLecture = () => {
 
       toast.success("Lecture Updated Successfully");
 
-      navigate(`/createlecture/${courseId}`);
+      navigate(`/create-lecture/${courseId}/${moduleId}`);
 
       setLoading(false);
     } catch (error) {
@@ -145,7 +152,7 @@ const EditLecture = () => {
 
       toast.success("Lecture Removed Successfully");
 
-      navigate(`/createlecture/${courseId}`);
+      navigate(`/create-lecture/${courseId}/${moduleId}`);
 
       setLoading1(false);
     } catch (error) {
@@ -170,7 +177,7 @@ const EditLecture = () => {
           <div className="flex items-center gap-4">
 
             <FaArrowLeftLong
-              onClick={() => navigate(`/createlecture/${courseId}`)}
+              onClick={() => navigate(`/create-lecture/${courseId}/${moduleId}`)}
               className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
             />
 

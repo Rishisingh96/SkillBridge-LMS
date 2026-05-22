@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { FaPlayCircle } from "react-icons/fa";
 import { MdOutlineLock } from "react-icons/md";
+import { fetchModules } from ".././redux/moduleSlice"
 
 import axios from "axios";
 
@@ -11,7 +12,7 @@ import img from "../assets/Empty.png";
 import LectureResources from "../component/Lecture/LectureResources";
 import QuizResult from "../component/Lecture/QuizResult";
 
-const serverUrl = "http://localhost:8000";
+import { serverUrl } from "../App";
 
 const ViewLecture = () => {
   const { couseId } = useParams();
@@ -21,27 +22,83 @@ const ViewLecture = () => {
   const { userData } = useSelector((state) => state.user);
 
   const { selectedCourse } = useSelector((state) => state.course);
+  const { moduleData } = useSelector((state) => state.module);
 
   const [creatorData, setCreatorData] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-  const [selectedLecture, setSelectedLecture] = useState(
-    selectedCourse?.lectures?.[0] || null,
-  );
+  const [selectedLecture, setSelectedLecture] = useState(null);
+    const [openModule, setOpenModule] = useState(null);
 
-  // ======================================================
-  // First Lecture Auto Select
-  // ======================================================
+
+// Fetch Selected Course Data
+  const fetchCourseData = () => {
+    console.log("All Courses => ", courseData);
+
+    courseData.map((course) => {
+      // console.log("Checking Course => ", course._id);
+
+      if (course._id === courseId) {
+        // console.log("Matched Course Found => ", course);
+
+        dispatch(setSelectedCourse(course));
+
+        console.log("Selected Course Set Successfully");
+      }
+
+      return null;
+    });
+  };
+
+  //FetchModule
+  const fetchModules = async () => {
+    try {
+      const response = await axios.get(
+        `${serverUrl}/api/course/course-modules/${courseId}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      dispatch(setModuleData(response.data.modules));
+
+      console.log("Modules:", response.data.modules);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   useEffect(() => {
-    if (selectedCourse?.lectures?.length > 0) {
-      setSelectedLecture(selectedCourse?.lectures?.[0]);
+
+    if (moduleData?.length > 0 && !selectedLecture) {
+
+      for (const module of moduleData) {
+
+        const freeLecture = module.lectures?.find(
+          (lecture) => lecture.isPreviewFree
+        );
+
+        if (freeLecture) {
+
+          setSelectedLecture(freeLecture);
+
+          break;
+        }
+
+      }
+
     }
-  }, [selectedCourse]);
 
-  // ======================================================
+  }, [moduleData]);
+
+  useEffect(() => {
+    if (moduleData) {
+      console.log("Module Data fetch: ", moduleData);
+    }
+  }, [moduleData])
+
   // Fetch Creator Data
-  // ======================================================
-
   useEffect(() => {
     const handleCreator = async () => {
       if (selectedCourse?.creator) {
@@ -61,6 +118,7 @@ const ViewLecture = () => {
 
     handleCreator();
   }, [selectedCourse]);
+
 
   return (
     <div className="min-h-screen bg-[#f4f4f5] p-4 md:p-7">
@@ -147,7 +205,7 @@ const ViewLecture = () => {
             </div>
 
             {/* Resoue Download  */}
-            <LectureResources selectedLecture={selectedLecture}/>
+            <LectureResources selectedLecture={selectedLecture} />
             <QuizResult selectedLecture={selectedLecture} />
           </div>
 
@@ -162,7 +220,13 @@ const ViewLecture = () => {
                   </h2>
 
                   <p className="text-sm text-gray-500 mt-1">
-                    {selectedCourse?.lectures?.length || 0} Lectures
+                    {/* {selectedCourse?.lectures?.length || 0} Lectures */}
+                    {
+                      moduleData?.reduce(
+                        (total, module) => total + module.lectures.length,
+                        0
+                      ) || 0
+                    } Lectures
                   </p>
                 </div>
 
@@ -171,107 +235,21 @@ const ViewLecture = () => {
                 </div>
               </div>
 
-              {/* LECTURES */}
+              
 
               {/* LECTURES */}
-              <div className="flex flex-col gap-2.5 max-h-[420px] overflow-y-auto pr-1">
-                {selectedCourse?.lectures?.length > 0 ? (
-                  selectedCourse?.lectures?.map((lecture, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedLecture(lecture)}
-                      className={`
-        w-full flex items-center justify-between
-        px-3 py-3 rounded-[18px]
-        border text-left
-        transition-all duration-300
+              <div
+                 className="flex items-center justify-between cursor-pointer"
+                onClick={() =>
+                      setOpenModule(
+                        openModule === module._id ? null : module._id,
+                      )
+                    }
+              >
+                
 
-        ${
-          selectedLecture?._id === lecture?._id
-            ? "bg-[#f1f1f1] border-gray-300 shadow-sm"
-            : "bg-[#fafafa] border-gray-200 hover:bg-[#f5f5f5]"
-        }
-      `}
-                    >
-                      {/* LEFT */}
-                      <div className="flex items-center gap-3 min-w-0">
-                        {/* ICON */}
-                        <div
-                          className={`
-            min-w-[42px] h-[42px]
-            rounded-xl flex items-center justify-center
-            transition-all duration-300
-
-            ${
-              selectedLecture?._id === lecture?._id
-                ? "bg-white shadow-sm"
-                : "bg-[#f0f0f0]"
-            }
-          `}
-                        >
-                          <FaPlayCircle
-                            className={`
-              text-[16px]
-
-              ${
-                selectedLecture?._id === lecture?._id
-                  ? "text-black"
-                  : "text-gray-700"
-              }
-            `}
-                          />
-                        </div>
-
-                        {/* TEXT */}
-                        <div className="min-w-0">
-                          <h3
-                            className={`
-              text-[14px] font-semibold truncate
-
-              ${
-                selectedLecture?._id === lecture?._id
-                  ? "text-black"
-                  : "text-gray-800"
-              }
-            `}
-                          >
-                            {lecture?.lectureTitle}
-                          </h3>
-
-                          <p className="text-[12px] text-gray-500 mt-[2px]">
-                            Lecture {index + 1}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* RIGHT */}
-                      <div>
-                        <span
-                          className={`
-            text-[11px] font-medium
-            px-3 py-1.5 rounded-full
-            transition-all duration-300
-
-            ${
-              selectedLecture?._id === lecture?._id
-                ? "bg-white text-black border border-gray-200"
-                : "bg-gray-100 text-gray-600"
-            }
-          `}
-                        >
-                          Watch
-                        </span>
-                      </div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="text-center py-10">
-                    <p className="text-gray-500 text-sm">
-                      No Lectures Available
-                    </p>
-                  </div>
-                )}
               </div>
+              
             </div>
 
             {/* INSTRUCTOR */}
@@ -327,3 +305,96 @@ const ViewLecture = () => {
 };
 
 export default ViewLecture;
+// // <div className="flex flex-col gap-2.5 max-h-[420px] overflow-y-auto pr-1">
+//                 {selectedCourse?.lectures?.length > 0 ? (
+//                   selectedCourse?.lectures?.map((lecture, index) => (
+//                     <button
+//                       key={index}
+//                       onClick={() => setSelectedLecture(lecture)}
+//                       className={`
+//         w-full flex items-center justify-between
+//         px-3 py-3 rounded-[18px]
+//         border text-left
+//         transition-all duration-300
+
+//         ${selectedLecture?._id === lecture?._id
+//                           ? "bg-[#f1f1f1] border-gray-300 shadow-sm"
+//                           : "bg-[#fafafa] border-gray-200 hover:bg-[#f5f5f5]"
+//                         }
+//       `}
+//                     >
+//                       {/* LEFT */}
+//                       <div className="flex items-center gap-3 min-w-0">
+//                         {/* ICON */}
+//                         <div
+//                           className={`
+//             min-w-[42px] h-[42px]
+//             rounded-xl flex items-center justify-center
+//             transition-all duration-300
+
+//             ${selectedLecture?._id === lecture?._id
+//                               ? "bg-white shadow-sm"
+//                               : "bg-[#f0f0f0]"
+//                             }
+//           `}
+//                         >
+//                           <FaPlayCircle
+//                             className={`
+//               text-[16px]
+
+//               ${selectedLecture?._id === lecture?._id
+//                                 ? "text-black"
+//                                 : "text-gray-700"
+//                               }
+//             `}
+//                           />
+//                         </div>
+
+//                         {/* TEXT */}
+//                         <div className="min-w-0">
+//                           <h3
+//                             className={`
+//               text-[14px] font-semibold truncate
+
+//               ${selectedLecture?._id === lecture?._id
+//                                 ? "text-black"
+//                                 : "text-gray-800"
+//                               }
+//             `}
+//                           >
+//                             {lecture?.lectureTitle}
+//                           </h3>
+
+//                           <p className="text-[12px] text-gray-500 mt-[2px]">
+//                             Lecture {index + 1}
+//                           </p>
+//                         </div>
+//                       </div>
+
+//                       {/* RIGHT */}
+//                       <div>
+//                         <span
+//                           className={`
+//             text-[11px] font-medium
+//             px-3 py-1.5 rounded-full
+//             transition-all duration-300
+
+//             ${selectedLecture?._id === lecture?._id
+//                               ? "bg-white text-black border border-gray-200"
+//                               : "bg-gray-100 text-gray-600"
+//                             }
+//           `}
+//                         >
+//                           Watch
+//                         </span>
+//                       </div>
+//                     </button>
+//                   ))
+//                 ) : (
+//                   <div className="text-center py-10">
+//                     <p className="text-gray-500 text-sm">
+//                       No Lectures Available
+//                     </p>
+//                   </div>
+//                 )}
+//               </div>

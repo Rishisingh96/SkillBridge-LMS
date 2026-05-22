@@ -46,6 +46,7 @@ import getCreatorCourse from "./customHooks/getCreatorCourse";
 
 import getPublishedCourse from "./customHooks/getPublishedCourse";
 import getAllReviews from "./customHooks/getAllReviews";
+import Module from "./page/Educator/Module";
 
 export const serverUrl =
   "http://localhost:8000";
@@ -170,8 +171,18 @@ function App() {
           }
         />
 
+
+          <Route
+          path="/create-module/:courseId"
+          element={
+            userData?.role === "educator"
+              ? <Module />
+              : <Navigate to="/login" />
+          }
+        />
+
         <Route
-          path="/createlecture/:courseId"
+          path="/create-lecture/:courseId/:moduleId"
           element={
             userData?.role === "educator"
               ? <CreateLecture />
@@ -180,7 +191,7 @@ function App() {
         />
 
         <Route
-          path="/editlecture/:courseId/:lectureId"
+          path="/editlecture/:courseId/:moduleId/:lectureId"
           element={
             userData?.role === "educator"
               ? <EditLecture />

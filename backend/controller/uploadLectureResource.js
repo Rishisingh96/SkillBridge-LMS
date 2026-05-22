@@ -7,6 +7,8 @@ import Module from "../model/module.js";
 // Cloudinary
 import uploadOnCloudinary from "../config/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
+import { isCourseActive } from "../middleware/isCourseActive.js";
+
 
 // Upload Lecture Resources
 export const uploadLectureResource = async (req, res) => {
@@ -124,13 +126,13 @@ export const uploadLectureResource = async (req, res) => {
 
     await lecture.save();
 
-    // Final Response
+    // Final Response - return saved resources with _id
     return res.status(200).json({
 
       message:
         "Resources uploaded successfully",
 
-      resources: uploadedResources,
+      resources: lecture.resources,
 
       lecture,
 
@@ -155,8 +157,6 @@ export const uploadLectureResource = async (req, res) => {
 };
 
 // Download Lecture Resource Controller
-// Download Lecture Resource Controller
-
 export const downloadResource = async (req, res) => {
 
   try {
@@ -175,6 +175,7 @@ export const downloadResource = async (req, res) => {
     if (!lecture) {
 
       return res.status(404).json({
+        success: false,
         message: "Lecture not found",
       });
 
@@ -191,33 +192,31 @@ export const downloadResource = async (req, res) => {
     if (!resource) {
 
       return res.status(404).json({
+        success: false,
         message: "Resource not found",
       });
 
     }
 
     // =========================
-    // FIND MODULE USING LECTURE
+    // FIND MODULE
     // =========================
     const module =
       await Module.findOne({
-
         lectures: lectureId,
-
       });
 
     if (!module) {
 
       return res.status(404).json({
-
+        success: false,
         message: "Module not found",
-
       });
 
     }
 
     // =========================
-    // FIND COURSE USING MODULE
+    // FIND COURSE
     // =========================
     const course =
       await Course.findById(
@@ -227,20 +226,11 @@ export const downloadResource = async (req, res) => {
     if (!course) {
 
       return res.status(404).json({
-
+        success: false,
         message: "Course not found",
-
       });
 
     }
-
-    // =========================
-    // CHECK ENROLLMENT
-    // =========================
-    const isEnrolled =
-      course.enrolledStudents?.includes(
-        userId
-      );
 
     // =========================
     // CHECK CREATOR
@@ -248,6 +238,15 @@ export const downloadResource = async (req, res) => {
     const isCreator =
       course.creator.toString()
       === userId;
+
+    // =========================
+    // CHECK ACTIVE ENROLLMENT
+    // =========================
+    const isEnrolled =
+      await isCourseActive(
+        userId,
+        course._id
+      );
 
     // =========================
     // ACCESS CHECK
@@ -259,8 +258,10 @@ export const downloadResource = async (req, res) => {
 
       return res.status(403).json({
 
+        success: false,
+
         message:
-          "You are not enrolled in this course",
+          "Course access expired or not enrolled",
 
       });
 
@@ -271,7 +272,9 @@ export const downloadResource = async (req, res) => {
     // =========================
     resource.downloads += 1;
 
-    // Save Download Log
+    // =========================
+    // SAVE DOWNLOAD LOG
+    // =========================
     resource.downloadLogs.push({
 
       userId,
@@ -308,6 +311,8 @@ export const downloadResource = async (req, res) => {
     );
 
     return res.status(500).json({
+
+      success: false,
 
       message:
         `Download resource error ${error.message}`,

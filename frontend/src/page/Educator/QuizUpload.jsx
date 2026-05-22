@@ -12,8 +12,7 @@ const QuizUpload = ({ quizData,
 
   const { lectureId } = useParams();
 
-  const [question, setQuestion] =
-    useState("");
+  const [question, setQuestion] = useState("");
 
   const [options, setOptions] =
     useState([

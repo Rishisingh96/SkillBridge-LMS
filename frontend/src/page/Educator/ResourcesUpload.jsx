@@ -189,7 +189,7 @@ const ResourcesUpload = ({ resources,
               {resources.map((resource, index) => (
 
                 <div
-                  key={resource._id}
+                  key={resource._id || index}
                   className="bg-white border rounded-2xl p-5 shadow-sm"
                 >
 
@@ -211,7 +211,7 @@ const ResourcesUpload = ({ resources,
                     <div className="flex items-center gap-3">
 
                       <a
-                        href={resource.resourceUrl}
+                        href={resource.fileUrl}
                         target="_blank"
                         rel="noreferrer"
                         className="bg-black text-white px-4 py-2 rounded-lg text-sm"

@@ -1,13 +1,28 @@
 import multer from "multer";
+import path from "path";
 
 const storage = multer.diskStorage({
 
+  // ==========================
+  // DESTINATION
+  // ==========================
   destination: (req, file, cb) => {
-    cb(null, "./public");
+
+    cb(null, "uploads/");
+
   },
 
+  // ==========================
+  // FILE NAME
+  // ==========================
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+
+    const uniqueName =
+      Date.now() +
+      path.extname(file.originalname);
+
+    cb(null, uniqueName);
+
   },
 
 });
@@ -16,23 +31,28 @@ const upload = multer({
 
   storage,
 
-  // 500MB Limit
+  // ==========================
+  // FILE SIZE LIMIT
+  // ==========================
   limits: {
+
     fileSize: 500 * 1024 * 1024,
+
   },
 
+  // ==========================
+  // FILE FILTER
+  // ==========================
   fileFilter: (req, file, cb) => {
 
     // ==========================
-    // ALL ALLOWED FILE TYPES
+    // ALLOWED MIME TYPES
     // ==========================
-
-    const allowedTypes = [
+    const allowedMimeTypes = [
 
       // ==========================
       // IMAGES
       // ==========================
-
       "image/jpeg",
       "image/jpg",
       "image/png",
@@ -47,7 +67,6 @@ const upload = multer({
       // ==========================
       // VIDEOS
       // ==========================
-
       "video/mp4",
       "video/webm",
       "video/mkv",
@@ -57,13 +76,10 @@ const upload = multer({
       "video/mpeg",
       "video/3gpp",
       "video/ogg",
-      "video/ts",
-      "video/mp2t",
 
       // ==========================
-      // PDF / DOCS / NOTES
+      // PDF / DOCS
       // ==========================
-
       "application/pdf",
 
       "application/msword",
@@ -81,21 +97,17 @@ const upload = multer({
       "text/plain",
 
       // ==========================
-      // ZIP / SOURCE CODE FILES
+      // ZIP / RAR
       // ==========================
-
       "application/zip",
 
       "application/x-zip-compressed",
 
       "application/x-rar-compressed",
 
-      "application/octet-stream",
-
       // ==========================
       // JAVASCRIPT
       // ==========================
-
       "application/javascript",
 
       "text/javascript",
@@ -103,13 +115,11 @@ const upload = multer({
       // ==========================
       // JSON
       // ==========================
-
       "application/json",
 
       // ==========================
       // XML
       // ==========================
-
       "application/xml",
 
       "text/xml",
@@ -117,19 +127,16 @@ const upload = multer({
       // ==========================
       // PYTHON
       // ==========================
-
       "text/x-python",
 
       // ==========================
       // JAVA
       // ==========================
-
       "text/x-java-source",
 
       // ==========================
       // C / CPP
       // ==========================
-
       "text/x-c",
 
       "text/x-c++",
@@ -137,7 +144,6 @@ const upload = multer({
       // ==========================
       // HTML / CSS
       // ==========================
-
       "text/html",
 
       "text/css",
@@ -145,13 +151,11 @@ const upload = multer({
       // ==========================
       // TYPESCRIPT
       // ==========================
-
       "application/typescript",
 
       // ==========================
       // YAML
       // ==========================
-
       "application/x-yaml",
 
       "text/yaml",
@@ -161,7 +165,6 @@ const upload = multer({
     // ==========================
     // FILE EXTENSIONS
     // ==========================
-
     const allowedExtensions = [
 
       // CODE FILES
@@ -181,53 +184,54 @@ const upload = multer({
       ".go",
       ".dart",
 
-      // FLUTTER
-      ".dart",
-
-      // REACT / NEXT
-      ".jsx",
-      ".tsx",
-
-      // WEB FILES
+      // WEB
       ".html",
       ".css",
       ".scss",
 
       // CONFIG
       ".json",
-      ".env",
       ".xml",
       ".yml",
       ".yaml",
 
-      // NOTES
+      // DOCS
       ".pdf",
       ".doc",
       ".docx",
       ".ppt",
       ".pptx",
       ".txt",
+      ".xls",
+      ".xlsx",
 
-      // SOURCE CODE ZIP
+      // ZIP
       ".zip",
       ".rar",
+
     ];
 
     // ==========================
     // CHECK EXTENSION
     // ==========================
-
-    const isExtensionAllowed = allowedExtensions.some((ext) =>
-      file.originalname.toLowerCase().endsWith(ext)
-    );
+    const isExtensionAllowed =
+      allowedExtensions.some((ext) =>
+        file.originalname
+          .toLowerCase()
+          .endsWith(ext)
+      );
 
     // ==========================
     // FINAL VALIDATION
     // ==========================
-
     if (
-      allowedTypes.includes(file.mimetype) ||
+
+      allowedMimeTypes.includes(
+        file.mimetype
+      ) ||
+
       isExtensionAllowed
+
     ) {
 
       cb(null, true);
@@ -235,14 +239,19 @@ const upload = multer({
     } else {
 
       cb(
+
         new Error(
           "File type not supported"
         ),
+
         false
+
       );
 
     }
+
   },
+
 });
 
 export default upload;
