@@ -174,7 +174,6 @@ export const resetPassword = async (req, res) =>{
 
 
 //Google Singup 
-
 export const googleAuth = async (req, res) =>{
         try {
             const {name, email, photoUrl, role} = req.body

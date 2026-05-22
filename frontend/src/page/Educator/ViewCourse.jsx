@@ -47,7 +47,7 @@ const ViewCourse = () => {
 
   // Fetch Selected Course Data
   const fetchCourseData = () => {
-    // console.log("All Courses => ", courseData);
+    console.log("All Courses => ", courseData);
 
     courseData.map((course) => {
       // console.log("Checking Course => ", course._id);
@@ -64,7 +64,7 @@ const ViewCourse = () => {
     });
   };
 
-  // Fetch Course on Page Load
+
 
   // check Enrollemnt true when enrollemnt success
 
@@ -273,9 +273,22 @@ const ViewCourse = () => {
               <div className="flex items-center gap-2">
                 <span className="text-green-500 text-sm">✅</span>
 
-                <p className="text-gray-600 text-sm">
+                {/* <p className="text-gray-600 text-sm">
                   Lifetime access to course materials
-                </p>
+                </p> */}
+
+                <p className="text-sm text-gray-700 font-medium">
+    {selectedCourse?.validity?.value}{" "}
+    {selectedCourse?.validity?.unit === "month"
+      ? selectedCourse?.validity?.value > 1
+        ? "Months Access"
+        : "Month Access"
+      : selectedCourse?.validity?.unit === "year"
+      ? selectedCourse?.validity?.value > 1
+        ? "Years Access"
+        : "Year Access"
+      : "Lifetime Access"}
+  </p>
               </div>
             </div>
 

@@ -7,7 +7,13 @@ import uploadOnCloudinary from "../config/cloudinary.js"
 // Create Course
 export const createCourse = async (req, res) =>{
     try{
-        const {title, category, description} = req.body
+        const {title, category, description, validity} = req.body
+        console.log("Request body:", req.body)
+
+        const safeValidity = validity || {
+            value:6,
+            unit:"month"
+        }
 
         // Validation
         if(!title || !category ){
@@ -19,6 +25,7 @@ export const createCourse = async (req, res) =>{
             title,
             category,
             description,
+            validity: safeValidity,
             creator: req.userId   
         })
         res.status(201).json({message:"Course created successfully", course})
@@ -28,19 +35,73 @@ export const createCourse = async (req, res) =>{
     }
 }
 
-// Get Publiced course
-export const getPublishedCourses = async (req, res) =>{
-    try {
-        const courses = await Course.find({isPublished:true}).populate("lectures").populate("creator").populate("reviews");
-        if(!courses){ 
-            return res.status(404).json({message:"No published courses found"})
-        }
-        return res.status(200).json(courses)
-    } catch (error) {
-        return res.status(500).json({message:`Failed to fetch courses ${error}`})
-        
+// togglePublishCourse 
+export const togglePublishCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
     }
-}
+
+    // toggle
+    course.isPublished = !course.isPublished;
+
+    await course.save();
+
+    return res.status(200).json({
+      message: course.isPublished
+        ? "Course published successfully"
+        : "Course unpublished successfully",
+      course,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: `Error: ${error.message}`,
+    });
+  }
+};
+
+// Get Publiced course
+// Get Published Courses
+export const getPublishedCourses = async (req, res) => {
+  try {
+    const courses = await Course.find({ isPublished: true })
+      .populate({
+        path: "modules",
+        populate: {
+          path: "lectures",
+          model: "Lecture",
+        },
+      })
+      .populate({
+        path: "creator",
+        select: "name email photoUrl role",
+      })
+      .populate({
+        path: "reviews",
+      });
+
+    if (!courses || courses.length === 0) {
+      return res.status(404).json({
+        message: "No published courses found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: courses.length,
+      courses,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: `Failed to fetch courses: ${error.message}`,
+    });
+  }
+};
 
 
 // Get Courses by Creator
@@ -94,38 +155,97 @@ export const getCreatorById = async (req, res) => {
 
 
 // Get Course Edit
-export const editCourse = async (req, res) =>{
-    try {
-        const {courseId} = req.params
-        const {title, subTitle, description, category, level, isPublished, price} = req.body
-        let thumbnail
+export const editCourse = async (req, res) => {
+  try {
 
-        if(req.file){
-            thumbnail = await uploadOnCloudinary(req.file.path)
-        }
-        let course = await Course.findById(courseId)
+    const { courseId } = req.params;
 
-        if(!course) {
-            return res.status(400).json({message:"Course is not found"})
-        }
-        const updateDate =  {
-            title,
-            subTitle,
-            description,
-            category,
-            level,
-            isPublished,
-            price,
-            thumbnail
-        }
+    const {
+      title,
+      subTitle,
+      description,
+      category,
+      level,
+      isPublished,
+      price,
+    } = req.body;
 
-        course = await Course.findByIdAndUpdate(courseId, updateDate, {new:true})
+    // find course
+    const course = await Course.findById(courseId);
 
-        return res.status(200).json({message:"Course updated successfully", course})
-    } catch (error) {
-        return res.status(500).json({message:`failed to generate course ${error}`})  
+    if (!course) {
+      return res.status(404).json({
+        message: "Course not found",
+      });
     }
-}
+
+    // validity object
+    const validity = {
+      value: req.body["validity[value]"],
+      unit: req.body["validity[unit]"],
+    };
+
+    // dynamic update object
+    const updateData = {};
+
+    if (title) updateData.title = title;
+
+    if (subTitle) updateData.subTitle = subTitle;
+
+    if (description) updateData.description = description;
+
+    if (category) updateData.category = category;
+
+    if (level) updateData.level = level;
+
+    if (price !== undefined) updateData.price = price;
+
+    // validity update
+    if (validity.value && validity.unit) {
+      updateData.validity = {
+        value: Number(validity.value),
+        unit: validity.unit,
+      };
+    }
+
+    // boolean handle
+    if (typeof isPublished !== "undefined") {
+      updateData.isPublished = isPublished;
+    }
+
+    // thumbnail upload
+    if (req.file) {
+
+      const thumbnailUrl = await uploadOnCloudinary(
+        req.file.path
+      );
+
+      updateData.thumbnail = thumbnailUrl.fileUrl;
+    }
+
+    // update course
+    const updatedCourse = await Course.findByIdAndUpdate(
+      courseId,
+      updateData,
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Course updated successfully",
+      course: updatedCourse,
+    });
+
+  } catch (error) {
+
+    console.log("Edit course error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: `Failed to update course: ${error.message}`,
+    });
+  }
+};
 
 
 // Get Course by Id
@@ -143,7 +263,6 @@ export const getCourseById = async (req, res) =>{
 }
 
 
-
 // Delete Course
 export const deleteCourse = async (req, res) =>{
     try {
@@ -158,4 +277,5 @@ export const deleteCourse = async (req, res) =>{
         return res.status(500).json({message:`failed to delete course ${error}`})  
     }
 }
+
 

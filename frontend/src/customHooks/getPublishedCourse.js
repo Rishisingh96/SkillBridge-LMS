@@ -18,7 +18,7 @@ const getPublishedCourse = () => {
                     { withCredentials: true }
                 );
 
-                dispatch(setCourseData(result.data));
+                dispatch(setCourseData(result.data.courses));
 
             } catch (error) {
                 console.log(error);

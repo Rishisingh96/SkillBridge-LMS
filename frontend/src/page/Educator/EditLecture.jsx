@@ -4,9 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setLectureData } from "../../redux/lectureSlice";
 import { toast } from "react-toastify";
-import {ClipLoader} from "react-spinners";
+import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { serverUrl } from "../../App";
+import ResourcesUpload from "./ResourcesUpload";
+import QuizUpload from "./QuizUpload";
 
 const EditLecture = () => {
   const navigate = useNavigate();
@@ -15,6 +17,10 @@ const EditLecture = () => {
   const { courseId, lectureId } = useParams();
 
   const { lectureData } = useSelector((state) => state.lecture);
+
+  const [resources, setResources] = useState([]);
+  const [quizData, setQuizData] = useState([]);
+  const [existingVideo, setExistingVideo] = useState("");
 
   // Find Selected Lecture
   const selectedLecture = useMemo(() => {
@@ -35,7 +41,14 @@ const EditLecture = () => {
   useEffect(() => {
     if (selectedLecture) {
       setLectureTitle(selectedLecture.lectureTitle || "");
+
       setIsPreviewFree(selectedLecture.isPreviewFree || false);
+
+      setExistingVideo(selectedLecture.videoUrl || "");
+
+      setResources(selectedLecture.resources || []);
+
+      setQuizData(selectedLecture.quiz || []);
     }
   }, [selectedLecture]);
 
@@ -236,6 +249,24 @@ const EditLecture = () => {
 
           </div>
 
+          {/* Existing Video */}
+          {existingVideo && !videoUrl && (
+
+            <div className="border rounded-2xl p-5 bg-gray-50 shadow-sm">
+
+              <h3 className="font-bold text-lg text-gray-800 mb-4">
+                Current Lecture Video
+              </h3>
+
+              <video
+                src={existingVideo}
+                controls
+                className="w-full rounded-xl max-h-[400px]"
+              />
+
+            </div>
+          )}
+
           {/* Free Preview */}
           <div className="flex items-center gap-3">
 
@@ -271,6 +302,13 @@ const EditLecture = () => {
 
             </div>
           )}
+
+
+          <ResourcesUpload resources={resources}
+            setResources={setResources} />
+
+          <QuizUpload quizData={quizData}
+            setQuizData={setQuizData} />
 
           {/* Update Button */}
           <button

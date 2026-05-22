@@ -57,7 +57,7 @@ const Profile = () => {
 
           {/* Back Button */}
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="absolute top-5 left-5 bg-white p-3 rounded-full shadow-md hover:scale-110 duration-300"
           >
             <FaArrowLeftLong className="text-black text-[20px]" />

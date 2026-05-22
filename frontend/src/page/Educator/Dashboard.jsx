@@ -43,7 +43,7 @@ const Dashboard = () => {
           }
         );
 
-        dispatch(setCreatorCourseData(res.data.courses));
+        dispatch(setCreatorCourseData(res.data));
       } catch (error) {
         console.log(error);
       }

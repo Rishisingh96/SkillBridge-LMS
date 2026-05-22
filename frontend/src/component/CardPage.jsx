@@ -40,7 +40,7 @@ const CardPage = () => {
                     popularCourses.map((course, index) => (
                         <Card
                             key={index}
-                            thumbnail={course.thumbnail}
+                            thumbnail={course.thumbnail }
                             title={course.title}
                             category={course.category}
                             price={course.price}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { ImStarFull } from "react-icons/im";
 import { useNavigate } from 'react-router-dom';
+import empty from '../assets/Empty.png'
 
 const Card = ({ thumbnail, title, category, price, id, reviews }) => {
     const navigate = useNavigate()
@@ -23,7 +24,7 @@ const Card = ({ thumbnail, title, category, price, id, reviews }) => {
             {/* Image */}
             <div className='overflow-hidden'>
                 <img
-                    src={thumbnail}
+                    src={thumbnail || empty }
                     alt={title}
                     className='w-full h-52 object-cover hover:scale-105 transition-all duration-300'
                     onClick={()=>navigate(`/viewcourse/${id}`)}

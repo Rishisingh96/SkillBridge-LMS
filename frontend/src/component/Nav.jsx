@@ -1,50 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../assets/logo1.png";
-import { IoPersonCircleSharp } from "react-icons/io5";
+import { HiOutlineMenuAlt3 } from "react-icons/hi";
+import { RxCross2 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { GiCrossMark } from "react-icons/gi";
 
 const Nav = () => {
   const { userData } = useSelector((state) => state.user);
+
   const navigate = useNavigate();
-  const dispath = useDispatch();
-  const [show, setShow] = useState(false);
+  const dispatch = useDispatch();
+
+  const [showProfile, setShowProfile] = useState(false);
   const [showHam, setShowHam] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const result = await axios.get(serverUrl + "/api/user/getcurrentuser", { withCredentials: true })
-  //       dispath(setUserData(result.data))
-  //     } catch (error) {
-  //       console.log(error);
-  //       dispath(setUserData(null))
-  //     }
-  //   }
-  //   fetchUser()
-  // }, [])
-
-  // const handleLogout = async () => {
-  //   try {
-  //     const result = await axios.get(serverUrl + "/api/auth/logout", { withCredentials: true })
-  //     dispath(setUserData(null))
-  //     console.log(result.data)
-  //     toast.success("Logout Successfully")
-  //     // toast.success(result.data)
-
-  //   } catch (error) {
-  //     console.log(error)
-  //     toast.error(error.response.data.message)
-  //   }
-  // }
-
+  // Logout
   const handleLogout = async () => {
     try {
       await axios.get(serverUrl + "/api/auth/logout", {
@@ -53,7 +27,7 @@ const Nav = () => {
 
       localStorage.clear();
 
-      dispath(setUserData(null));
+      dispatch(setUserData(null));
 
       toast.success("Logout Successfully");
 
@@ -64,154 +38,230 @@ const Nav = () => {
       toast.error(error.response?.data?.message || "Logout Failed");
     }
   };
-  return (
-    <div>
-      <div className="w-[100%] h-[70px] fixed top-0 px-[20px] py-[10px] flex items-center justify-between bg-gray-100 z-10">
-        <div className="lg:w-[20%] w-[40%] lg:pl-[50px]">
-          <img
-            src={logo}
-            alt=""
-            className="w-[60px] h-[70px] rounded-[5px] border-2 border-amber-100"
-          />
-        </div>
 
-        {/* User Icon login/logout profile , use hidden class to hide it on mobile */}
-        <div className="w-[30%] lg:flex items-center justify-center gap-4 hidden">
-          {/* show a Name or photo */}
-          {userData ? (
-            userData?.photoUrl ? (
-              <img
-                src={userData?.photoUrl}
-                alt=""
-                className="w-[50px] h-[50px] rounded-full cursor-pointer"
-                onClick={() => setShow((prev) => !prev)}
+  return (
+    <>
+      {/* Navbar */}
+      <div className="fixed top-0 left-0 w-full h-[68px] bg-white border-b border-gray-200 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-4 lg:px-8">
+          {/* Logo */}
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <img
+              src={logo}
+              alt="logo"
+              className="w-[48px] h-[48px] rounded-xl object-cover shadow-sm border border-gray-200"
+            />
+
+            <h1 className="text-2xl font-bold text-gray-900 hidden sm:block tracking-tight">
+              EduVerse
+            </h1>
+          </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center gap-4">
+            {/* Dashboard */}
+            {userData?.role === "educator" && (
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="px-5 py-2 rounded-xl bg-black text-white font-medium hover:bg-gray-800 transition-all duration-300 shadow-sm"
+              >
+                Dashboard
+              </button>
+            )}
+
+            {/* Login */}
+            {!userData && (
+              <button
+                onClick={() => navigate("/login")}
+                className="px-5 py-2 rounded-xl bg-black text-white font-semibold hover:bg-gray-800 transition-all duration-300 shadow-sm"
+              >
+                Login
+              </button>
+            )}
+
+            {/* User Section */}
+            {userData && (
+              <div className="relative">
+                {/* Profile Icon */}
+                <div
+                  onClick={() => setShowProfile((prev) => !prev)}
+                  className="cursor-pointer"
+                >
+                  {userData?.photoUrl ? (
+                    <img
+                      src={userData?.photoUrl}
+                      alt=""
+                      className="w-[46px] h-[46px] rounded-full border border-gray-300 object-cover hover:scale-105 transition-all duration-300"
+                    />
+                  ) : (
+                    <div className="w-[46px] h-[46px] rounded-full bg-black text-white flex items-center justify-center text-lg font-bold hover:scale-105 transition-all duration-300">
+                      {userData?.name?.slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+
+                {/* Dropdown */}
+                {showProfile && (
+                  <div className="absolute right-0 top-[60px] w-[240px] bg-white rounded-2xl shadow-xl border border-gray-200 p-3 flex flex-col gap-2 duration-300">
+                    {/* User Info */}
+                    <div className="border-b border-gray-100 pb-3 px-2">
+                      <h2 className="font-semibold text-gray-900 text-lg">
+                        {userData?.name}
+                      </h2>
+
+                      <p className="text-sm text-gray-500 truncate">
+                        {userData?.email}
+                      </p>
+                    </div>
+
+                    {/* Menu Items */}
+                    <button
+                      onClick={() => navigate("/profile")}
+                      className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 hover:text-black transition-all duration-300 font-medium"
+                    >
+                      My Profile
+                    </button>
+
+                    <button
+                      onClick={() => navigate("/mycourses")}
+                      className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700 hover:text-black transition-all duration-300 font-medium"
+                    >
+                      My Courses
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-4 py-3 rounded-xl bg-red-500/90 text-white hover:bg-red-500 transition-all duration-300 font-medium shadow-sm"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Icon */}
+          <div className="lg:hidden">
+            {showHam ? (
+              <RxCross2
+                className="w-7 h-7 text-gray-800 cursor-pointer"
+                onClick={() => setShowHam(false)}
               />
             ) : (
-              <div
-                className="w-[50px] h-[50px] rounded-full text-white flex items-center justify-center text-[20px] border-2 bg-black border-white cursor-pointer"
-                onClick={() => setShow((prev) => !prev)}
-              >
-                {userData?.name?.slice(0, 1).toUpperCase() || "U"}
-              </div>
-            )
-          ) : (
-            <IoPersonCircleSharp
-              className="w-[50px] h-[50px] fill-black cursor-pointer"
-              onClick={() => setShow((prev) => !prev)}
-            />
-          )}
-          {userData?.role === "educator" && (
-            <div
-              className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer"
-              onClick={() => navigate("/dashboard")}
-            >
-              Dashboard
-            </div>
-          )}
-
-          {/* Login / Logout */}
-          {!userData ? (
-            <span
-              className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </span>
-          ) : (
-            <span
-              className="px-[20px] py-[10px] bg-white text-black rounded-[10px] shadow-sm shadow-black text-[18px] cursor-pointer"
-              onClick={handleLogout}
-            >
-              Logout
-            </span>
-          )}
-
-          {show && (
-            <div className="absolute top-[110%] right-[15%] flex items-center flex-col justify-center gap-2 text-[16px] rounded-md bg-[white] px-[15px] py-[10px] border-[2px] border-black hover:border-white hover:text-white cursor-pointer hover:bg-black">
-              <span
-                className="bg-[black] text-white px-[30px] py-[10px] rounded-2xl hover:bg-gray-600"
-                onClick={() => navigate("/profile")}
-              >
-                My Profile
-              </span>
-              <span
-                className="bg-[black] text-white px-[30px] py-[10px] rounded-2xl hover:bg-gray-600"
-                onClick={() => navigate("/mycourses")}
-              >
-                My Courses
-              </span>
-            </div>
-          )}
+              <HiOutlineMenuAlt3
+                className="w-7 h-7 text-gray-800 cursor-pointer"
+                onClick={() => setShowHam(true)}
+              />
+            )}
+          </div>
         </div>
+      </div>
 
-        {/* For Mobile */}
-        <GiHamburgerMenu
-          className="w-[25px] h-[30px] lg:hidden fill-black cursor-pointer"
-          onClick={() => setShowHam((prev) => !prev)}
-        />
+      {/* Mobile Sidebar */}
+      <div
+        className={`fixed top-0 ${
+          showHam ? "right-0" : "-right-full"
+        } w-[75%] h-screen bg-white z-50 shadow-xl border-l border-gray-200 transition-all duration-500 lg:hidden`}
+      >
+        <div className="flex flex-col p-6 gap-4 mt-6">
+          {/* Close Button */}
+          <div className="flex justify-end">
+            <RxCross2
+              className="w-7 h-7 text-gray-700 cursor-pointer"
+              onClick={() => setShowHam(false)}
+            />
+          </div>
 
-        <div
-          className={`fixed top-0 left-0 w-[100vw] h-[100vh] bg-[#000000d6] flex items-center justify-center flex-col gap-5 z-10 lg:hidden transition-all duration-600 ${showHam ? "translate-x-0" : "-translate-x-full"}`}
-        >
-          <GiCrossMark
-            className="w-[30px] h-[30px] fill-white absolute top-5 right-[4%]"
-            onClick={() => setShowHam((prev) => !prev)}
-          />
-
-          {/* Mobile Menu Items */}
-          {!userData && (
-            <span
-              className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </span>
-          )}
-
+          {/* User Info */}
           {userData && (
-            <>
-              {userData && (
-                <div
-                  className="w-[50px] h-[50px] rounded-full text-white flex items-center justify-center text-[20px] border-2 bg-black border-white cursor-pointer"
-                  onClick={() => setShow((prev) => !prev)}
-                >
-                  {userData?.name?.slice(0, 1).toUpperCase() || "U"}
+            <div className="flex items-center gap-4 border-b border-gray-200 pb-5">
+              {userData?.photoUrl ? (
+                <img
+                  src={userData?.photoUrl}
+                  alt=""
+                  className="w-[55px] h-[55px] rounded-full object-cover border border-gray-300"
+                />
+              ) : (
+                <div className="w-[55px] h-[55px] rounded-full bg-black text-white flex items-center justify-center text-xl font-bold">
+                  {userData?.name?.slice(0, 1).toUpperCase()}
                 </div>
               )}
-              <span
-                className="px-[20px] py-[10px] bg-white text-black rounded-[10px] shadow-sm shadow-black text-[18px] cursor-pointer"
-                onClick={handleLogout}
-              >
-                Logout
-              </span>
 
+              <div>
+                <h2 className="font-semibold text-gray-900">
+                  {userData?.name}
+                </h2>
+
+                <p className="text-sm text-gray-500 truncate">
+                  {userData?.email}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Menu Items */}
+          {!userData ? (
+            <button
+              onClick={() => {
+                navigate("/login");
+                setShowHam(false);
+              }}
+              className="w-full py-3 rounded-xl bg-black text-white font-semibold hover:bg-gray-900 transition-all duration-300"
+            >
+              Login
+            </button>
+          ) : (
+            <>
+              {/* Dashboard */}
               {userData?.role === "educator" && (
-                <span
-                  className="px-[20px] py-[10px] border-2 border-white text-white bg-[black] rounded-[10px] text-[18px] font-light cursor-pointer"
-                  onClick={() => navigate("/dashboard")}
+                <button
+                  onClick={() => {
+                    navigate("/dashboard");
+                    setShowHam(false);
+                  }}
+                  className="w-full py-3 rounded-xl bg-black text-white font-semibold hover:bg-gray-900 transition-all duration-300"
                 >
                   Dashboard
-                </span>
+                </button>
               )}
 
-              <span
-                className="px-[20px] py-[10px] bg-white text-black rounded-[10px] shadow-sm shadow-black text-[18px] cursor-pointer"
-                onClick={() => navigate("/profile")}
+              {/* Profile */}
+              <button
+                onClick={() => {
+                  navigate("/profile");
+                  setShowHam(false);
+                }}
+                className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-950 hover:text-white text-gray-900 transition-all duration-100 font-medium shadow-sm hover:shadow-md"
               >
-                MyProfile
-              </span>
+                My Profile
+              </button>
 
-              <span
-                className="px-[20px] py-[10px] bg-white text-black rounded-[10px] shadow-sm shadow-black text-[18px] cursor-pointer"
-                onClick={() => navigate("/mycourses")}
+              {/* Courses */}
+              <button
+                onClick={() => {
+                  navigate("/mycourses");
+                  setShowHam(false);
+                }}
+                className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-950 hover:text-white text-gray-900 transition-all duration-100 font-medium shadow-sm hover:shadow-md"
               >
-                MyCourses
-              </span>
+                My Courses
+              </button>
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                className="w-full py-3 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all duration-300 font-medium"
+              >
+                Logout
+              </button>
             </>
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

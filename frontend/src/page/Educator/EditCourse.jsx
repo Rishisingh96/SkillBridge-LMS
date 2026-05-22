@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 const EditCourse = () => {
   const navigate = useNavigate();
   const { courseId } = useParams();
-
   const fileInputRef = useRef(null);
 
   const [isPublished, setIsPublished] = useState(false);
@@ -30,6 +29,9 @@ const EditCourse = () => {
 
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
+
+  const [validityValue, setValidityValue] = useState(6);
+  const [validityUnit, setValidityUnit] = useState("month");
 
   // =========================
   // Thumbnail Change
@@ -72,9 +74,11 @@ const EditCourse = () => {
       setLevel(course.level || "");
       setPrice(course.price || "");
       setIsPublished(course.isPublished || false);
-
       setSelectCourse(result.data)
-      // console.log(result.data)
+      setValidityValue(course.validity?.value || 6);
+      setValidityUnit(course.validity?.unit || "month");
+
+      console.log(result.data)
 
       if (course.thumbnail) {
         setThumbnail(course.thumbnail);
@@ -113,7 +117,10 @@ const EditCourse = () => {
       formData.append("category", category);
       formData.append("level", level);
       formData.append("price", price);
+      formData.append("validity[value]", validityValue);
+      formData.append("validity[unit]", validityUnit);
       formData.append("isPublished", isPublished);
+     
 
       // Thumbnail
       if (thumbnailFile) {
@@ -382,6 +389,43 @@ const EditCourse = () => {
               </div>
             </div>
           </div>
+
+          {/* Validity */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+
+  {/* Validity Value */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-2">
+      Course Validity
+    </label>
+
+    <input
+      type="number"
+      value={validityValue}
+      onChange={(e) => setValidityValue(e.target.value)}
+      placeholder="6"
+      className="w-full border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-black outline-none"
+    />
+  </div>
+
+  {/* Validity Unit */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-2">
+      Validity Unit
+    </label>
+
+    <select
+      value={validityUnit}
+      onChange={(e) => setValidityUnit(e.target.value)}
+      className="w-full border border-gray-300 rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none"
+    >
+      <option value="day">Day</option>
+      <option value="month">Month</option>
+      <option value="year">Year</option>
+    </select>
+  </div>
+
+</div>
 
           {/* Thumbnail */}
           <div className="mt-8">

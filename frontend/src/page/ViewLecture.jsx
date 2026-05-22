@@ -8,6 +8,8 @@ import { MdOutlineLock } from "react-icons/md";
 import axios from "axios";
 
 import img from "../assets/Empty.png";
+import LectureResources from "../component/Lecture/LectureResources";
+import QuizResult from "../component/Lecture/QuizResult";
 
 const serverUrl = "http://localhost:8000";
 
@@ -143,6 +145,10 @@ const ViewLecture = () => {
                   "No description available for this lecture."}
               </p>
             </div>
+
+            {/* Resoue Download  */}
+            <LectureResources selectedLecture={selectedLecture}/>
+            <QuizResult selectedLecture={selectedLecture} />
           </div>
 
           {/* RIGHT SIDE */}

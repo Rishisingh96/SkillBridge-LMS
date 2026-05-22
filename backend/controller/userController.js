@@ -35,7 +35,7 @@ export const updateProfile = async (req, res) =>{
         
         const updateData = {name, description}
         if(photoUrl){
-            updateData.photoUrl = photoUrl
+            updateData.photoUrl = photoUrl.fileUrl
         }
         
         console.log("Update data:", updateData)

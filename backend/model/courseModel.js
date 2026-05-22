@@ -1,54 +1,101 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-const courseSchema = new mongoose.Schema({
-    title:{
-        type:String,
-        require:true
+const courseSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
     },
+
     subTitle: {
-        type:String
+      type: String,
+      default: "",
     },
-    description: { 
-        type: String
-    },
-    category:{
-        type:String,
-        required:true
-    },
-    level:{
-        type:String, 
-        enum:["beginner", "intermediate", "advanced"]
-    },
-    price:{
-        type:Number
-    },
-    thumbnail:{
-        type:String
-    },
-    enrolledStudents:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"User"
-    }],
-    lectures:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"Lecture"
-    }],
-    creator:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"User"
-    },
-    isPublished:{
-        type:Boolean,
-        default:false
-    },
-    reviews:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'Review'
-    }]
-    
 
-}, {timestamps:true})
+    description: {
+      type: String,
+      default: "",
+    },
 
-// Create Model
-const Course = mongoose.model("Course", courseSchema)
-export default Course
+    category: {
+      type: String,
+      required: true,
+    },
+
+    level: {
+      type: String,
+      enum: ["beginner", "intermediate", "advanced"],
+      default: "beginner",
+    },
+
+    price: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+
+    thumbnail: {
+      type: String,
+      default: "",
+    },
+
+    // ⏳ COURSE VALIDITY CONFIG
+    validity: {
+      value: {
+        type: Number,
+        default: 6, // default 6
+      },
+      unit: {
+        type: String,
+        enum: ["day", "month", "year"],
+        default: "month",
+      },
+    },
+
+    // 📚 MODULES (sections of course)
+    modules: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Module",
+      },
+    ],
+
+    // // � LECTURES (direct lectures for course)
+    // lectures: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Lecture",
+    //   },
+    // ],
+
+    // �👨‍🏫 course creator
+    creator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    // 📢 publish status
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+
+    // ⭐ reviews
+    reviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+// 📌 Index for performance (important for search/filter)
+courseSchema.index({ category: 1, level: 1, isPublished: 1 });
+
+const Course = mongoose.model("Course", courseSchema);
+
+export default Course;
