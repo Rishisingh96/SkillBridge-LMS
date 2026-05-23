@@ -56,7 +56,7 @@ const Nav = () => {
             />
 
             <h1 className="text-2xl font-bold text-gray-900 hidden sm:block tracking-tight">
-              EduVerse
+              SkillBridge
             </h1>
           </div>
 

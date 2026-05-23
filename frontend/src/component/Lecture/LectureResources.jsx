@@ -16,12 +16,12 @@ import { serverUrl } from "../../App";
 
 import { ClipLoader } from "react-spinners";
 
-const LectureResources = ({ selectedLecture }) => {
+const LectureResources = ({ lecture  }) => {
 
-  
+
   // RESOURCES
   const resources =
-    selectedLecture?.resources || [];
+    lecture?.resources || [];
 
   // LOADING STATE
   const [loadingId, setLoadingId] =
@@ -38,17 +38,35 @@ const LectureResources = ({ selectedLecture }) => {
       setLoadingId(resourceId);
 
       const response = await axios.get(
+
         `${serverUrl}/api/course/download-resource/${lectureId}/${resourceId}`,
+
         {
           withCredentials: true,
         }
+
       );
 
-      // open file
-      window.open(
-        response.data.fileUrl,
-        "_blank"
+      // =========================
+      // DIRECT DOWNLOAD
+      // =========================
+      const link =
+        document.createElement("a");
+
+      link.href =
+        response.data.fileUrl;
+
+      document.body.appendChild(
+        link
       );
+
+      link.click();
+
+      setTimeout(() => {
+
+        link.remove();
+
+      }, 100);
 
       toast.success(
         "Download started"
@@ -59,8 +77,11 @@ const LectureResources = ({ selectedLecture }) => {
       console.log(error);
 
       toast.error(
-        error.response?.data?.message ||
+
+        error?.response?.data?.message ||
+
         "Download failed"
+
       );
 
     } finally {
@@ -68,6 +89,7 @@ const LectureResources = ({ selectedLecture }) => {
       setLoadingId(null);
 
     }
+
   };
 
   // FILE ICON
@@ -200,7 +222,7 @@ const LectureResources = ({ selectedLecture }) => {
 
                   onClick={() =>
                     handleDownload(
-                      selectedLecture?._id,
+                      lecture?._id,
                       resource._id
                     )
                   }

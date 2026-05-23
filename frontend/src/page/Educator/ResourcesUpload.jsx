@@ -147,6 +147,45 @@ const ResourcesUpload = ({ resources,
 
   };
 
+  // View Resourse 
+  const handleViewResource = async (
+  resourceId
+) => {
+
+  try {
+
+    const result = await axios.get(
+
+      `${serverUrl}/api/course/download-resource/${lectureId}/${resourceId}`,
+
+      {
+        withCredentials: true,
+      }
+
+    );
+
+    // OPEN FILE
+    window.open(
+      result.data.fileUrl,
+      "_blank"
+    );
+
+  } catch (error) {
+
+    console.log(error);
+
+    toast.error(
+
+      error?.response?.data?.message ||
+
+      "Failed to open resource"
+
+    );
+
+  }
+
+};
+
   return (
 
     <div className="bg-gray-50 border border-gray-200 rounded-3xl p-6">
@@ -210,14 +249,15 @@ const ResourcesUpload = ({ resources,
 
                     <div className="flex items-center gap-3">
 
-                      <a
-                        href={resource.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
+                      <button
+                        onClick={()=>
+                          handleViewResource(resource._id)
+                        }
+                        
                         className="bg-black text-white px-4 py-2 rounded-lg text-sm"
                       >
                         View
-                      </a>
+                      </button>
 
                       <button
                         onClick={() =>

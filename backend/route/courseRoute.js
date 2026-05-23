@@ -11,6 +11,8 @@ import { createModule, getCourseModules, removeAllModules, removeModule } from "
 
 const courseRoute = express.Router();
 
+
+// course section
 courseRoute.post("/create", isAuth, createCourse)
 courseRoute.get("/getcreator", isAuth, getCreatorCourses)
 courseRoute.put("/editcourse/:courseId", isAuth, upload.single("thumbnail"), editCourse)

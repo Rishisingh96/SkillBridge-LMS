@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import path from "path";
 
 // Cloudinary Config
 cloudinary.config({
@@ -8,69 +9,54 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload File Function
-const uploadOnCloudinary = async (
-  filePath
-) => {
+const uploadOnCloudinary = async (filePath) => {
 
   try {
 
     if (!filePath) return null;
 
-    // ==========================
-    // DETECT PDF
-    // ==========================
-    const isPdf =
-      filePath
-        .toLowerCase()
-        .endsWith(".pdf");
+    // =========================
+    // FILE EXTENSION
+    // =========================
+    const ext = path.extname(filePath).toLowerCase();
 
-    console.log("Cloudinary Upload - File Path:", filePath);
-    console.log("Cloudinary Upload - Is PDF:", isPdf);
+    // =========================
+    // PDF CHECK
+    // =========================
+    const isPdf = ext === ".pdf";
 
-    // ==========================
+    // =========================
+    // IMAGE / PDF
+    // =========================
+    const resourceType = isPdf
+      ? "raw"
+      : "auto";
+
+    // =========================
     // UPLOAD
-    // ==========================
+    // =========================
     const uploadResult =
       await cloudinary.uploader.upload(
-        filePath,
+        filePath, 
         {
-
-          resource_type: "raw",
-
-          folder:
-            "lecture-resources",
-
-          // For PDFs, ensure proper delivery
-          use_filename: true,
-          unique_filename: false,
-          overwrite: true,
-
+          resource_type: resourceType,
+          folder: "lecture-resources",
         }
       );
 
-    // ==========================
+    // =========================
     // DELETE LOCAL FILE
-    // ==========================
-    if (
-      fs.existsSync(filePath)
-    ) {
+    // =========================
+    if (fs.existsSync(filePath)) {
 
       fs.unlinkSync(filePath);
 
     }
 
-    // ==========================
-    // RETURN DATA
-    // ==========================
-    // For PDFs, add fl_attachment to force download
-    const fileUrl = isPdf
-      ? `${uploadResult.secure_url}?fl_attachment`
-      : uploadResult.secure_url;
-
     return {
 
-      fileUrl,
+      fileUrl:
+        uploadResult.secure_url,
 
       publicId:
         uploadResult.public_id,
@@ -87,7 +73,6 @@ const uploadOnCloudinary = async (
       error
     );
 
-    // delete local file
     if (
       filePath &&
       fs.existsSync(filePath)

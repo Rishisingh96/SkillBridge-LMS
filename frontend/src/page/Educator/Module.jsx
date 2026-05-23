@@ -13,18 +13,20 @@ import {
   clearError,
 } from "../../redux/moduleSlice";
 import { serverUrl } from "../../App";
+import axios from "axios";
 
 const Module = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { moduleData, loading, error } = useSelector((state) => state.module);
+  const { moduleData, error } = useSelector((state) => state.module);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [editingModule, setEditingModule] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Fetch Modules on component mount
   useEffect(() => {
@@ -92,17 +94,20 @@ const Module = () => {
 
   // Handle Delete Module
   const handleDeleteModule = async (moduleId) => {
-    if (!window.confirm("Are you sure you want to delete this module? This will also delete all lectures within it.")) {
-      return;
-    }
 
-    try {
-      await dispatch(deleteModule(moduleId)).unwrap();
-      toast.success("Module deleted successfully");
-    } catch (error) {
-      toast.error(error || "Failed to delete module");
-    }
-  };
+  try {
+
+    await dispatch(deleteModule(moduleId)).unwrap();
+
+    toast.success("Module deleted successfully");
+
+  } catch (error) {
+
+    toast.error(error);
+
+  }
+
+};
 
   // Handle Edit Module
   const handleEditModule = (module) => {

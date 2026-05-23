@@ -65,10 +65,10 @@ export const deleteModule = createAsyncThunk(
   }
 );
 
-const moduleSlice = createSlice({
+const moduleSlice = createSlice({  //Slice = State + Reducers + Actions
   name: "module",
 
-  initialState: {
+  initialState: {    // Ye Redux state hai.
     moduleData: [],
     loading: false,
     error: null,
@@ -76,7 +76,8 @@ const moduleSlice = createSlice({
 
   reducers: {
     setModuleData: (state, action) => {
-      state.moduleData = action.payload;
+      state.moduleData = action.payload;  //me store karta.
+    // state.moduleData =>Redux Store ke moduleData ko API wale fresh data se replace karo
     },
     clearError: (state) => {
       state.error = null;

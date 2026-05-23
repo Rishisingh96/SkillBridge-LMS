@@ -140,16 +140,17 @@ const getFormattedValidity = () => {
     formData.append("level", level);
     formData.append("price", price);
 
+
     // Validity
     const formattedValidity = getFormattedValidity();
 
     formData.append(
-      "validity[value]",
+      "validity.value",
       formattedValidity.value
     );
 
     formData.append(
-      "validity[unit]",
+      "validity.unit",
       formattedValidity.unit
     );
 

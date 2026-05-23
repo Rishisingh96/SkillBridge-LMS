@@ -157,26 +157,38 @@ export const uploadLectureResource = async (req, res) => {
 };
 
 // Download Lecture Resource Controller
-export const downloadResource = async (req, res) => {
+export const downloadResource = async (
+  req,
+  res
+) => {
 
   try {
 
-    const { lectureId, resourceId } = req.params;
+    const {
+      lectureId,
+      resourceId,
+    } = req.params;
 
-    const userId = req.userId;
+    const userId =
+      req.userId;
 
     // =========================
     // FIND LECTURE
     // =========================
-    const lecture = await Lecture.findById(
-      lectureId
-    );
+    const lecture =
+      await Lecture.findById(
+        lectureId
+      );
 
     if (!lecture) {
 
       return res.status(404).json({
+
         success: false,
-        message: "Lecture not found",
+
+        message:
+          "Lecture not found",
+
       });
 
     }
@@ -192,8 +204,12 @@ export const downloadResource = async (req, res) => {
     if (!resource) {
 
       return res.status(404).json({
+
         success: false,
-        message: "Resource not found",
+
+        message:
+          "Resource not found",
+
       });
 
     }
@@ -209,8 +225,12 @@ export const downloadResource = async (req, res) => {
     if (!module) {
 
       return res.status(404).json({
+
         success: false,
-        message: "Module not found",
+
+        message:
+          "Module not found",
+
       });
 
     }
@@ -226,8 +246,12 @@ export const downloadResource = async (req, res) => {
     if (!course) {
 
       return res.status(404).json({
+
         success: false,
-        message: "Course not found",
+
+        message:
+          "Course not found",
+
       });
 
     }
@@ -279,11 +303,29 @@ export const downloadResource = async (req, res) => {
 
       userId,
 
-      downloadedAt: new Date(),
+      downloadedAt:
+        new Date(),
 
     });
 
+    // =========================
+    // SAVE CHANGES
+    // =========================
     await lecture.save();
+
+    // =========================
+    // GENERATE DOWNLOAD URL
+    // =========================
+    let downloadUrl =
+      resource.fileUrl;
+
+    // remove old query params
+    downloadUrl =
+      downloadUrl.split("?")[0];
+
+    // force download
+    downloadUrl =
+      `${downloadUrl}?fl_attachment`;
 
     // =========================
     // FINAL RESPONSE
@@ -293,10 +335,10 @@ export const downloadResource = async (req, res) => {
       success: true,
 
       message:
-        "Resource fetched successfully",
+        "Resource downloaded successfully",
 
       fileUrl:
-        resource.fileUrl,
+        downloadUrl,
 
       downloads:
         resource.downloads,
@@ -322,7 +364,6 @@ export const downloadResource = async (req, res) => {
   }
 
 };
-
 
 // Delete Lecture Resource
 export const removeResource = async (
@@ -371,14 +412,14 @@ export const removeResource = async (
 
     }
 
-    // Delete From Cloudinary
     await cloudinary.uploader.destroy(
-      resource.publicId,
-      {
-        resource_type:
-          resource.resourceType,
-      }
-    );
+  resource.publicId,
+  {
+    resource_type:
+      resource.resourceType || "image",
+    invalidate: true,
+  }
+);
 
     // Remove Resource From MongoDB
     lecture.resources.pull(

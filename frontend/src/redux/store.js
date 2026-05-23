@@ -53,15 +53,31 @@ const persistedReducer = persistReducer(
   rootReducer
 );
 
-// Store
-export const store = configureStore({
-  reducer: persistedReducer,
+// 1. Store = Pure Global State Container
+export const store = configureStore({  
+  reducer: persistedReducer,   //Yahi main database hai frontend ka.
 
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),
 });
+
+
+/*Store Contains
+user state
+course state
+lecture state
+module state
+review state
+Final Redux State Structure
+{
+  user:{},
+  course:{},
+  lecture:{},
+  module:{},
+  review:{}
+} */
 
 // Persistor
 export const persistor = persistStore(store);
