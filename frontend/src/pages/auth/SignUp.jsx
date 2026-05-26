@@ -297,6 +297,18 @@ const SignUp = () => {
                 >
                   Educator
                 </button>
+
+                 <button
+                  type="button"
+                  onClick={() => setRole("admin")}
+                  className={`flex-1 h-[50px] rounded-2xl font-semibold transition-all duration-300 ${
+                    role === "admin"
+                      ? "bg-black text-white shadow-lg"
+                      : "border border-gray-300 text-gray-700 hover:border-black"
+                  }`}
+                >
+                  Admin
+                </button>
               </div>
             </div>
 

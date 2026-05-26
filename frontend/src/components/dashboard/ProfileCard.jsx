@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 
-const ProfileCard = ({ userData }) => {
+const ProfileCard = ({ userData, totalEarnings }) => {
   const navigate = useNavigate()
 
   return (
@@ -52,12 +52,68 @@ const ProfileCard = ({ userData }) => {
               "Passionate educator creating modern online learning experiences for students worldwide."}
           </p>
 
+          {/* ADDITIONAL INFO */}
+          <div className="mt-6 flex flex-wrap gap-4 justify-center md:justify-start">
+            {userData?.phone && (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span className="font-semibold">Phone:</span>
+                <span>{userData.phone}</span>
+              </div>
+            )}
+            {userData?.dateOfBirth && (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span className="font-semibold">DOB:</span>
+                <span>{new Date(userData.dateOfBirth).toLocaleDateString()}</span>
+              </div>
+            )}
+            {userData?.gender && (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span className="font-semibold">Gender:</span>
+                <span className="capitalize">{userData.gender}</span>
+              </div>
+            )}
+            {userData?.role && (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span className="font-semibold">Role:</span>
+                <span className="capitalize">{userData.role}</span>
+              </div>
+            )}
+          </div>
+
+          {/* STATS */}
+          <div className="mt-6 flex flex-wrap gap-6 justify-center md:justify-start">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-600">
+                ₹{totalEarnings !== undefined ? totalEarnings.toLocaleString() : '0'}
+              </p>
+              <p className="text-xs text-gray-500">Total Earnings</p>
+            </div>
+            {userData?.isVerified !== undefined && (
+              <div className="text-center">
+                <p className={`text-2xl font-bold ${userData.isVerified ? 'text-green-600' : 'text-orange-500'}`}>
+                  {userData.isVerified ? '✓' : '○'}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {userData.isVerified ? 'Verified' : 'Not Verified'}
+                </p>
+              </div>
+            )}
+            {userData?.createdAt && (
+              <div className="text-center">
+                <p className="text-2xl font-bold text-gray-800">
+                  {new Date(userData.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                </p>
+                <p className="text-xs text-gray-500">Joined</p>
+              </div>
+            )}
+          </div>
+
           {/* ACTION BUTTONS */}
           <div className="flex flex-wrap gap-4 mt-8 justify-center md:justify-start">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/courses")}
+              onClick={() => navigate("/educator/courses")}
               className="bg-black text-white px-6 py-3 rounded-2xl shadow-lg"
             >
               Manage Courses

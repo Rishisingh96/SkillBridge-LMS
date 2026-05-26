@@ -88,83 +88,203 @@ export const getCourseLectures = async (req, res) => {
 };
 
 // Edit lecture
-export const editLecture = async (
-  req,
-  res
-) => {
+// export const editLecture = async (
+//   req,
+//   res
+// ) => {
+
+//   try {
+
+//     const { lectureId } =
+//       req.params;
+
+//     const {
+
+//       isPreviewFree,
+
+//       lectureTitle,
+
+//       description,
+
+//     } = req.body;
+
+//     const lecture =
+//       await Lecture.findById(
+//         lectureId
+//       );
+
+//     if (!lecture) {
+
+//       return res.status(404).json({
+
+//         message:
+//           "Lecture is not found",
+
+//       });
+
+//     }
+
+//     // Upload New Video
+//     if (req.file) {
+
+//       // Delete Old Video
+//       if (
+//         lecture.video?.publicId
+//       ) {
+
+//         await cloudinary.uploader.destroy(
+//           lecture.video.publicId,
+//           {
+//             resource_type:
+//               lecture.video.resourceType,
+//           }
+//         );
+
+//       }
+
+//       // Upload New Video
+//       const video =
+//         await uploadOnCloudinary(
+//           req.file.path
+//         );
+
+//       // Save Video
+//       lecture.video = {
+
+//         fileUrl:
+//           video.fileUrl,
+
+//         publicId:
+//           video.publicId,
+
+//         resourceType:
+//           video.resourceType,
+
+//       };
+
+//     }
+
+//     // Update Title
+//     if (lectureTitle) {
+
+//       lecture.lectureTitle =
+//         lectureTitle;
+
+//     }
+
+//     // Update Description
+//     if (description) {
+
+//       lecture.description =
+//         description;
+
+//     }
+
+//     // Preview
+//     lecture.isPreviewFree =
+//       isPreviewFree === "true" ||
+//       isPreviewFree === true;
+
+//     await lecture.save();
+
+//     return res.status(200).json({
+//       lecture,
+//     });
+
+//   } catch (error) {
+
+//     return res.status(500).json({
+
+//       message:
+//         `Edit lecture error ${error}`,
+
+//     });
+
+//   }
+
+// };
+
+
+
+// EDIT LECTURE
+export const editLecture = async (req, res) => {
 
   try {
 
-    const { lectureId } =
-      req.params;
+    const { lectureId } = req.params;
 
     const {
-
       isPreviewFree,
-
       lectureTitle,
-
       description,
-
     } = req.body;
 
-    const lecture =
-      await Lecture.findById(
-        lectureId
-      );
+    // Find Lecture
+    const lecture = await Lecture.findById(lectureId);
 
     if (!lecture) {
 
       return res.status(404).json({
-
-        message:
-          "Lecture is not found",
-
+        success: false,
+        message: "Lecture not found",
       });
 
     }
 
-    // Upload New Video
+    // =========================
+    // VIDEO UPLOAD (MP4 Direct)
+    // =========================
     if (req.file) {
 
-      // Delete Old Video
-      if (
-        lecture.video?.publicId
-      ) {
+      try {
+        // Delete old video from cloudinary
+        if (lecture.video?.publicId) {
 
-        await cloudinary.uploader.destroy(
-          lecture.video.publicId,
-          {
-            resource_type:
-              lecture.video.resourceType,
-          }
-        );
+          await cloudinary.uploader.destroy(
+            lecture.video.publicId,
+            {
+              resource_type:
+                lecture.video.resourceType || "video",
+            }
+          );
 
+        }
+
+        // Upload MP4 directly to Cloudinary
+        const uploadedVideo =
+          await uploadOnCloudinary(
+            req.file.path
+          );
+
+        // Check if upload succeeded
+        if (!uploadedVideo || !uploadedVideo.fileUrl) {
+          throw new Error("Cloudinary upload failed - no fileUrl returned");
+        }
+
+        // Save Video URL
+        lecture.video = {
+
+          fileUrl:
+            uploadedVideo.fileUrl,
+
+          publicId:
+            uploadedVideo.publicId,
+
+          resourceType:
+            uploadedVideo.resourceType || "video",
+
+        };
+
+      } catch (videoError) {
+        console.error("Video upload error:", videoError);
+        throw new Error(`Video upload failed: ${videoError.message}`);
       }
-
-      // Upload New Video
-      const video =
-        await uploadOnCloudinary(
-          req.file.path
-        );
-
-      // Save Video
-      lecture.video = {
-
-        fileUrl:
-          video.fileUrl,
-
-        publicId:
-          video.publicId,
-
-        resourceType:
-          video.resourceType,
-
-      };
 
     }
 
-    // Update Title
+    // =========================
+    // UPDATE TITLE
+    // =========================
     if (lectureTitle) {
 
       lecture.lectureTitle =
@@ -172,7 +292,9 @@ export const editLecture = async (
 
     }
 
-    // Update Description
+    // =========================
+    // UPDATE DESCRIPTION
+    // =========================
     if (description) {
 
       lecture.description =
@@ -180,23 +302,35 @@ export const editLecture = async (
 
     }
 
-    // Preview
+    // =========================
+    // FREE PREVIEW
+    // =========================
     lecture.isPreviewFree =
       isPreviewFree === "true" ||
       isPreviewFree === true;
 
+    // Save
     await lecture.save();
 
     return res.status(200).json({
+
+      success: true,
+
+      message:
+        "Lecture updated successfully",
+
       lecture,
+
     });
 
   } catch (error) {
 
     return res.status(500).json({
 
+      success: false,
+
       message:
-        `Edit lecture error ${error}`,
+        `Edit lecture error: ${error.message}`,
 
     });
 

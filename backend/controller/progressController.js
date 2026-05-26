@@ -41,46 +41,54 @@ export const updateLectureProgress = async (req, res) => {
   }
 };
 
-
 export const getCourseProgress = async (req, res) => {
   try {
     const { userId, courseId } = req.params;
 
-    const totalLectures = await Lecture.countDocuments({ course: courseId });
+    const lectures = await Lecture.find({ course: courseId });
+
+    const lectureIds = lectures.map((lecture) => lecture._id);
+
+    const totalLectures = lectureIds.length;
 
     const completedLectures = await LectureProgress.countDocuments({
       user: userId,
+      lecture: { $in: lectureIds },
       completed: true,
     });
 
     const progressPercent =
       totalLectures === 0
         ? 0
-        : (completedLectures / totalLectures) * 100;
+        : Math.round((completedLectures / totalLectures) * 100);
 
     return res.json({
       success: true,
       totalLectures,
       completedLectures,
-      progressPercent: Math.round(progressPercent),
+      progressPercent,
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
 
 export const resumeLecture = async (req, res) => {
   try {
     const { userId, courseId } = req.params;
 
+    const lectures = await Lecture.find({ course: courseId });
+
+    const lectureIds = lectures.map((lecture) => lecture._id);
+
     const lastWatched = await LectureProgress.findOne({
       user: userId,
+      lecture: { $in: lectureIds },
     })
-      .populate({
-        path: "lecture",
-        match: { course: courseId },
-      })
+      .populate("lecture")
       .sort({ updatedAt: -1 });
 
     return res.json({
@@ -88,7 +96,10 @@ export const resumeLecture = async (req, res) => {
       lecture: lastWatched?.lecture || null,
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -102,7 +113,7 @@ export const updateWatchTime = async (req, res) => {
         $inc: { watchTime },
         watched: true,
       },
-      { new: true, upsert: true }
+      { new: true, upsert: true },
     );
 
     return res.json({

@@ -1,63 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import GraphSection from "../../components/dashboard/GraphSection";
 import ProfileCard from "../../components/dashboard/ProfileCard";
 import DashboardHeader from "../../components/dashboard/DashboardHeader";
 import StatsCards from "../../components/dashboard/StatsCards";
 import { fetchCreatorCourses } from "../../redux/slices/courseSlice";
-import { serverUrl } from "../../App";
-import CoursePerformanceTable from "../../components/dashboard/CoursePerformanceTable";  
-import RecentEnrollments from "../../components/dashboard/RecentEnrollments";             // ✅
-import TopPerformingCourse from "../../components/dashboard/TopPerformingCourse";       // ✅
+import { fetchDashboardStats } from "../../redux/slices/dashboardSlice";
+import CoursePerformanceTable from "../../components/dashboard/CoursePerformanceTable";
+import RecentEnrollments from "../../components/dashboard/RecentEnrollments";
+import TopPerformingCourse from "../../components/dashboard/TopPerformingCourse";
 
 const Dashboard = () => {
   const { userData } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Replace your useEffect with:
-  const { creatorCourseData, loading } = useSelector((state) => state.course);
-
-  // Dashboard Stats State
-  const [dashboardStats, setDashboardStats] = useState({
-    totalCourses: 0,
-    totalStudents: 0,
-    totalEarnings: 0,
-    averageProgress: 0,
-    recentEnrollments: 0,
-    enrollmentByCourse: [],
-  });
-  const [recentEnrollmentsList, setRecentEnrollmentsList] = useState([]);
-
-  // Fetch Dashboard Stats
-  const fetchDashboardStats = async () => {
-    try {
-      const response = await axios.get(
-        `${serverUrl}/api/course/dashboard-stats`,
-        { withCredentials: true }
-      );
-      setDashboardStats(response.data.stats);
-      setRecentEnrollmentsList(response.data.recentEnrollments || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { creatorCourseData } = useSelector((state) => state.course);
+  const { stats, loading } = useSelector((state) => state.dashboard);
 
   useEffect(() => {
     dispatch(fetchCreatorCourses());
-    fetchDashboardStats();
+    dispatch(fetchDashboardStats());
   }, [dispatch]);
 
-
-  // Use API stats instead of calculated
-  const totalCourses = dashboardStats.totalCourses;
-  const totalStudents = dashboardStats.totalStudents;
-  const totalEarning = dashboardStats.totalEarnings;
-  const averageProgress = dashboardStats.averageProgress;
-  const recentEnrollments = dashboardStats.recentEnrollments;
+  const totalCourses = stats.totalCourses;
+  const totalStudents = stats.totalStudents;
+  const totalEarning = stats.totalEarnings;
+  const averageProgress = stats.averageProgress;
+  const recentEnrollments = stats.recentEnrollments;
+  const totalDownloads = stats.totalDownloads;
+  const enrollmentByCourse = stats.enrollmentByCourse;
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] px-4 md:px-8 py-6">
@@ -65,10 +39,10 @@ const Dashboard = () => {
         title="Educator Dashboard"
         subtitle="Manage your courses, students and revenue"
         buttonText="Create Course"
-        buttonAction={() => navigate("/courses")}
+        buttonAction={() => navigate("/educator/courses")}
       />
 
-      <ProfileCard userData={userData} />
+      <ProfileCard userData={userData} totalEarnings={totalEarning} />
 
       <StatsCards
         stats={{
@@ -77,11 +51,12 @@ const Dashboard = () => {
           totalEarnings: totalEarning,
           averageProgress,
           recentEnrollments,
+          totalDownloads,
         }}
       />
 
       <GraphSection
-        enrollmentByCourse={dashboardStats.enrollmentByCourse}
+        enrollmentByCourse={enrollmentByCourse}
         creatorCourseData={creatorCourseData}
       />
 

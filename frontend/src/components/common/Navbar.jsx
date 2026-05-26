@@ -65,7 +65,7 @@ const Nav = () => {
             {/* Dashboard */}
             {userData?.role === "educator" && (
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/educator/profile")}
                 className="px-5 py-2 rounded-xl bg-black text-white font-medium hover:bg-gray-800 transition-all duration-300 shadow-sm"
               >
                 Dashboard

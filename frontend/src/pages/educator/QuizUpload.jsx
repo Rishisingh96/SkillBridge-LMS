@@ -81,7 +81,7 @@ const QuizUpload = ({ quizData,
 
       );
 
-      setQuizData(result.data.quiz);
+      setQuizData(result.data.quizQuestions);
 
       toast.success(
         "Quiz Added Successfully"
@@ -122,9 +122,9 @@ const QuizUpload = ({ quizData,
 
     try {
 
-      await axios.delete(
+      const response = await axios.delete(
 
-        `${serverUrl}/api/course/removequiz/${lectureId}/${quizId}`,
+        `${serverUrl}/api/course/remove-quiz/${lectureId}/${quizId}`,
 
         {
           withCredentials: true,
@@ -132,12 +132,8 @@ const QuizUpload = ({ quizData,
 
       );
 
-      const updatedQuiz =
-        quizData.filter(
-          (item) => item._id !== quizId
-        );
-
-      setQuizData(updatedQuiz);
+      // Use the updated quizQuestions from API response
+      setQuizData(response.data.quizQuestions);
 
       toast.success(
         "Quiz Removed Successfully"

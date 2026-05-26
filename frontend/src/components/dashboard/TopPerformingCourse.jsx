@@ -101,7 +101,7 @@ const TopPerformingCourse = () => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          onClick={() => navigate(`/edit-course/${topCourse.courseId}`)}
+          onClick={() => navigate(`/educator/edit-course/${topCourse.courseId}`)}
           className="w-full mt-6 py-3 bg-black text-white rounded-2xl font-semibold text-sm shadow-lg"
         >
           View Course →

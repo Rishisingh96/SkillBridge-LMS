@@ -35,6 +35,12 @@ const lectureProgressSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+//  Prevent duplicate progress
+lectureProgressSchema.index(
+  { user: 1, lecture: 1 },
+  { unique: true }
+);
+
 const LectureProgress = mongoose.model(
   "LectureProgress",
   lectureProgressSchema

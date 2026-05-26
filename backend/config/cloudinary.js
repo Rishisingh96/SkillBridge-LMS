@@ -26,21 +26,33 @@ const uploadOnCloudinary = async (filePath) => {
     const isPdf = ext === ".pdf";
 
     // =========================
-    // IMAGE / PDF
+    // HLS CHECK
     // =========================
-    const resourceType = isPdf
-      ? "raw"
-      : "auto";
+    const isHls = ext === ".m3u8";
+
+    // =========================
+    // IMAGE / PDF / HLS
+    // =========================
+    let resourceType = "auto";
+    let folder = "lecture-resources";
+
+    if (isPdf) {
+      resourceType = "raw";
+    } else if (isHls) {
+      resourceType = "video";
+      folder = "lecture-videos";
+    }
 
     // =========================
     // UPLOAD
     // =========================
     const uploadResult =
       await cloudinary.uploader.upload(
-        filePath, 
+        filePath,
         {
           resource_type: resourceType,
-          folder: "lecture-resources",
+          folder: folder,
+          chunk_size: 6000000,
         }
       );
 

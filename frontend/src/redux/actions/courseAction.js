@@ -11,7 +11,7 @@ export const createCourse = (courseData, navigate) => async (dispatch) => {
       withCredentials: true,
     });
     toast.success("Course created successfully");
-    navigate("/courses");
+    navigate("/educator/courses");
     dispatch(fetchCreatorCourses()); // refresh list
   } catch (error) {
     toast.error(error.response?.data?.message || "Failed to create course");

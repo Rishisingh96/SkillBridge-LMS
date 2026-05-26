@@ -76,7 +76,7 @@ const CreateLecture = () => {
 
   // Handle Edit Lecture
   const handleEditLecture = (lectureId) => {
-    navigate(`/editlecture/${courseId}/${moduleId}/${lectureId}`);
+    navigate(`/educator/editlecture/${courseId}/${moduleId}/${lectureId}`);
   };
 
   return (
@@ -86,7 +86,7 @@ const CreateLecture = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <FaArrowLeftLong
-              onClick={() => navigate(`/create-module/${courseId}`)}
+              onClick={() => navigate(`/educator/create-module/${courseId}`)}
               className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
             />
             <div>

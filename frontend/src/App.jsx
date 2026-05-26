@@ -6,8 +6,19 @@ import { ToastContainer } from "react-toastify";
 
 // Redux
 import { fetchCurrentUser } from "./redux/slices/userSlice";
-import { fetchCreatorCourses, fetchPublishedCourses } from "./redux/slices/courseSlice";
+import {
+  fetchCreatorCourses,
+  fetchPublishedCourses,
+} from "./redux/slices/courseSlice";
 import { fetchAllReviews } from "./redux/slices/reviewSlice";
+import {
+  fetchAllUsers,
+  fetchCourses,
+  fetchPlatformStats,
+} from "./redux/slices/adminSlice";
+
+// Layouts
+import EducatorLayout from "./components/educator/EducatorLayout";
 
 // Pages
 import Home from "./pages/student/Home";
@@ -30,18 +41,34 @@ import ViewLecture from "./pages/student/ViewLecture";
 import MyEnrolledCourses from "./pages/student/MyEnrolledCourses";
 import CourseDetail from "./pages/student/CourseDetail";
 import Module from "./pages/educator/Module";
+import EducatorProfile from "./pages/educator/Profile";
+import Graph from "./pages/educator/Graph";
+import RecentEnrollment from "./pages/educator/RecentEnrollment";
+import Stats from "./pages/educator/Stats";
+import CoursePerformance from "./pages/educator/CoursePerformance";
+
+import AdminLayout from "./components/admin/AdminLayout";
+
+import AdminDashboard from "./pages/admin/AdminDashboard";
+
+import ManageUsers from "./pages/admin/ManageUsers";
+
+import ManageCourses from "./pages/admin/ManageCourses";
+
+import PlatformStats from "./pages/admin/PlatformStats";
 
 export const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function App() {
   const dispatch = useDispatch();
-  const { userData, loading } = useSelector((state) => state.user);
+  const { userData, loading, initialLoading } = useSelector(
+    (state) => state.user,
+  );
 
-  // ── App Load pe fetch ──────────────────────
   useEffect(() => {
     dispatch(fetchCurrentUser());
     dispatch(fetchAllReviews());
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     if (userData) {
@@ -50,9 +77,13 @@ function App() {
     if (userData?.role === "educator") {
       dispatch(fetchCreatorCourses());
     }
-  }, [dispatch, userData]);
+    if (userData?.role === "admin") {
+      dispatch(fetchAllUsers());
+      dispatch(fetchCourses());
+      dispatch(fetchPlatformStats());
+    }
+  }, [userData]);
 
-  // Loading state
   if (loading) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-black text-white text-2xl">
@@ -67,128 +98,163 @@ function App() {
       <ScrollToTop />
 
       <Routes>
-
         {/* Public */}
         <Route path="/" element={<Home />} />
 
         <Route
           path="/signup"
-          element={!userData ? <SignUp /> : <Navigate to="/" />}
+          element={
+            !userData ? (
+              <SignUp />
+            ) : userData?.role === "admin" ? (
+              <Navigate to="/admin/dashboard" />
+            ) : userData?.role === "educator" ? (
+              <Navigate to="/" />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
+
+        {/* <Route
+          path="/signup"
+          element={!userData ? <SignUp /> : <Navigate to="/" />}
+        /> */}
+
+        {/* <Route path="/login" element={!userData ? <Login /> : <Navigate to="/" />} /> */}
 
         <Route
           path="/login"
-          element={!userData ? <Login /> : <Navigate to="/" />}
+          element={
+            !userData ? (
+              <Login />
+            ) : userData?.role === "admin" ? (
+              <Navigate to="/admin/dashboard" />
+            ) : userData?.role === "educator" ? (
+              <Navigate to="/" />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
         />
 
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
 
-        {/* Protected */}
+        {/* Protected - Student */}
         <Route
           path="/profile"
           element={userData ? <Profile /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/editprofile"
           element={userData ? <EditProfile /> : <Navigate to="/login" />}
         />
-
-        {/* Educator */}
-        <Route
-          path="/dashboard"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <Dashboard /> :
-            <Navigate to="/" />
-          }
-        />
-
-        <Route
-          path="/courses"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <Courses /> :
-            <Navigate to="/" />
-          }
-        />
-
-        <Route
-          path="/create-course"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <CreateCourse /> :
-            <Navigate to="/" />
-          }
-        />
-
-        <Route
-          path="/edit-course/:courseId"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <EditCourse /> :
-            <Navigate to="/" />
-          }
-        />
-
-        <Route
-          path="/create-module/:courseId"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <Module /> :
-            <Navigate to="/" />
-          }
-        />
-
-        <Route
-          path="/create-lecture/:courseId/:moduleId"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <CreateLecture /> :
-            <Navigate to="/" />
-          }
-        />
-
-        <Route
-          path="/editlecture/:courseId/:moduleId/:lectureId"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <EditLecture /> :
-            <Navigate to="/" />
-          }
-        />
-
-        <Route
-          path="/viewcourse/:courseId"
-          element={
-            !userData ? <Navigate to="/login" /> :
-            userData?.role === "educator" ? <ViewCourse /> :
-            <Navigate to="/" />
-          }
-        />
-
-        {/* Students */}
         <Route
           path="/allcourses"
           element={userData ? <AllCourses /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/course/:courseId"
           element={userData ? <CourseDetail /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/viewlecture/:courseId"
           element={userData ? <ViewLecture /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/mycourses"
           element={userData ? <MyEnrolledCourses /> : <Navigate to="/login" />}
         />
 
+        {/* Educator redirect */}
+        <Route
+          path="/dashboard"
+          element={
+            !userData ? (
+              <Navigate to="/login" />
+            ) : userData?.role === "educator" ? (
+              <Navigate to="/educator/profile" />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+
+        {/* Educator - nested under EducatorLayout with sidebar */}
+        <Route
+          path="/educator"
+          element={
+            !userData ? (
+              <Navigate to="/login" />
+            ) : userData?.role === "educator" ? (
+              <EducatorLayout />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        >
+          <Route index element={<Navigate to="profile" replace />} />
+
+          <Route path="profile" element={<EducatorProfile />} />
+          <Route path="graph" element={<Graph />} />
+          <Route path="recent-enrollment" element={<RecentEnrollment />} />
+          <Route path="stats" element={<Stats />} />
+          <Route path="course-performance" element={<CoursePerformance />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="courses" element={<Courses />} />
+          <Route path="create-course" element={<CreateCourse />} />
+          <Route path="edit-course/:courseId" element={<EditCourse />} />
+          <Route path="create-module/:courseId" element={<Module />} />
+          <Route
+            path="create-lecture/:courseId/:moduleId"
+            element={<CreateLecture />}
+          />
+          <Route
+            path="editlecture/:courseId/:moduleId/:lectureId"
+            element={<EditLecture />}
+          />
+          <Route path="viewcourse/:courseId" element={<ViewCourse />} />
+        </Route>
+
+        {/* Admin redirect */}
+
+        {/* ======================================== */}
+        {/* ADMIN ROUTES */}
+        {/* ======================================== */}
+
+        <Route
+          path="/admin"
+          element={
+            !userData ? (
+              <Navigate to="/login" />
+            ) : userData?.role === "admin" ? (
+              <AdminLayout />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        >
+          {/* DEFAULT */}
+
+          <Route index element={<Navigate to="dashboard" replace />} />
+
+          {/* DASHBOARD */}
+
+          <Route path="dashboard" element={<AdminDashboard />} />
+
+          {/* USERS */}
+
+          <Route path="users" element={<ManageUsers />} />
+
+          {/* COURSES */}
+
+          <Route path="courses" element={<ManageCourses />} />
+
+          {/* STATS */}
+
+          <Route path="stats" element={<PlatformStats />} />
+        </Route>
       </Routes>
     </>
   );

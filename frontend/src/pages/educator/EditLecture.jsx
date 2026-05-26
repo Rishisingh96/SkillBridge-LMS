@@ -44,11 +44,11 @@ const EditLecture = () => {
 
       setIsPreviewFree(selectedLecture.isPreviewFree || false);
 
-      setExistingVideo(selectedLecture.videoUrl || "");
+      setExistingVideo(selectedLecture.video?.fileUrl || "");
 
       setResources(selectedLecture.resources || []);
 
-      setQuizData(selectedLecture.quiz || []);
+      setQuizData(selectedLecture.quizQuestions || []);
     }
   }, [selectedLecture]);
 
@@ -117,7 +117,7 @@ const EditLecture = () => {
 
       toast.success("Lecture Updated Successfully");
 
-      navigate(`/create-lecture/${courseId}/${moduleId}`);
+      navigate(`/educator/create-lecture/${courseId}/${moduleId}`);
 
       setLoading(false);
     } catch (error) {
@@ -152,7 +152,7 @@ const EditLecture = () => {
 
       toast.success("Lecture Removed Successfully");
 
-      navigate(`/create-lecture/${courseId}/${moduleId}`);
+      navigate(`/educator/create-lecture/${courseId}/${moduleId}`);
 
       setLoading1(false);
     } catch (error) {
@@ -177,7 +177,7 @@ const EditLecture = () => {
           <div className="flex items-center gap-4">
 
             <FaArrowLeftLong
-              onClick={() => navigate(`/create-lecture/${courseId}/${moduleId}`)}
+              onClick={() => navigate(`/educator/create-lecture/${courseId}/${moduleId}`)}
               className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
             />
 

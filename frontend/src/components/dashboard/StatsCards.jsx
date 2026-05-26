@@ -6,15 +6,17 @@ import {
   MdOutlineMenuBook,
   MdOutlineTrendingUp,
   MdOutlinePeople,
+  MdOutlineDownload,
 } from 'react-icons/md'
 
-const StatsCards = ({ stats }) => {
+const StatsCards = ({ stats = {} }) => {
   const {
     totalCourses = 0,
     totalStudents = 0,
     totalEarnings = 0,
     averageProgress = 0,
     recentEnrollments = 0,
+    totalDownloads = 0,
   } = stats
 
   return (
@@ -170,6 +172,37 @@ const StatsCards = ({ stats }) => {
 
           <div className="w-16 h-16 rounded-3xl bg-orange-600 text-white flex items-center justify-center shadow-xl">
             <MdOutlinePeople className="text-3xl" />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* TOTAL DOWNLOADS */}
+      <motion.div
+        whileHover={{
+          y: -5,
+          scale: 1.02,
+        }}
+        className="bg-white rounded-[28px] p-7 shadow-lg border border-gray-200 relative overflow-hidden"
+      >
+        <div className="absolute top-0 left-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+
+        <div className="relative z-10 flex items-center justify-between">
+          <div>
+            <p className="text-gray-500 text-sm font-medium">
+              Total Downloads
+            </p>
+
+            <h1 className="text-5xl font-bold mt-3 text-gray-800">
+              {totalDownloads.toLocaleString()}
+            </h1>
+
+            <p className="text-sm text-gray-400 mt-3">
+              Resource Downloads
+            </p>
+          </div>
+
+          <div className="w-16 h-16 rounded-3xl bg-blue-600 text-white flex items-center justify-center shadow-xl">
+            <MdOutlineDownload className="text-3xl" />
           </div>
         </div>
       </motion.div>

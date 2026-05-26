@@ -17,7 +17,8 @@ import lectureSlice from "./lectureSlice";
 import reviewSlice from "./reviewSlice";
 import moduleSlice from "./moduleSlice";
 import dashboardSlice from "./dashboardSlice"; // ✅ Add kiya
-
+import commentSlice from "./commentSlice";
+import adminSlice from "./adminSlice"
 // Combine Reducers
 const rootReducer = combineReducers({
   user: userSlice,
@@ -25,7 +26,9 @@ const rootReducer = combineReducers({
   lecture: lectureSlice,
   module: moduleSlice,
   review: reviewSlice,
-  dashboard: dashboardSlice, // ✅ Add kiya
+  dashboard: dashboardSlice, 
+  comment: commentSlice,
+  admin: adminSlice,
 });
 
 // Persist Config
@@ -51,6 +54,10 @@ export const store = configureStore({
 });
 
 
+// Persistor
+export const persistor = persistStore(store);
+
+
 /*Store Contains
 user state
 course state
@@ -67,6 +74,3 @@ Final Redux State Structure
   review:{},
   dashboard:{}
 } */
-
-// Persistor
-export const persistor = persistStore(store);

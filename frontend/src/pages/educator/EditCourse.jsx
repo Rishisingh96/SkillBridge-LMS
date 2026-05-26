@@ -182,7 +182,7 @@ const getFormattedValidity = () => {
 
     toast.success("Course updated successfully");
 
-    navigate("/courses");
+    navigate("/educator/courses");
 
   } catch (error) {
 
@@ -226,7 +226,7 @@ const getFormattedValidity = () => {
         <div className="flex items-center gap-4 mb-8">
           <FaArrowLeftLong
             className="text-xl text-gray-600 cursor-pointer hover:text-black transition-all"
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/educator/courses")}
           />
 
           <h2 className="text-2xl font-bold text-gray-800">
@@ -235,7 +235,7 @@ const getFormattedValidity = () => {
 
           <div className="space-x-2 space-y-2">
             <button className="bg-black text-white px-4 py-2 rounded-md cursor-pointer hover:bg-gray-800 transition-all"
-              onClick={() => navigate(`/create-module/${selectCourse._id}`)}
+              onClick={() => navigate(`/educator/create-module/${selectCourse._id}`)}
             >
               Go to Module Page
             </button>

@@ -15,7 +15,6 @@ const Courses = () => {
 
   useEffect(() => {
     // dispatch(getCreatorCourses());
-    // ✅ Ye karo
      dispatch(fetchCreatorCourses());
   }, [dispatch]);
 
@@ -36,7 +35,7 @@ const Courses = () => {
         <div className="flex items-start gap-4">
 
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/")}
             className="min-w-[42px] h-[42px] rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition"
           >
             <FaArrowLeftLong className="text-[17px] text-gray-700" />
@@ -55,7 +54,7 @@ const Courses = () => {
 
         {/* Right */}
         <button
-          onClick={() => navigate("/create-course")}
+          onClick={() => navigate("/educator/create-course")}
           className="bg-black text-white px-5 py-3 rounded-xl font-medium hover:scale-105 transition duration-200 shadow-md w-full md:w-auto"
         >
           Create Course
@@ -134,7 +133,7 @@ const Courses = () => {
                   {/* Action */}
                   <td className="px-6 py-5">
                     <button 
-                      onClick={() => navigate(`/edit-course/${course._id}`)}
+                      onClick={() => navigate(`/educator/edit-course/${course._id}`)}
                       className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-black hover:text-white transition flex items-center justify-center"
                     >
                       <FaEdit className="text-[15px]" />
@@ -217,7 +216,7 @@ const Courses = () => {
               </div>
 
               <button 
-                onClick={() => navigate(`/edit-course/${course._id}`)}
+                onClick={() => navigate(`/educator/edit-course/${course._id}`)}
                 className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl text-sm hover:scale-105 transition"
               >
                 <FaEdit />

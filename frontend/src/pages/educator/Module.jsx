@@ -127,7 +127,7 @@ const Module = () => {
 
   // Handle Open Module
   const handleOpenModule = (moduleId) => {
-    navigate(`/create-lecture/${courseId}/${moduleId}`);
+    navigate(`/educator/create-lecture/${courseId}/${moduleId}`);
   };
 
   return (
@@ -137,7 +137,7 @@ const Module = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <FaArrowLeftLong
-              onClick={() => navigate(`/edit-course/${courseId}`)}
+              onClick={() => navigate(`/educator/edit-course/${courseId}`)}
               className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
             />
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800">

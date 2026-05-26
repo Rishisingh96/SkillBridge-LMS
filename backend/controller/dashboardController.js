@@ -38,6 +38,7 @@ export const getDashboardStats = async (req, res) => {
     // Course Progress (average completion rate)
     let totalLectures = 0;
     let totalCompletedLectures = 0;
+    let totalDownloads = 0;
 
     for (const course of courses) {
       // Get all modules for this course
@@ -57,6 +58,13 @@ export const getDashboardStats = async (req, res) => {
       });
 
       totalCompletedLectures += completedCount;
+
+      // Calculate total downloads for this course
+      for (const lecture of lectures) {
+        for (const resource of lecture.resources) {
+          totalDownloads += resource.downloads || 0;
+        }
+      }
     }
 
     const averageProgress = totalLectures > 0 
@@ -82,7 +90,11 @@ export const getDashboardStats = async (req, res) => {
         return {
           courseId: course._id,
           courseTitle: course.title,
-          enrollmentCount: count
+          enrollmentCount: count,
+          isPublished: course.isPublished,
+          thumbnail: course.thumbnail,
+          price: course.price,
+          reviewCount: course.reviews ? course.reviews.length : 0
         };
       })
     );
@@ -95,6 +107,7 @@ export const getDashboardStats = async (req, res) => {
         totalEarnings,
         averageProgress,
         recentEnrollments: recentEnrollments.length,
+        totalDownloads,
         enrollmentByCourse
       },
       recentEnrollments

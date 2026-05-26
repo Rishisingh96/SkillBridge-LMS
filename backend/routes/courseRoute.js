@@ -102,4 +102,5 @@ courseRoute.post("/watchtime", updateWatchTime);
 courseRoute.get("/dashboard-stats", isAuth, getDashboardStats);
 courseRoute.get("/recent-enrollments", isAuth, isRole("educator"), getRecentEnrollments);
 
+
 export default courseRoute

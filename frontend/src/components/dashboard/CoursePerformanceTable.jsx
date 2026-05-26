@@ -30,6 +30,7 @@ const CoursePerformanceTable = () => {
                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Course Title</th>
                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Students</th>
                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Revenue</th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Reviews</th>
                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Status</th>
                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Action</th>
               </tr>
@@ -38,7 +39,7 @@ const CoursePerformanceTable = () => {
             <tbody>
               {enrollmentByCourse.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-10 text-gray-400">
+                  <td colSpan={7} className="text-center py-10 text-gray-400">
                     No courses found
                   </td>
                 </tr>
@@ -86,6 +87,13 @@ const CoursePerformanceTable = () => {
                       </span>
                     </td>
 
+                    {/* Reviews */}
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-semibold text-gray-800">
+                        {item.reviewCount || 0}
+                      </span>
+                    </td>
+
                     {/* Status */}
                     <td className="px-6 py-4">
                       {item.isPublished ? (
@@ -102,7 +110,7 @@ const CoursePerformanceTable = () => {
                     {/* Action */}
                     <td className="px-6 py-4">
                       <button
-                        onClick={() => navigate(`/edit-course/${item.courseId}`)}
+                        onClick={() => navigate(`/educator/edit-course/${item.courseId}`)}
                         className="text-sm text-black font-semibold hover:underline"
                       >
                         Manage →

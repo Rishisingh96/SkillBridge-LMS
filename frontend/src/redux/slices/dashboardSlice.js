@@ -62,6 +62,7 @@ const dashboardSlice = createSlice({
       totalEarnings: 0,
       averageProgress: 0,
       recentEnrollments: 0,
+      totalDownloads: 0,
       enrollmentByCourse: [],
     },
 
@@ -87,10 +88,12 @@ const dashboardSlice = createSlice({
       .addCase(fetchDashboardStats.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.stats = action.payload.stats;
+        state.stats = {
+          ...action.payload.stats,
+          enrollmentByCourse: (action.payload.stats.enrollmentByCourse || []).map(item => ({ ...item }))
+        };
 
-        state.recentEnrollments =
-          action.payload.recentEnrollments;
+        state.recentEnrollments = (action.payload.recentEnrollments || []).map(item => ({ ...item }));
       })
 
       .addCase(fetchDashboardStats.rejected, (state, action) => {
@@ -108,7 +111,7 @@ const dashboardSlice = createSlice({
       .addCase(fetchRecentEnrollments.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.recentEnrollments = action.payload;
+        state.recentEnrollments = (action.payload || []).map(item => ({ ...item }));
       })
 
       .addCase(fetchRecentEnrollments.rejected, (state, action) => {

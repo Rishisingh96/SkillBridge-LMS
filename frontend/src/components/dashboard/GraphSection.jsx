@@ -147,7 +147,7 @@ const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[320px] flex items-center justify-center text-gray-400">
+            <div className="h-[322px] flex items-center justify-center text-gray-400">
               No Course Data Available
             </div>
           )}
@@ -181,7 +181,7 @@ const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
           </div>
 
           {EnrollData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={320}>
+            <ResponsiveContainer width="100%" height={400}>
               <BarChart data={EnrollData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -219,7 +219,7 @@ const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[320px] flex items-center justify-center text-gray-400">
+            <div className="h-[400px] flex items-center justify-center text-gray-400">
               No Enrollment Data Available
             </div>
           )}

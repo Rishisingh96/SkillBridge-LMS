@@ -11,7 +11,7 @@ export const fetchLectures = createAsyncThunk(
         `${serverUrl}/api/course/courselecture/${moduleId}`,
         { withCredentials: true }
       );
-      return response.data.lectures;
+      return response.data.lectures || [];
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch lectures");
     }
