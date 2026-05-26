@@ -1,94 +1,178 @@
-import User from "../model/userModel.js"
+import User from "../models/userModel.js"
 import validator from "validator"
 import bcrypt from "bcryptjs"
 import genToken from "../config/token.js"
 import sendMail from "../config/sendMail.js"
 
 
-//singup
-export const signUP = async (req, res) =>{
-    try{
-        const {name, email, password, role} = req.body
+//Signup
+// export const signUP = async (req, res) => {
+//   try {
+//     const { name, email, password, role } = req.body;
 
-        //Before find user
-        let existUser = await User.findOne({email})
-        if(existUser){
-            return res.status(400).json({message:"User is already exist"})
-        }
-        if(!validator.isEmail(email)){
-            return res.status(400).json({message:"Enter valid email"})
-        }
+//     // Step 1 — Required fields check
+//     if (!name || !email || !password) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
 
-          // check password
-        if(password.length < 8){
-            return res.status(400).json({message:"Enter Strong password"})
-        }
+//     // Step 2 — Email validate
+//     if (!validator.isEmail(email)) {
+//       return res.status(400).json({ message: "Enter valid email" });
+//     }
 
-        // bcrypt passwor 
-        let hashPassword = await bcrypt.hash(password, 10)
+//     // Step 3 — Password length
+//     if (password.length < 8) {
+//       return res.status(400).json({ message: "Password must be at least 8 characters" });
+//     }
 
-        const user = await User.create({
-            name, 
-            email, 
-            password:hashPassword,
-            role
-        })
-      
-        const token = await genToken(user._id)
+//     // Step 4 — User already exists
+//     const existUser = await User.findOne({ email });
+//     if (existUser) {
+//       return res.status(400).json({ message: "User already exists" });
+//     }
 
-        res.cookie("token", token, {
-            httpOnly:true, 
-            secure:false,  // when we deploye than chage true
-            sameSite:"Strict",  
-            maxAge: 7*24*60*60*1000 // chage in milisecont
-        })
+//     // Step 5 — Hash password
+//     const hashPassword = await bcrypt.hash(password, 10);
 
-        return res.status(201).json({
-            user: user,
-            token: token
-        })
+//     // Step 6 — Create user
+//     const user = await User.create({
+//       name,
+//       email,
+//       password: hashPassword,
+//       role: role || "student",
+//     });
+
+//     // Step 7 — Generate token
+//     const token = await genToken(user._id);
+
+//     // Step 8 — Set cookie
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       sameSite: "Strict",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+//     return res.status(201).json({
+//       success: true,
+//       user,
+//       token,
+//     });
+
+//   } catch (error) {
+//     return res.status(500).json({ message: `SignUp error: ${error.message}` });
+//   }
+// };
 
 
-    }catch(error){
-        return res.status(500).json({message:`SignUp error ${error}`})
+//Signup
+export const signUP = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
 
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-}
-
-///login 
-export const login = async (req, res) =>{
-    try{
-        const {email, password} = req.body
-        //find user
-        let user = await User.findOne({email})
-
-        // user not found
-        if(!user){
-            return res.status(404).json({message:"User not found"})
-        }
-
-        //compare user same of not use bcrypt
-        let isMatch = await bcrypt.compare(password, user.password)
-        // check password
-        if(!isMatch){
-            return res.status(400).json({message:"Incorract password"})
-        }
-        const token = await genToken(user._id)
-
-        res.cookie("token", token, {
-            httpOnly: true, 
-            secure:false, 
-            sameSite: "Strict", 
-            maxAge: 7*24*60*60*1000
-        })
-        return res.status(200).json({
-            user: user,
-            token: token
-        })
-    } catch(error){
-        return res.status(500).json({message:`Login error ${error}`})
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "Enter valid email" });
     }
-}
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
+    const existUser = await User.findOne({ email });
+    if (existUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    // OTP generate karo
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // ✅ User banao but isVerified false rakho
+    const user = await User.create({
+      name,
+      email,
+      password: hashPassword,
+      role: role || "student",
+      isVerified: false,        // ✅
+      resetOtp: otp,            // ✅ OTP save karo
+      otpExpires: Date.now() + 5 * 60 * 1000, // ✅ 5 min
+    });
+
+    // ✅ OTP email pe bhejo
+    await sendMail(email, otp);
+
+    // ✅ Token mat do abhi — pehle verify kare
+    return res.status(201).json({
+      success: true,
+      message: "OTP sent to your email. Please verify to continue.",
+      email, // frontend ko email chahiye verify ke liye
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: `SignUp error: ${error.message}` });
+  }
+};
+
+
+
+//login
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // ✅ Verified check
+    if (!user.isVerified) {
+      // OTP dobara bhejo
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      user.resetOtp = otp;
+      user.otpExpires = Date.now() + 5 * 60 * 1000;
+      await user.save();
+      await sendMail(email, otp);
+
+      return res.status(403).json({
+        message: "Email not verified. New OTP sent to your email.",
+        email,
+        isVerified: false,
+      });
+    }
+
+    // ✅ Banned check
+    if (user.isBanned) {
+      return res.status(403).json({ message: "Your account has been banned" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect password" });
+    }
+
+    const token = await genToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      user,
+      token,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: `Login error: ${error.message}` });
+  }
+};
 
 // for logOut
 export const logOut = async (req, res) => {
@@ -129,29 +213,74 @@ export const sendOtp = async (req, res) => {
 }
 
 // verify otp
-export const varifyOTP = async (req, res)=>{
-    try {
-        const { email, otp} = req.body
-        const user = await User.findOne({email})
-        if(!user){
-            return res.status(404).json({message:"User not found"})
-        }
-        if(user.resetOtp !== otp){
-            return res.status(400).json({message:"Invalid OTP"})
-        }
-        if(user.otpExpires < Date.now()){
-            return res.status(400).json({message:"OTP expired"})
-        }
-        user.isOtpVerifed = true
-        user.resetOtp = undefined, 
-        user.otpExpires = undefined,
+// export const varifyOTP = async (req, res)=>{
+//     try {
+//         const { email, otp} = req.body
+//         const user = await User.findOne({email})
+//         if(!user){
+//             return res.status(404).json({message:"User not found"})
+//         }
+//         if(user.resetOtp !== otp){
+//             return res.status(400).json({message:"Invalid OTP"})
+//         }
+//         if(user.otpExpires < Date.now()){
+//             return res.status(400).json({message:"OTP expired"})
+//         }
+//         user.isOtpVerifed = true
+//         user.resetOtp = undefined, 
+//         user.otpExpires = undefined,
        
-        await user.save()
-        return res.status(200).json({message:"OTP verified successfully"})
-    } catch (error) {
-        return res.status(500).json({message:`Verify OTP error ${error}`})
+//         await user.save()
+//         return res.status(200).json({message:"OTP verified successfully"})
+//     } catch (error) {
+//         return res.status(500).json({message:`Verify OTP error ${error}`})
+//     }
+// }
+
+//verigyOTP
+export const varifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-}
+    if (user.resetOtp !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+    if (user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    // ✅ Verify karo
+    user.isVerified = true;
+    user.isOtpVerifed = true;
+    user.resetOtp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    // ✅ Ab token do — account verified ho gaya
+    const token = await genToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+      user,
+      token,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ message: `Verify OTP error: ${error.message}` });
+  }
+};
 
 // Reset password 
 export const resetPassword = async (req, res) =>{
@@ -214,3 +343,5 @@ export const googleAuth = async (req, res) =>{
             return res.status(500).json({message: `Google auth error: ${error.message}`})
         }
 }
+
+

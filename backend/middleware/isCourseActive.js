@@ -1,5 +1,5 @@
-import Enrollment from "../model/enrollmentSchema.js";
-import User from "../model/userModel.js";
+import Enrollment from "../models/enrollmentModel.js";
+import User from "../models/userModel.js";
 
 export const isCourseActive = async (
   userId,

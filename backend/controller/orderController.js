@@ -1,8 +1,8 @@
 import razorpay from "razorpay";
 import dotenv from "dotenv";
-import Course from "../model/courseModel.js";
-import User from "../model/userModel.js";
-import Enrollment from "../model/enrollmentSchema.js";
+import Course from "../models/courseModel.js";
+import User from "../models/userModel.js";
+import Enrollment from "../models/enrollmentModel.js";
 
 dotenv.config();
 

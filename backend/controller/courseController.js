@@ -1,96 +1,64 @@
-
 // Import Course model
-import Course from "../model/courseModel.js"
-import User from "../model/userModel.js"
+import Course from "../models/courseModel.js"
+import User from "../models/userModel.js"
 import uploadOnCloudinary from "../config/cloudinary.js"
 
-// Create Course
+// ── Create Course ──────────────────────────
 export const createCourse = async (req, res) => {
-
   try {
-
-    const {
-      title,
-      category,
-      description,
-      validity
-    } = req.body;
-
-    const safeValidity = validity || {
-      value: 6,
-      unit: "month"
-    };
+    const { title, category, description, validity } = req.body;
 
     if (!title || !category) {
-
-      return res.status(400).json({
-        message: "Title and Category are required"
-      });
-
+      return res.status(400).json({ message: "Title and Category are required" });
     }
 
-    const course = await Course.create({
+    const safeValidity = validity || { value: 6, unit: "month" };
 
+    const course = await Course.create({
       title,
       category,
       description,
-
       validity: safeValidity,
-
-      creator: req.userId
-
+      creator: req.userId,
     });
 
     return res.status(201).json({
-
       success: true,
       message: "Course created successfully",
-      course
-
+      course,
     });
 
   } catch (error) {
-
-    console.log(error);
-
-    return res.status(500).json({
-      message: "Failed to create course"
-    });
-
+    return res.status(500).json({ message: `Create course error: ${error.message}` });
   }
-
 };
 
-// togglePublishCourse 
+// ── Toggle Publish ─────────────────────────
 export const togglePublishCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
 
     const course = await Course.findById(courseId);
-
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // toggle
     course.isPublished = !course.isPublished;
-
     await course.save();
 
     return res.status(200).json({
+      success: true,
       message: course.isPublished
         ? "Course published successfully"
         : "Course unpublished successfully",
       course,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: `Error: ${error.message}`,
-    });
+    return res.status(500).json({ message: `Toggle publish error: ${error.message}` });
   }
 };
 
-// Get Published Courses
+// ── Get Published Courses ──────────────────
 export const getPublishedCourses = async (req, res) => {
   try {
     const courses = await Course.find({ isPublished: true })
@@ -105,14 +73,10 @@ export const getPublishedCourses = async (req, res) => {
         path: "creator",
         select: "name email photoUrl role",
       })
-      .populate({
-        path: "reviews",
-      });
+      .populate("reviews");
 
     if (!courses || courses.length === 0) {
-      return res.status(404).json({
-        message: "No published courses found",
-      });
+      return res.status(404).json({ message: "No published courses found" });
     }
 
     return res.status(200).json({
@@ -122,65 +86,60 @@ export const getPublishedCourses = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({
-      message: `Failed to fetch courses: ${error.message}`,
-    });
+    return res.status(500).json({ message: `Failed to fetch courses: ${error.message}` });
   }
 };
 
-// Get Courses by Creator
+// ── Get Creator Courses ────────────────────
 export const getCreatorCourses = async (req, res) => {
   try {
-
-    const userId = req.userId
+    const userId = req.userId;
 
     const courses = await Course.find({ creator: userId })
-    console.log("Found courses:", courses)
+      .populate({
+        path: "modules",
+        populate: {
+          path: "lectures",
+          model: "Lecture",
+        },
+      })
+      .populate("creator", "name email photoUrl role");
 
     if (!courses) {
-      return res.status(400).json({ message: "Courses are not found" })
+      return res.status(404).json({ message: "Courses not found" });
     }
-    return res.status(200).json(courses)
+
+    return res.status(200).json(courses);
 
   } catch (error) {
-    console.log("Error in getCreatorCourses:", error)
-    return res.status(500).json({ message: `Failed to fetch courses ${error}` })
+    return res.status(500).json({ message: `Failed to fetch courses: ${error.message}` });
   }
-}
+};
 
-//get Creator
+// ── Get Creator By ID ──────────────────────
 export const getCreatorById = async (req, res) => {
   try {
-    console.log("Request body:", req.body);
     const { userId } = req.body;
 
     if (!userId) {
-      console.log("No userId provided in request");
       return res.status(400).json({ message: "userId is required" });
     }
 
-    console.log("Searching for user with ID:", userId);
     const user = await User.findById(userId).select("-password");
 
-    console.log("Found user:", user);
-
     if (!user) {
-      console.log("User not found with ID:", userId);
-      return res.status(404).json({ message: "user is not found." });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    console.log("Returning user data:", user);
     return res.status(200).json(user);
   } catch (error) {
-    console.log("Error in getCreatorById:", error);
-    return res.status(500).json({ message: `Failed to Creator   ${error}` });
+    return res.status(500).json({ message: `Failed to get creator: ${error.message}` });
   }
 };
 
-// Get Course Edit
+// ── Edit Course ────────────────────────────
 export const editCourse = async (req, res) => {
   try {
-
     const { courseId } = req.params;
 
     const {
@@ -194,52 +153,38 @@ export const editCourse = async (req, res) => {
     } = req.body;
 
     const course = await Course.findById(courseId);
-
     if (!course) {
-      return res.status(404).json({
-        message: "Course not found",
-      });
+      return res.status(404).json({ message: "Course not found" });
     }
 
     const updateData = {};
 
     if (title) updateData.title = title;
-
     if (subTitle) updateData.subTitle = subTitle;
-
     if (description) updateData.description = description;
-
     if (category) updateData.category = category;
-
     if (level) updateData.level = level;
 
     if (price !== undefined) {
       updateData.price = Number(price);
     }
 
-    // ✅ validity update
-    if (
-      req.body["validity.value"] &&
-      req.body["validity.unit"]
-    ) {
+    // Validity update
+    if (req.body["validity.value"] && req.body["validity.unit"]) {
       updateData.validity = {
         value: Number(req.body["validity.value"]),
         unit: req.body["validity.unit"],
       };
     }
 
-    // ✅ boolean handle
+    // Boolean handle
     if (typeof isPublished !== "undefined") {
       updateData.isPublished = isPublished === "true";
     }
 
-    // ✅ thumbnail upload
+    // Thumbnail upload
     if (req.file) {
-
-      const thumbnailUrl = await uploadOnCloudinary(
-        req.file.path
-      );
-
+      const thumbnailUrl = await uploadOnCloudinary(req.file.path);
       updateData.thumbnail = thumbnailUrl.fileUrl;
     }
 
@@ -256,9 +201,6 @@ export const editCourse = async (req, res) => {
     });
 
   } catch (error) {
-
-    console.log("Edit course error:", error);
-
     return res.status(500).json({
       success: false,
       message: `Failed to update course: ${error.message}`,
@@ -266,35 +208,48 @@ export const editCourse = async (req, res) => {
   }
 };
 
-
-// Get Course by Id
+// ── Get Course By ID ───────────────────────
 export const getCourseById = async (req, res) => {
   try {
-    const { courseId } = req.params
-    const course = await Course.findById(courseId).populate("creator")
+    const { courseId } = req.params;
+
+    const course = await Course.findById(courseId)
+      .populate("creator", "name email photoUrl")
+      .populate({
+        path: "modules",
+        populate: {
+          path: "lectures",
+          model: "Lecture",
+        },
+      });
+
     if (!course) {
-      return res.status(400).json({ message: "Course is not found" })
+      return res.status(404).json({ message: "Course not found" });
     }
-    return res.status(200).json(course)
+
+    return res.status(200).json(course);
   } catch (error) {
-    return res.status(500).json({ message: `failed to fetch course ${error}` })
+    return res.status(500).json({ message: `Failed to fetch course: ${error.message}` });
   }
-}
+};
 
-
-// Delete Course
+// ── Delete Course ──────────────────────────
 export const deleteCourse = async (req, res) => {
   try {
-    const { courseId } = req.params
-    let course = await Course.findById(courseId)
+    const { courseId } = req.params;
+
+    const course = await Course.findById(courseId);
     if (!course) {
-      return res.status(400).json({ message: "Course is not found" })
+      return res.status(404).json({ message: "Course not found" });
     }
-    course = await Course.findByIdAndDelete(courseId)
-    return res.status(200).json({ message: "Course deleted successfully" })
+
+    await Course.findByIdAndDelete(courseId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Course deleted successfully",
+    });
   } catch (error) {
-    return res.status(500).json({ message: `failed to delete course ${error}` })
+    return res.status(500).json({ message: `Failed to delete course: ${error.message}` });
   }
-}
-
-
+};

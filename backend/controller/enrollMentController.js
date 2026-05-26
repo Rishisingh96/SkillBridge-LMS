@@ -1,8 +1,8 @@
 // controller/enrollMentController.js
 
-import Course from "../model/courseModel.js";
-import Enrollment from "../model/enrollmentSchema.js";
-import User from "../model/userModel.js";
+import Course from "../models/courseModel.js";
+import Enrollment from "../models/enrollmentModel.js";
+import User from "../models/userModel.js";
 
 // ======================================
 // FREE COURSE ENROLLMENT

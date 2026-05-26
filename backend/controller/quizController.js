@@ -1,7 +1,7 @@
 // Import Models
-import Course from "../model/courseModel.js";
-import Lecture from "../model/lectureModel.js";
-import User from "../model/userModel.js";
+import Course from "../models/courseModel.js";
+import Lecture from "../models/lectureModel.js";
+import User from "../models/userModel.js";
 
 // Cloudinary
 import uploadOnCloudinary from "../config/cloudinary.js";

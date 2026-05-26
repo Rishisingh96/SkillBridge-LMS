@@ -1,4 +1,5 @@
-
+import LectureProgress from "../models/lectureProgressModel.js";
+import Lecture from "../models/lectureModel.js";
 
 export const updateLectureProgress = async (req, res) => {
   try {

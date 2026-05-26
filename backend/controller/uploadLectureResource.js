@@ -1,8 +1,8 @@
 // Import Models
-import Course from "../model/courseModel.js";
-import Lecture from "../model/lectureModel.js";
-import User from "../model/userModel.js";
-import Module from "../model/module.js";
+import Course from "../models/courseModel.js";
+import Lecture from "../models/lectureModel.js";
+import User from "../models/userModel.js";
+import Module from "../models/moduleModel.js";
 
 // Cloudinary
 import uploadOnCloudinary from "../config/cloudinary.js";
@@ -264,32 +264,9 @@ export const downloadResource = async (
       === userId;
 
     // =========================
-    // CHECK ACTIVE ENROLLMENT
+    // ACCESS CHECK - REMOVED ENROLLMENT RESTRICTION
     // =========================
-    const isEnrolled =
-      await isCourseActive(
-        userId,
-        course._id
-      );
-
-    // =========================
-    // ACCESS CHECK
-    // =========================
-    if (
-      !isEnrolled &&
-      !isCreator
-    ) {
-
-      return res.status(403).json({
-
-        success: false,
-
-        message:
-          "Course access expired or not enrolled",
-
-      });
-
-    }
+    // Anyone can download resources now - no enrollment required
 
     // =========================
     // INCREASE DOWNLOAD COUNT
