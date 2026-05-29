@@ -40,7 +40,7 @@ courseRoute.put("/unpublish/:courseId", isAuth, isRole("educator"), togglePublis
 
 
 //Creator
-courseRoute.post("/creator", isAuth, isRole("educator"), getCreatorById)
+courseRoute.post("/creator", isAuth, getCreatorById)
 
 
 //Module create

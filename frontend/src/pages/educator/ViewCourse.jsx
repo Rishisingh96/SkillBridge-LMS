@@ -227,7 +227,6 @@ const ViewCourse = () => {
 
             {/* Features */}
             <div className="mt-5 space-y-3">
-             
 
               <div className="flex items-center gap-2">
                 <span className="text-green-500 text-sm">✅</span>

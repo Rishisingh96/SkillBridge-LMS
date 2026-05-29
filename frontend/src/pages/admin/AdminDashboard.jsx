@@ -26,8 +26,6 @@ import {
   CartesianGrid,
 } from "recharts";
 
-import Nav from "../../components/navbar/Navbar";
-
 const StatCard = ({ title, value, icon, color }) => {
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 flex items-center justify-between hover:shadow-xl transition-all duration-300">
@@ -116,8 +114,7 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <Nav />
-      <div className="min-h-screen bg-gray-100 p-6 pt-[90px]">
+      <div className="min-h-screen bg-gray-100 p-6">
 
       {/* ========================================= */}
       {/* PAGE HEADER */}

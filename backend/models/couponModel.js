@@ -103,7 +103,6 @@ const couponSchema = new mongoose.Schema(
 );
 
 // ⚡ indexes
-couponSchema.index({ code: 1 });
 couponSchema.index({ expiryDate: 1 });
 
 const Coupon = mongoose.model(

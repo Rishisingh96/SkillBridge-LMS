@@ -93,10 +93,8 @@ const CheckoutPage = () => {
     );
   }, [selectedCourse, discount]);
 
-  // =========================================
+ 
   // FORMAT DESCRIPTION
-  // =========================================
-
   const formatDescription = (description) => {
     if (!description) return null;
 
@@ -150,10 +148,8 @@ const CheckoutPage = () => {
     return formatDescription(selectedCourse?.description);
   }, [selectedCourse]);
 
-  // =========================================
+  
   // HANDLE CHANGE
-  // =========================================
-
   const handleChange = (e) => {
     setFormData({
       ...formData,

@@ -24,6 +24,7 @@ import img from "../../assets/Empty.png";
 import CheckoutPage from "../student/CheckoutPage";
 import Nav from "../../components/navbar/Navbar";
 import LecturePlayer from "../../components/lecture/LecturePlayer";
+import { useTheme } from "../../context/ThemeContext";
 
 const CourseDetail = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const CourseDetail = () => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [darkMode, setDarkMode] = useState(true);
+  const { isDark, toggleTheme } = useTheme();
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   // ---------------- FETCH COURSE ----------------
@@ -85,12 +86,14 @@ const CourseDetail = () => {
         { withCredentials: true }
       );
 
+      // Always set enrollmentData to preserve status info (including expired status)
+      setEnrollmentData(response.data);
+
+      // Set isEnrolled based on active status only
       if (response.data.isEnrolled && response.data.isActive) {
         setIsEnrolled(true);
-        setEnrollmentData(response.data);
       } else {
         setIsEnrolled(false);
-        setEnrollmentData(null);
       }
     } catch (error) {
       console.log(error);
@@ -295,7 +298,7 @@ const CourseDetail = () => {
 
   return (
     <div
-      className={`min-h-screen transition-all duration-500 ${darkMode
+      className={`min-h-screen transition-all duration-500 ${isDark
           ? "bg-[#050816] text-white"
           : "bg-[#f5f7fb] text-black"
         }`}
@@ -305,7 +308,7 @@ const CourseDetail = () => {
       {/* ===================================================== */}
 
       <header
-        className={`sticky top-0 z-50 backdrop-blur-2xl border-b ${darkMode
+        className={`sticky top-0 z-50 backdrop-blur-2xl border-b ${isDark
             ? "bg-white/5 border-white/10"
             : "bg-white/70 border-black/10"
           }`}
@@ -317,7 +320,7 @@ const CourseDetail = () => {
               whileHover={{ x: -3 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => navigate("/allcourses")}
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center cursor-pointer ${darkMode
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center cursor-pointer ${isDark
                   ? "bg-white/10 hover:bg-white/20"
                   : "bg-black/5 hover:bg-black/10"
                 }`}
@@ -331,7 +334,7 @@ const CourseDetail = () => {
               </h1>
 
               <p
-                className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"
+                className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"
                   }`}
               >
                 Premium Learning Platform
@@ -342,13 +345,13 @@ const CourseDetail = () => {
           {/* RIGHT */}
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setDarkMode(!darkMode)}
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${darkMode
+              onClick={toggleTheme}
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${isDark
                   ? "bg-white/10 hover:bg-white/20"
                   : "bg-black/5 hover:bg-black/10"
                 }`}
             >
-              {darkMode ? <FaSun /> : <FaMoon />}
+              {isDark ? <FaSun /> : <FaMoon />}
             </button>
 
             <img
@@ -380,7 +383,7 @@ const CourseDetail = () => {
               transition={{ duration: 0.7 }}
             >
               <div
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 border ${darkMode
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 border ${isDark
                     ? "bg-white/10 border-white/10"
                     : "bg-white border-black/10"
                   }`}
@@ -397,7 +400,7 @@ const CourseDetail = () => {
               </h1>
 
               <p
-                className={`mt-6 text-[16px] leading-8 max-w-2xl ${darkMode ? "text-gray-300" : "text-gray-600"
+                className={`mt-6 text-[16px] leading-8 max-w-2xl ${isDark ? "text-gray-300" : "text-gray-600"
                   }`}
               >
                 {selectedCourse?.subTitle ||
@@ -412,7 +415,7 @@ const CourseDetail = () => {
                   <span className="font-bold">{avgRating}</span>
 
                   <span
-                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"
                       }`}
                   >
                     Reviews
@@ -420,14 +423,14 @@ const CourseDetail = () => {
                 </div>
 
                 <div
-                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"
                     }`}
                 >
                   12+ Hours Content
                 </div>
 
                 <div
-                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"
                     }`}
                 >
                   {enrollmentData?.daysRemaining !== undefined
@@ -455,13 +458,19 @@ const CourseDetail = () => {
                   <motion.button
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => navigate(`/checkout/${courseId}`)}
+                    onClick={() => {
+                      if (selectedCourse?.price === 0) {
+                        handleFreeEnroll(courseId);
+                      } else {
+                        navigate(`/checkout/${courseId}`);
+                      }
+                    }}
                     className="px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 text-white font-semibold shadow-2xl"
                   >
-                    {selectedCourse?.price === 0
-                      ? "Enroll For Free"
-                      : enrollmentData?.status === "expired"
-                        ? "Re-enroll Now"
+                    {enrollmentData?.status === "expired"
+                      ? "Re-enroll Now"
+                      : selectedCourse?.price === 0
+                        ? "Enroll For Free"
                         : "Enroll Now"}
                   </motion.button>
                 ) : (
@@ -477,7 +486,7 @@ const CourseDetail = () => {
                 )}
 
                 <button
-                  className={`px-8 py-4 rounded-2xl font-semibold border ${darkMode
+                  className={`px-8 py-4 rounded-2xl font-semibold border ${isDark
                       ? "bg-white/10 border-white/10 hover:bg-white/20"
                       : "bg-white border-black/10 hover:bg-black/5"
                     }`}
@@ -495,12 +504,12 @@ const CourseDetail = () => {
               className="relative"
             >
               <div
-                className={`absolute inset-0 blur-3xl rounded-full ${darkMode ? "bg-violet-500/20" : "bg-blue-500/20"
+                className={`absolute inset-0 blur-3xl rounded-full ${isDark ? "bg-violet-500/20" : "bg-blue-500/20"
                   }`}
               />
 
               <div
-                className={`relative overflow-hidden rounded-[32px] border backdrop-blur-2xl ${darkMode
+                className={`relative overflow-hidden rounded-[32px] border backdrop-blur-2xl ${isDark
                     ? "bg-white/10 border-white/10"
                     : "bg-white/70 border-white"
                   }`}
@@ -522,12 +531,14 @@ const CourseDetail = () => {
 
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
         <div className="grid lg:grid-cols-[420px_1fr] gap-6 items-start">
+         
           {/* LEFT */}
             <ModuleList
               moduleData={moduleData}
               selectedLecture={selectedLecture}
               onSelectLecture={setSelectedLecture}
               mode="preview"
+              isEnrolled={isEnrolled}
             />
 
           {/* RIGHT */}
@@ -544,7 +555,7 @@ const CourseDetail = () => {
       {isEnrolled && (
         <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
           <div
-            className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${darkMode
+            className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${isDark
                 ? "bg-white/10 border-white/10"
                 : "bg-white/70 border-black/10"
               }`}
@@ -571,7 +582,7 @@ const CourseDetail = () => {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Write your premium learning experience..."
-              className={`w-full rounded-3xl border p-5 outline-none resize-none ${darkMode
+              className={`w-full rounded-3xl border p-5 outline-none resize-none ${isDark
                   ? "bg-white/5 border-white/10 placeholder:text-gray-500"
                   : "bg-white border-black/10"
                 }`}
@@ -593,15 +604,13 @@ const CourseDetail = () => {
       )}
 
 
-
-
       {/* ===================================================== */}
       {/* DESCRIPTION */}
       {/* ===================================================== */}
 
       <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
         <div
-          className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${darkMode
+          className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${isDark
               ? "bg-white/10 border-white/10"
               : "bg-white/70 border-black/10"
             }`}
@@ -610,7 +619,7 @@ const CourseDetail = () => {
             Course Description
           </h2>
 
-          <div className={`space-y-6 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+          <div className={`space-y-6 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
             {formattedDescription?.slice(0, showFullDescription ? formattedDescription.length : 2).map((item, index) => {
               if (item.type === 'text') {
                 return (
@@ -620,7 +629,7 @@ const CourseDetail = () => {
                 );
               } else if (item.type === 'module') {
                 return (
-                  <div key={index} className={`rounded-2xl p-5 ${darkMode ? "bg-white/5" : "bg-gray-50"}`}>
+                  <div key={index} className={`rounded-2xl p-5 ${isDark ? "bg-white/5" : "bg-gray-50"}`}>
                     <h3 className="text-xl font-bold mb-3 text-indigo-600 dark:text-indigo-400">
                       {item.title}
                     </h3>
@@ -642,7 +651,7 @@ const CourseDetail = () => {
           {formattedDescription?.length > 2 && (
             <button
               onClick={() => setShowFullDescription(!showFullDescription)}
-              className={`mt-4 px-6 py-3 rounded-2xl font-semibold transition-all ${darkMode
+              className={`mt-4 px-6 py-3 rounded-2xl font-semibold transition-all ${isDark
                   ? "bg-white/10 hover:bg-white/20 text-white"
                   : "bg-black/5 hover:bg-black/10 text-black"
                 }`}
@@ -659,7 +668,7 @@ const CourseDetail = () => {
 
       <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
         <div
-          className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${darkMode
+          className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${isDark
               ? "bg-white/10 border-white/10"
               : "bg-white/70 border-black/10"
             }`}
@@ -681,14 +690,14 @@ const CourseDetail = () => {
               </h3>
 
               <p
-                className={`mt-2 ${darkMode ? "text-gray-400" : "text-gray-500"
+                className={`mt-2 ${isDark ? "text-gray-400" : "text-gray-500"
                   }`}
               >
                 {selectedCourse?.creator?.email}
               </p>
 
               <p
-                className={`mt-5 leading-8 max-w-3xl ${darkMode ? "text-gray-300" : "text-gray-600"
+                className={`mt-5 leading-8 max-w-3xl ${isDark ? "text-gray-300" : "text-gray-600"
                   }`}
               >
                 {selectedCourse?.creator?.description ||
@@ -711,7 +720,7 @@ const CourseDetail = () => {
 
           <button
             onClick={() => navigate("/allcourses")}
-            className={`px-5 py-3 rounded-2xl text-sm font-semibold ${darkMode
+            className={`px-5 py-3 rounded-2xl text-sm font-semibold ${isDark
                 ? "bg-white/10 hover:bg-white/20"
                 : "bg-black/5 hover:bg-black/10"
               }`}
@@ -729,7 +738,7 @@ const CourseDetail = () => {
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -10 }}
               onClick={() => navigate(`/course/${course._id}`)}
-              className={`overflow-hidden rounded-[28px] border cursor-pointer group backdrop-blur-2xl ${darkMode
+              className={`overflow-hidden rounded-[28px] border cursor-pointer group backdrop-blur-2xl ${isDark
                   ? "bg-white/10 border-white/10"
                   : "bg-white/70 border-black/10"
                 }`}
@@ -744,7 +753,7 @@ const CourseDetail = () => {
 
               <div className="p-5">
                 <span
-                  className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold mb-4 ${darkMode
+                  className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold mb-4 ${isDark
                       ? "bg-white/10 text-gray-300"
                       : "bg-black/5 text-gray-700"
                     }`}

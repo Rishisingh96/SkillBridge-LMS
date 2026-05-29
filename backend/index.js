@@ -10,6 +10,7 @@ import paymentRouter from './routes/paymentRoute.js'
 import reviewRoter from './routes/reviewRoute.js'
 import adminRouter from './routes/adminRoute.js'
 import couponRouter from './routes/coupon.routes.js'
+import enrollmentRouter from './routes/enrollmentRoute.js'
 
 // ✅ IMPORTANT MODEL IMPORTS
 import "./models/moduleModel.js";
@@ -39,6 +40,7 @@ app.use("/api/order", paymentRouter)
 app.use("/api/review", reviewRoter)
 app.use("/api/admin", adminRouter)
 app.use("/api/coupon", couponRouter)
+app.use("/api/enrollment", enrollmentRouter)
 
 app.get("/", (req, res)=>{
     res.send("Hello from Server")

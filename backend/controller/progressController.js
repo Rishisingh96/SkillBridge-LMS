@@ -51,6 +51,34 @@ export const getCourseProgress = async (req, res) => {
 
     const totalLectures = lectureIds.length;
 
+    // Calculate total course duration (sum of all lecture video durations)
+    const totalCourseDuration = lectures.reduce(
+      (total, lecture) => total + (lecture.video?.duration || 0),
+      0
+    );
+
+    // Get all progress for this user in this course
+    const allProgress = await LectureProgress.find({
+      user: userId,
+      lecture: { $in: lectureIds },
+    });
+
+    // Calculate total watch time (sum of all watchTime)
+    const totalWatchTime = allProgress.reduce(
+      (total, progress) => total + (progress.watchTime || 0),
+      0
+    );
+
+    // Create lecture-wise completion map
+    const lectureProgressMap = {};
+    allProgress.forEach((progress) => {
+      lectureProgressMap[progress.lecture.toString()] = {
+        completed: progress.completed,
+        watched: progress.watched,
+        watchTime: progress.watchTime,
+      };
+    });
+
     const completedLectures = await LectureProgress.countDocuments({
       user: userId,
       lecture: { $in: lectureIds },
@@ -67,6 +95,9 @@ export const getCourseProgress = async (req, res) => {
       totalLectures,
       completedLectures,
       progressPercent,
+      totalWatchTime,
+      totalCourseDuration,
+      lectureProgress: lectureProgressMap,
     });
   } catch (error) {
     return res.status(500).json({

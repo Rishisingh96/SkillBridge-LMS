@@ -3,21 +3,19 @@ import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi2";
 
 const DarkModeButton = () => {
   const [isDark, setIsDark] = useState(() => {
-    // Initialize state based on localStorage or system preference
+    // Initialize state based on localStorage, default to light mode
     const savedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
     console.log("🌙 Dark Mode Initialization:");
     console.log("  - Saved theme from localStorage:", savedTheme);
-    console.log("  - System prefers dark:", systemPrefersDark);
 
-    if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+    if (savedTheme === "dark") {
       document.documentElement.classList.add("dark");
       console.log("  → Setting dark mode: ON");
       return true;
     } else {
       document.documentElement.classList.remove("dark");
-      console.log("  → Setting dark mode: OFF");
+      console.log("  → Setting dark mode: OFF (default)");
       return false;
     }
   });

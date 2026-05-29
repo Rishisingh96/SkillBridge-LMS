@@ -28,15 +28,16 @@ const InfoCard = ({ icon, label, value }) => {
     <motion.div
       whileHover={{ y: -4 }}
       className="
-        rounded-3xl
+        rounded-xl
         border
-        border-white/10
-        bg-white/[0.04]
-        backdrop-blur-2xl
+        border-gray-200
+        dark:border-gray-700
+        bg-white
+        dark:bg-gray-800
         p-5
         transition-all
-        hover:border-violet-500/30
-        hover:bg-white/[0.06]
+        hover:border-violet-500
+        hover:shadow-md
       "
     >
       <div className="flex items-start gap-4">
@@ -44,28 +45,27 @@ const InfoCard = ({ icon, label, value }) => {
           className="
             w-12
             h-12
-            rounded-2xl
+            rounded-xl
             bg-gradient-to-br
-            from-violet-600/20
-            to-cyan-500/20
+            from-violet-500
+            to-cyan-500
             flex
             items-center
             justify-center
-            text-violet-300
+            text-white
             text-lg
-            border
-            border-white/10
+            shadow-md
           "
         >
           {icon}
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-400 mb-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
             {label}
           </p>
 
-          <h3 className="text-white font-semibold break-words leading-7">
+          <h3 className="text-gray-900 dark:text-white font-semibold break-words leading-7">
             {value || "Not Added"}
           </h3>
         </div>
@@ -112,11 +112,11 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 pt-[90px]">
         <div className="text-center">
-          <div className="w-14 h-14 border-4 border-white/10 border-t-violet-500 rounded-full animate-spin mx-auto" />
+          <div className="w-14 h-14 border-4 border-gray-200 dark:border-gray-700 border-t-violet-500 rounded-full animate-spin mx-auto" />
 
-          <p className="text-gray-400 mt-5 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 mt-5 text-lg">
             Loading Profile...
           </p>
         </div>
@@ -130,25 +130,27 @@ const Profile = () => {
 
   if (!userData) {
     return (
-      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 pt-[90px]">
         <div
           className="
             w-full
             max-w-md
-            rounded-3xl
+            rounded-2xl
             border
-            border-red-500/20
-            bg-red-500/10
-            backdrop-blur-xl
+            border-red-200
+            dark:border-red-800
+            bg-white
+            dark:bg-gray-800
             p-8
             text-center
+            shadow-lg
           "
         >
-          <h2 className="text-3xl font-black text-white">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             User Not Found
           </h2>
 
-          <p className="text-red-300 mt-3">
+          <p className="text-red-600 dark:text-red-400 mt-3">
             {error || "Something went wrong"}
           </p>
 
@@ -158,7 +160,7 @@ const Profile = () => {
               mt-6
               px-6
               py-3
-              rounded-2xl
+              rounded-xl
               bg-gradient-to-r
               from-violet-600
               to-cyan-500
@@ -166,6 +168,7 @@ const Profile = () => {
               font-semibold
               hover:scale-[1.02]
               transition-all
+              shadow-md
             "
           >
             Go To Login
@@ -178,15 +181,7 @@ const Profile = () => {
   return (
     <>
       <Nav />
-      <div className="min-h-screen bg-[#0B1120] text-white relative overflow-hidden pt-[90px]">
-
-      {/* ========================================================= */}
-      {/* BACKGROUND GLOW */}
-      {/* ========================================================= */}
-
-      <div className="fixed top-[-120px] right-[-100px] w-[320px] h-[320px] bg-violet-600/20 blur-[120px]" />
-
-      <div className="fixed bottom-[-120px] left-[-100px] w-[320px] h-[320px] bg-cyan-500/20 blur-[120px]" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white relative pt-[90px]">
 
       {/* ========================================================= */}
       {/* PAGE */}
@@ -207,19 +202,22 @@ const Profile = () => {
             className="
               w-12
               h-12
-              rounded-2xl
-              bg-white/[0.05]
+              rounded-xl
+              bg-white
+              dark:bg-gray-800
               border
-              border-white/10
-              backdrop-blur-xl
+              border-gray-200
+              dark:border-gray-700
               flex
               items-center
               justify-center
-              hover:bg-white/[0.08]
+              hover:bg-gray-50
+              dark:hover:bg-gray-700
               transition-all
+              shadow-sm
             "
           >
-            <FaArrowLeft />
+            <FaArrowLeft className="text-gray-600 dark:text-gray-300" />
           </motion.button>
 
           <motion.button
@@ -229,7 +227,7 @@ const Profile = () => {
             className="
               px-5
               h-12
-              rounded-2xl
+              rounded-xl
               bg-gradient-to-r
               from-violet-600
               to-cyan-500
@@ -238,8 +236,9 @@ const Profile = () => {
               flex
               items-center
               gap-3
-              shadow-xl
-              shadow-violet-500/20
+              shadow-md
+              hover:shadow-lg
+              transition-all
             "
           >
             <FiEdit />
@@ -260,13 +259,14 @@ const Profile = () => {
           className="
             max-w-6xl
             mx-auto
-            rounded-[32px]
+            rounded-2xl
             border
-            border-white/10
-            bg-white/[0.05]
-            backdrop-blur-2xl
+            border-gray-200
+            dark:border-gray-700
+            bg-white
+            dark:bg-gray-800
             overflow-hidden
-            shadow-[0_20px_80px_rgba(0,0,0,0.45)]
+            shadow-lg
           "
         >
 
@@ -279,13 +279,13 @@ const Profile = () => {
               relative
               h-[240px]
               bg-gradient-to-br
-              from-violet-700
-              via-[#1E1B4B]
-              to-cyan-600
+              from-violet-600
+              via-indigo-600
+              to-cyan-500
             "
           >
 
-            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 bg-black/10" />
 
             {/* PROFILE IMAGE */}
 
@@ -301,10 +301,11 @@ const Profile = () => {
                   className="
                     w-36
                     h-36
-                    rounded-[32px]
+                    rounded-2xl
                     object-cover
                     border-4
-                    border-[#0B1120]
+                    border-white
+                    dark:border-gray-800
                     shadow-2xl
                   "
                 />
@@ -315,17 +316,19 @@ const Profile = () => {
                   className="
                     w-36
                     h-36
-                    rounded-[32px]
+                    rounded-2xl
                     bg-gradient-to-br
                     from-violet-600
                     to-cyan-500
                     border-4
-                    border-[#0B1120]
+                    border-white
+                    dark:border-gray-800
                     flex
                     items-center
                     justify-center
                     text-5xl
                     font-black
+                    text-white
                     shadow-2xl
                   "
                 >
@@ -350,7 +353,7 @@ const Profile = () => {
 
             <div className="text-center">
 
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {userData?.name || "User"}
               </h1>
 
@@ -361,10 +364,13 @@ const Profile = () => {
                     px-4
                     py-2
                     rounded-full
-                    bg-violet-500/15
+                    bg-violet-100
+                    dark:bg-violet-500/20
                     border
-                    border-violet-500/20
-                    text-violet-300
+                    border-violet-200
+                    dark:border-violet-500/30
+                    text-violet-700
+                    dark:text-violet-300
                     text-sm
                     capitalize
                     font-medium
@@ -378,10 +384,13 @@ const Profile = () => {
                     px-4
                     py-2
                     rounded-full
-                    bg-white/5
+                    bg-gray-100
+                    dark:bg-gray-700
                     border
-                    border-white/10
-                    text-gray-300
+                    border-gray-200
+                    dark:border-gray-600
+                    text-gray-700
+                    dark:text-gray-300
                     text-sm
                   "
                 >
@@ -395,7 +404,7 @@ const Profile = () => {
 
               {/* BIO */}
 
-              <p className="max-w-3xl mx-auto text-gray-400 leading-8 mt-6 text-[15px] md:text-base">
+              <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-400 leading-8 mt-6 text-[15px] md:text-base">
                 {userData?.bio ||
                   "No bio added yet."}
               </p>
@@ -440,121 +449,6 @@ const Profile = () => {
 
             </div>
 
-            {/* ========================================================= */}
-            {/* ENROLLED COURSES LIST */}
-            {/* ========================================================= */}
-
-            {userData?.role === "student" && (
-              <div className="mt-10">
-                <h2 className="text-2xl font-bold mb-6">
-                  My Enrolled Courses
-                </h2>
-
-                {loadingEnrollments ? (
-                  <div className="text-center py-10">
-                    <div className="w-12 h-12 border-4 border-white/10 border-t-violet-500 rounded-full animate-spin mx-auto" />
-                    <p className="text-gray-400 mt-4">Loading courses...</p>
-                  </div>
-                ) : enrollments.length === 0 ? (
-                  <div
-                    className="
-                      rounded-3xl
-                      border
-                      border-white/10
-                      bg-white/[0.04]
-                      backdrop-blur-2xl
-                      p-10
-                      text-center
-                    "
-                  >
-                    <FiBookOpen className="text-4xl text-gray-500 mx-auto mb-4" />
-                    <p className="text-gray-400">
-                      No enrolled courses yet
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {enrollments.map((enrollment) => (
-                      <motion.div
-                        key={enrollment._id}
-                        whileHover={{ y: -4 }}
-                        onClick={() =>
-                          navigate(`/course/${enrollment.course._id}`)
-                        }
-                        className="
-                          rounded-3xl
-                          border
-                          border-white/10
-                          bg-white/[0.04]
-                          backdrop-blur-2xl
-                          overflow-hidden
-                          cursor-pointer
-                          hover:border-violet-500/30
-                          transition-all
-                        "
-                      >
-                        <img
-                          src={enrollment.course.thumbnail}
-                          alt=""
-                          className="w-full h-40 object-cover"
-                        />
-
-                        <div className="p-5">
-                          <h3 className="font-bold text-white line-clamp-2">
-                            {enrollment.course.title}
-                          </h3>
-
-                          <p className="text-sm text-gray-400 mt-2">
-                            {enrollment.course.creator?.name}
-                          </p>
-
-                          <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-400">
-                                Enrolled:
-                              </span>
-                              <span className="text-white">
-                                {new Date(
-                                  enrollment.startDate
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-400">
-                                Valid Till:
-                              </span>
-                              <span className="text-white">
-                                {new Date(
-                                  enrollment.endDate
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-400">
-                                Status:
-                              </span>
-                              <span
-                                className={`font-medium ${
-                                  enrollment.status === "active"
-                                    ? "text-green-400"
-                                    : "text-red-400"
-                                }`}
-                              >
-                                {enrollment.status === "active"
-                                  ? `${enrollment.daysRemaining} days left`
-                                  : "Expired"}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* ========================================================= */}
             {/* ROLE SECTION */}
@@ -567,12 +461,15 @@ const Profile = () => {
                 <motion.div
                   whileHover={{ y: -3 }}
                   className="
-                    rounded-3xl
+                    rounded-xl
                     border
-                    border-white/10
+                    border-violet-200
+                    dark:border-violet-500/30
                     bg-gradient-to-r
-                    from-violet-500/10
-                    to-cyan-500/10
+                    from-violet-50
+                    to-cyan-50
+                    dark:from-violet-500/10
+                    dark:to-cyan-500/10
                     p-6
                     flex
                     items-center
@@ -588,31 +485,34 @@ const Profile = () => {
                       className="
                         w-14
                         h-14
-                        rounded-2xl
-                        bg-violet-500/20
+                        rounded-xl
+                        bg-gradient-to-br
+                        from-violet-500
+                        to-cyan-500
                         flex
                         items-center
                         justify-center
-                        text-violet-300
+                        text-white
                         text-xl
+                        shadow-md
                       "
                     >
                       <FiBookOpen />
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-bold">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                         Enrolled Courses
                       </h3>
 
-                      <p className="text-gray-400 text-sm mt-1">
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                         Your active learning progress
                       </p>
                     </div>
 
                   </div>
 
-                  <div className="text-4xl font-black text-violet-300">
+                  <div className="text-4xl font-black text-violet-600 dark:text-violet-300">
                     {userData?.enrolledCourses
                       ?.length || 0}
                   </div>
@@ -626,12 +526,15 @@ const Profile = () => {
                 <motion.div
                   whileHover={{ y: -3 }}
                   className="
-                    rounded-3xl
+                    rounded-xl
                     border
-                    border-white/10
+                    border-blue-200
+                    dark:border-blue-500/30
                     bg-gradient-to-r
-                    from-blue-500/10
-                    to-cyan-500/10
+                    from-blue-50
+                    to-cyan-50
+                    dark:from-blue-500/10
+                    dark:to-cyan-500/10
                     p-6
                     flex
                     items-center
@@ -647,31 +550,34 @@ const Profile = () => {
                       className="
                         w-14
                         h-14
-                        rounded-2xl
-                        bg-blue-500/20
+                        rounded-xl
+                        bg-gradient-to-br
+                        from-blue-500
+                        to-cyan-500
                         flex
                         items-center
                         justify-center
-                        text-blue-300
+                        text-white
                         text-xl
+                        shadow-md
                       "
                     >
                       <FaUserGraduate />
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-bold">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                         Created Courses
                       </h3>
 
-                      <p className="text-gray-400 text-sm mt-1">
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                         Courses published by you
                       </p>
                     </div>
 
                   </div>
 
-                  <div className="text-4xl font-black text-blue-300">
+                  <div className="text-4xl font-black text-blue-600 dark:text-blue-300">
                     {userData?.createdCourses
                       ?.length || 0}
                   </div>
@@ -685,10 +591,12 @@ const Profile = () => {
                 <motion.div
                   whileHover={{ y: -3 }}
                   className="
-                    rounded-3xl
+                    rounded-xl
                     border
-                    border-red-500/20
-                    bg-red-500/10
+                    border-red-200
+                    dark:border-red-500/30
+                    bg-red-50
+                    dark:bg-red-500/10
                     p-6
                     flex
                     items-center
@@ -704,31 +612,34 @@ const Profile = () => {
                       className="
                         w-14
                         h-14
-                        rounded-2xl
-                        bg-red-500/20
+                        rounded-xl
+                        bg-gradient-to-br
+                        from-red-500
+                        to-orange-500
                         flex
                         items-center
                         justify-center
-                        text-red-300
+                        text-white
                         text-xl
+                        shadow-md
                       "
                     >
                       <FiShield />
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-bold">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                         Admin Access
                       </h3>
 
-                      <p className="text-gray-300 text-sm mt-1">
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                         Full platform management access
                       </p>
                     </div>
 
                   </div>
 
-                  <div className="text-red-300 font-bold text-lg">
+                  <div className="text-red-600 dark:text-red-300 font-bold text-lg">
                     Full Control
                   </div>
 

@@ -19,16 +19,19 @@ import {
 
 // Layouts
 import EducatorLayout from "./components/educator/EducatorLayout";
+import StudentLayout from "./components/student/StudentLayout";
 
 // Pages
 import Home from "./pages/student/Home";
 import SignUp from "./pages/auth/SignUp";
 import Login from "./pages/auth/Login";
 import Profile from "./pages/student/Profile";
+import StudentDashboard from "./pages/student/StudentDashboard";
+import PurchaseHistory from "./pages/student/PurchaseHistory";
 import ForgetPassword from "./pages/auth/ForgetPassword";
 import EditProfile from "./pages/student/EditProfile";
 import VerifyEmail from "./pages/auth/VerifyEmail";
-import Dashboard from "./pages/educator/Dashboard";
+import EducatorDashboard from "./pages/educator/EducatorDashboard";
 import Courses from "./pages/educator/Courses";
 import CreateCourse from "./pages/educator/CreateCourse";
 import EditCourse from "./pages/educator/EditCourse";
@@ -58,6 +61,10 @@ import ManageCourses from "./pages/admin/ManageCourses";
 import PlatformStats from "./pages/admin/PlatformStats";
 import AdminCoupons from "./pages/admin/Coupons";
 import CheckoutPage from "./pages/student/CheckoutPage";
+import Certificates from "./pages/student/Certificates";
+import BlogPanel from "./pages/Blog/BlogPanal";
+import CategoryBlog from "./pages/Blog/CategoryBlog";
+import Blog from "./pages/Blog/Blog";
 
 export const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -171,9 +178,51 @@ function App() {
 
         <Route path="/checkout/:courseId" element={<CheckoutPage />} />
 
+        {/* Student Dashboard */}
+
+        <Route
+          path="/student"
+          element={
+            !userData ? (
+              <Navigate to="/login" />
+            ) : (
+              <StudentLayout />
+            )
+          }
+        >
+          <Route index element={<Navigate to="stu-dashboard" replace />} />
+
+          <Route path="dashboard" element={<StudentDashboard />} />
+
+          <Route path="my-courses" element={<MyEnrolledCourses />} />
+
+          <Route path="certificates" element={<Certificates />} />
+
+          <Route path="purchase-history" element={<PurchaseHistory />} />
+
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
+        {/* Blog */}
+
+        <Route
+          path="/blogs"
+          element={userData ? <BlogPanel /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/blogs/:category"
+          element={userData ? <CategoryBlog /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/blogs/:category/:slug"
+          element={userData ? <Blog /> : <Navigate to="/login" />}
+        />
+
         {/* Educator redirect */}
         <Route
-          path="/dashboard"
+          path="/edu-dashboard"
           element={
             !userData ? (
               <Navigate to="/login" />
@@ -205,7 +254,7 @@ function App() {
           <Route path="recent-enrollment" element={<RecentEnrollment />} />
           <Route path="stats" element={<Stats />} />
           <Route path="course-performance" element={<CoursePerformance />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard" element={<EducatorDashboard />} />
           <Route path="courses" element={<Courses />} />
           <Route path="coupons" element={<AdminCoupons />} />
           <Route path="create-course" element={<CreateCourse />} />
@@ -228,8 +277,7 @@ function App() {
         {/* ADMIN ROUTES */}
         {/* ======================================== */}
 
-        <Route
-          path="/admin"
+        <Route path="/admin"
           element={
             !userData ? (
               <Navigate to="/login" />
@@ -249,7 +297,6 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
 
           {/* USERS */}
-
           <Route path="users" element={<ManageUsers />} />
 
           {/* COURSES */}
@@ -257,7 +304,6 @@ function App() {
           <Route path="courses" element={<ManageCourses />} />
 
           {/* COUPONS */}
-
           <Route path="coupons" element={<AdminCoupons />} />
 
           {/* STATS */}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import {
   FaPlayCircle,
+  FaCheck,
 } from "react-icons/fa";
 
 import {
@@ -19,7 +20,8 @@ const ModuleList = ({
   moduleData,
   selectedLecture,
   onSelectLecture,
-  mode = "watch",
+  isEnrolled,
+  lectureProgress = {},
 }) => {
 
   const [openModule, setOpenModule] =
@@ -30,10 +32,35 @@ const ModuleList = ({
   const totalLectures =
     moduleData?.reduce(
       (total, module) =>
-        total +
-        module.lectures.length,
+        total + module.lectures.length,
       0
     ) || 0;
+
+  // Format seconds to "Xm Ys"
+  const formatDuration = (seconds) => {
+    if (!seconds) return "0m";
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}m ${secs}s`;
+  };
+
+  // Calculate module duration and completion
+  const getModuleStats = (module) => {
+    const totalDuration = module.lectures?.reduce(
+      (total, lecture) => total + (lecture.video?.duration || 0),
+      0
+    ) || 0;
+
+    const completedCount = module.lectures?.filter(
+      lecture => lectureProgress[lecture._id]?.completed
+    ).length || 0;
+
+    return {
+      duration: formatDuration(totalDuration),
+      completed: completedCount,
+      total: module.lectures?.length || 0,
+    };
+  };
 
   return (
 
@@ -44,7 +71,11 @@ const ModuleList = ({
         backdrop-blur-2xl
         p-5
         sm:p-6
-        ${isDark ? 'border-white/10 bg-white/5 shadow-[0_10px_50px_rgba(0,0,0,0.35)]' : 'border-gray-200/70 bg-white/70 shadow-[0_10px_50px_rgba(0,0,0,0.08)]'}
+        ${
+          isDark
+            ? "border-white/10 bg-white/5 shadow-[0_10px_50px_rgba(0,0,0,0.35)]"
+            : "border-gray-200/70 bg-white/70 shadow-[0_10px_50px_rgba(0,0,0,0.08)]"
+        }
       `}
     >
 
@@ -57,7 +88,11 @@ const ModuleList = ({
             className={`
               text-2xl
               font-black
-              ${isDark ? 'text-white' : 'text-gray-900'}
+              ${
+                isDark
+                  ? "text-white"
+                  : "text-gray-900"
+              }
             `}
           >
             Course Content
@@ -67,7 +102,11 @@ const ModuleList = ({
             className={`
               text-sm
               mt-1
-              ${isDark ? 'text-gray-400' : 'text-gray-500'}
+              ${
+                isDark
+                  ? "text-gray-400"
+                  : "text-gray-500"
+              }
             `}
           >
             {totalLectures} Lectures
@@ -106,17 +145,18 @@ const ModuleList = ({
             return (
 
               <motion.div
-
                 key={module._id}
-
                 layout
-
                 className={`
                   rounded-3xl
                   border
                   backdrop-blur-xl
                   overflow-hidden
-                  ${isDark ? 'border-white/10 bg-[#0F172A]/80' : 'border-gray-200/70 bg-white/80'}
+                  ${
+                    isDark
+                      ? "border-white/10 bg-[#0F172A]/80"
+                      : "border-gray-200/70 bg-white/80"
+                  }
                 `}
               >
 
@@ -145,7 +185,11 @@ const ModuleList = ({
                       className={`
                         text-lg
                         font-bold
-                        ${isDark ? 'text-white' : 'text-gray-900'}
+                        ${
+                          isDark
+                            ? "text-white"
+                            : "text-gray-900"
+                        }
                       `}
                     >
                       Module {moduleIndex + 1}
@@ -155,10 +199,28 @@ const ModuleList = ({
                       className={`
                         text-sm
                         mt-1
-                        ${isDark ? 'text-gray-400' : 'text-gray-500'}
+                        ${
+                          isDark
+                            ? "text-gray-400"
+                            : "text-gray-500"
+                        }
                       `}
                     >
                       {module.title}
+                    </p>
+
+                    <p
+                      className={`
+                        text-xs
+                        mt-2
+                        ${
+                          isDark
+                            ? "text-gray-500"
+                            : "text-gray-400"
+                        }
+                      `}
+                    >
+                      {getModuleStats(module).duration} | {getModuleStats(module).completed}/{getModuleStats(module).total} lectures
                     </p>
 
                   </div>
@@ -178,7 +240,11 @@ const ModuleList = ({
                       justify-center
                       text-lg
                       font-bold
-                      ${isDark ? 'bg-white/10' : 'bg-gray-100'}
+                      ${
+                        isDark
+                          ? "bg-white/10"
+                          : "bg-gray-100"
+                      }
                     `}
                   >
                     +
@@ -192,22 +258,18 @@ const ModuleList = ({
                   {isOpen && (
 
                     <motion.div
-
                       initial={{
                         opacity: 0,
                         height: 0,
                       }}
-
                       animate={{
                         opacity: 1,
                         height: "auto",
                       }}
-
                       exit={{
                         opacity: 0,
                         height: 0,
                       }}
-
                       className="
                         px-5
                         pb-5
@@ -226,9 +288,11 @@ const ModuleList = ({
                             lecture?._id;
 
                           const isLocked =
-                            mode ===
-                              "preview" &&
+                            !isEnrolled &&
                             !lecture.isPreviewFree;
+
+                          const isCompleted =
+                            lectureProgress[lecture._id]?.completed;
 
                           return (
 
@@ -267,7 +331,11 @@ const ModuleList = ({
                                 ${
                                   isActive
                                     ? "bg-gradient-to-r from-violet-600 to-indigo-500 text-white border-transparent shadow-xl"
-                                    : `${isDark ? 'bg-white/5 border-white/10 hover:border-violet-500' : 'bg-white border-gray-200 hover:border-violet-400'}`
+                                    : `${
+                                        isDark
+                                          ? "bg-white/5 border-white/10 hover:border-violet-500"
+                                          : "bg-white border-gray-200 hover:border-violet-400"
+                                      }`
                                 }
                                 ${
                                   isLocked
@@ -293,12 +361,29 @@ const ModuleList = ({
                                     ${
                                       isActive
                                         ? "bg-white/20"
-                                        : `${isDark ? 'bg-white/10' : 'bg-gray-100'}`
+                                        : `${
+                                            isDark
+                                              ? "bg-white/10"
+                                              : "bg-gray-100"
+                                          }`
                                     }
                                   `}
                                 >
 
-                                  {isLocked ? (
+                                  {isCompleted ? (
+
+                                    <FaCheck
+                                      className={`
+                                        text-xl
+                                        ${
+                                          isActive
+                                            ? "text-white"
+                                            : "text-green-500"
+                                        }
+                                      `}
+                                    />
+
+                                  ) : isLocked ? (
 
                                     <MdOutlineLock className="text-xl text-gray-400" />
 
@@ -314,6 +399,7 @@ const ModuleList = ({
                                         }
                                       `}
                                     />
+
                                   )}
 
                                 </div>
@@ -330,7 +416,11 @@ const ModuleList = ({
                                       ${
                                         isActive
                                           ? "text-white"
-                                          : `${isDark ? 'text-white' : 'text-gray-900'}`
+                                          : `${
+                                              isDark
+                                                ? "text-white"
+                                                : "text-gray-900"
+                                            }`
                                       }
                                     `}
                                   >
@@ -346,7 +436,11 @@ const ModuleList = ({
                                       ${
                                         isActive
                                           ? "text-gray-200"
-                                          : `${isDark ? 'text-gray-400' : 'text-gray-500'}`
+                                          : `${
+                                              isDark
+                                                ? "text-gray-400"
+                                                : "text-gray-500"
+                                            }`
                                       }
                                     `}
                                   >
@@ -370,15 +464,19 @@ const ModuleList = ({
                                   ${
                                     isLocked
                                       ? "bg-gray-200 text-gray-600"
+                                      : isCompleted
+                                      ? "bg-green-100 text-green-700"
                                       : isActive
                                       ? "bg-white text-black"
-                                      : "bg-green-100 text-green-700"
+                                      : "bg-violet-100 text-violet-700"
                                   }
                                 `}
                               >
 
                                 {isLocked
                                   ? "Locked"
+                                  : isCompleted
+                                  ? "Completed"
                                   : "Watch"}
 
                               </div>

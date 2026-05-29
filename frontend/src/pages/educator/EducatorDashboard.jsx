@@ -12,9 +12,8 @@ import CoursePerformanceTable from "../../components/dashboard/CoursePerformance
 import RecentEnrollments from "../../components/dashboard/RecentEnrollments";
 import TopPerformingCourse from "../../components/dashboard/TopPerformingCourse";
 import { useTheme } from "../../context/ThemeContext";
-import Nav from "../../components/navbar/Navbar";
 
-const Dashboard = () => {
+const EducatorDashboard = () => {
   const { userData } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,8 +37,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <Nav />
-      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f7fb]'} px-4 md:px-8 py-6 pt-[90px]`}>
+      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f7fb]'} px-4 md:px-8 py-6`}>
       <DashboardHeader
         title="Educator Dashboard"
         subtitle="Manage your courses, students and revenue"
@@ -77,4 +75,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default EducatorDashboard;

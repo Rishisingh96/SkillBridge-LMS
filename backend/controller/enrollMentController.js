@@ -140,15 +140,16 @@ export const enrollCourse = async (req, res) => {
 export const getUserEnrollments = async (req, res) => {
   try {
     const userId = req.userId;
+    const now = new Date();
 
     // ======================================================
-    // AUTO UPDATE EXPIRED ENROLLMENTS
+    // AUTO UPDATE EXPIRED ENROLLMENTS IN DATABASE
     // ======================================================
 
-    await Enrollment.updateMany(
+    const updateResult = await Enrollment.updateMany(
       {
         user: userId,
-        endDate: { $lte: new Date() },
+        endDate: { $lte: now },
         status: "active",
       },
       {
@@ -157,6 +158,8 @@ export const getUserEnrollments = async (req, res) => {
         },
       }
     );
+
+    console.log("Updated expired enrollments:", updateResult.modifiedCount);
 
     // ======================================================
     // REMOVE EXPIRED COURSE IDS FROM USER
@@ -186,10 +189,8 @@ export const getUserEnrollments = async (req, res) => {
       .populate("course.creator", "name photoUrl")
       .sort({ createdAt: -1 });
 
-    const now = new Date();
-
     const result = enrollments.map((enrollment) => {
-      const isExpired = now > enrollment.endDate;
+      const isExpired = now > new Date(enrollment.endDate);
 
       const daysRemaining = Math.max(
         0,
@@ -258,13 +259,23 @@ export const checkEnrollmentStatus = async (req, res) => {
     // ======================================================
 
     const now = new Date();
-    const isExpired = now > enrollment.endDate;
+    const isExpired = now > new Date(enrollment.endDate);
+
+    console.log("Enrollment check:", {
+      courseId,
+      userId,
+      endDate: enrollment.endDate,
+      now,
+      isExpired,
+      currentStatus: enrollment.status
+    });
 
     // ======================================================
-    // AUTO UPDATE STATUS
+    // AUTO UPDATE STATUS IN DATABASE
     // ======================================================
 
     if (isExpired && enrollment.status !== "expired") {
+      console.log("Updating enrollment to expired:", enrollment._id);
       await Enrollment.findByIdAndUpdate(enrollment._id, {
         status: "expired",
       });

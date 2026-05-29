@@ -20,6 +20,8 @@ import dashboardSlice from "./dashboardSlice"; // ✅ Add kiya
 import commentSlice from "./commentSlice";
 import adminSlice from "./adminSlice"
 import couponSlice from "./couponSlice"
+import progressSlice from "./progressSlice"
+import enrollmentSlice from "./enrollmentSlice"
 
 
 // Combine Reducers
@@ -33,8 +35,8 @@ const rootReducer = combineReducers({
   comment: commentSlice,
   admin: adminSlice,
   coupon: couponSlice,
-
-
+  progress: progressSlice,
+  enrollment: enrollmentSlice,
 });
 
 // Persist Config

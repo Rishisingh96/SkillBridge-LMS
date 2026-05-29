@@ -9,7 +9,6 @@ import {
   MdAutoAwesome,
 } from "react-icons/md";
 import { useTheme } from "../../context/ThemeContext";
-import Nav from "../../components/navbar/Navbar";
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -31,8 +30,7 @@ const CreateCourse = () => {
 
   return (
     <>
-      <Nav />
-      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f7fb]'} px-4 py-8 md:py-12 pt-[90px] flex items-center justify-center`}>
+      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f7fb]'} px-4 py-8 md:py-12 flex items-center justify-center`}>
 
       {/* Main Container */}
       <div className={`w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} rounded-3xl shadow-xl overflow-hidden border`}>

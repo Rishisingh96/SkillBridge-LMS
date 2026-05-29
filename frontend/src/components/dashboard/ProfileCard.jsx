@@ -122,7 +122,8 @@ const ProfileCard = ({ userData, totalEarnings }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white border border-gray-300 px-6 py-3 rounded-2xl shadow-sm"
+              onClick={() => navigate("/editprofile")}
+              className="bg-black text-white px-6 py-3 rounded-2xl shadow-lg"
             >
               Edit Profile
             </motion.button>

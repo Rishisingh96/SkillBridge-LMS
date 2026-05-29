@@ -158,22 +158,6 @@ export const applyCoupon = async (req, res) => {
       });
     }
 
-    // already used
-    const alreadyUsed =
-      coupon.usedBy.some(
-        (userId) =>
-          userId.toString() ===
-          req.user._id.toString()
-      );
-
-    if (alreadyUsed) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "You already used this coupon",
-      });
-    }
-
     // specific course validation
     if (
       coupon.couponFor === "specific"

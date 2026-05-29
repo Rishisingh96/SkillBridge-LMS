@@ -126,7 +126,7 @@ const Nav = () => {
 
       toast.error(
         error.response?.data?.message ||
-          "Logout Failed"
+        "Logout Failed"
       );
 
     }
@@ -272,10 +272,9 @@ const Nav = () => {
                 <FiChevronDown
                   className={`
                     transition-all
-                    ${
-                      showCourses
-                        ? "rotate-180"
-                        : ""
+                    ${showCourses
+                      ? "rotate-180"
+                      : ""
                     }
                   `}
                 />
@@ -364,11 +363,10 @@ const Nav = () => {
                                 rounded-2xl
                                 transition-all
                                 font-medium
-                                ${
-                                  selectedCategory ===
+                                ${selectedCategory ===
                                   category
-                                    ? "bg-black text-white dark:bg-white dark:text-black"
-                                    : "hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300"
+                                  ? "bg-black text-white dark:bg-white dark:text-black"
+                                  : "hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300"
                                 }
                               `}
                             >
@@ -523,13 +521,13 @@ const Nav = () => {
             {userData?.role ===
               "educator" && (
 
-              <button
-                onClick={() =>
-                  navigate(
-                    "/educator/profile"
-                  )
-                }
-                className="
+                <button
+                  onClick={() =>
+                    navigate(
+                      "/educator/profile"
+                    )
+                  }
+                  className="
                   hidden
                   lg:block
                   h-11
@@ -544,8 +542,38 @@ const Nav = () => {
                   active:scale-95
                   transition-all
                 "
+                >
+                  Dashboard
+                </button>
+              )}
+
+            {/* BLOG BUTTON */}
+            {userData?.role !== "educator" && (
+              <button
+                onClick={() => navigate("/blogs")}
+                className="
+      hidden
+      lg:flex
+      items-center
+      gap-2
+      h-11
+      px-5
+      rounded-2xl
+      bg-white/60
+      dark:bg-white/5
+      border
+      border-gray-200
+      dark:border-white/10
+      hover:bg-white
+      dark:hover:bg-white/10
+      text-gray-800
+      dark:text-gray-200
+      font-medium
+      transition-all
+    "
               >
-                Dashboard
+                <FiBookOpen />
+                Blog
               </button>
             )}
 
@@ -561,7 +589,11 @@ const Nav = () => {
             "
           >
 
+
+
             <DarkModeButton />
+
+
 
             {!userData && (
 
@@ -822,7 +854,7 @@ const Nav = () => {
 
                         <button
                           onClick={() => {
-                            navigate("/profile");
+                            navigate("/student/dashboard");
                             setShowProfile(false);
                           }}
                           className="
@@ -1177,16 +1209,16 @@ const Nav = () => {
                       {/* Dashboard */}
                       {userData?.role ===
                         "educator" && (
-                        <button
-                          onClick={() => {
-                            navigate(
-                              "/educator/profile"
-                            );
-                            setShowMobile(
-                              false
-                            );
-                          }}
-                          className="
+                          <button
+                            onClick={() => {
+                              navigate(
+                                "/educator/profile"
+                              );
+                              setShowMobile(
+                                false
+                              );
+                            }}
+                            className="
                             w-full
                             flex
                             items-center
@@ -1203,11 +1235,11 @@ const Nav = () => {
                             active:scale-95
                             transition-all
                           "
-                        >
-                          <FiGrid className="text-xl" />
-                          Dashboard
-                        </button>
-                      )}
+                          >
+                            <FiGrid className="text-xl" />
+                            Dashboard
+                          </button>
+                        )}
 
                       {/* Profile */}
                       <button
@@ -1240,6 +1272,36 @@ const Nav = () => {
                       </button>
 
                       {/* Courses */}
+
+                      {/* Blog */}
+                      {userData?.role !== "educator" && (
+                        <button
+                          onClick={() => {
+                            navigate("/blogs");
+                            setShowMobile(false);
+                          }}
+                          className="
+      w-full
+      flex
+      items-center
+      gap-3
+      px-5
+      py-4
+      rounded-2xl
+      bg-gray-100
+      dark:bg-white/5
+      text-gray-900
+      dark:text-white
+      font-semibold
+      hover:bg-gray-200
+      dark:hover:bg-white/10
+      transition-all
+    "
+                        >
+                          <FiBookOpen className="text-xl" />
+                          Blog
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           navigate(

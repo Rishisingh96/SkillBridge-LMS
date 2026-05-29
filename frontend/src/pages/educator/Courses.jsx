@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import empty from "../../assets/empty.png";
 import { fetchCreatorCourses } from "../../redux/slices/courseSlice";
 import { useTheme } from "../../context/ThemeContext";
-import Nav from "../../components/navbar/Navbar";
 
 
 const Courses = () => {
@@ -30,8 +29,7 @@ const Courses = () => {
 
   return (
     <>
-      <Nav />
-      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f6fa]'} px-3 md:px-8 py-4 md:py-6 pt-[90px]`}>
+      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f6fa]'} px-3 md:px-8 py-4 md:py-6`}>
 
       {/* Top Header */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-6 md:mb-8">

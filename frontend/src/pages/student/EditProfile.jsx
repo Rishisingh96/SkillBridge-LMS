@@ -142,15 +142,7 @@ const EditProfile = () => {
   return (
     <>
       <Nav />
-      <div className="relative min-h-screen overflow-hidden bg-[#0B1120] text-white pt-[90px] pb-10 px-4 md:px-6">
-
-      {/* ========================================================= */}
-      {/* BACKGROUND */}
-      {/* ========================================================= */}
-
-      <div className="fixed -z-10 top-[-150px] right-[-120px] h-[320px] w-[320px] rounded-full bg-violet-600/20 blur-[120px]" />
-
-      <div className="fixed -z-10 bottom-[-150px] left-[-120px] h-[320px] w-[320px] rounded-full bg-cyan-500/20 blur-[120px]" />
+      <div className="relative min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white pt-[90px] pb-10 px-4 md:px-6">
 
       {/* ========================================================= */}
       {/* CARD */}
@@ -174,12 +166,13 @@ const EditProfile = () => {
           mx-auto
           max-w-4xl
           overflow-hidden
-          rounded-[32px]
+          rounded-2xl
           border
-          border-white/10
-          bg-white/[0.05]
-          backdrop-blur-2xl
-          shadow-[0_10px_80px_rgba(0,0,0,0.45)]
+          border-gray-200
+          dark:border-gray-700
+          bg-white
+          dark:bg-gray-800
+          shadow-lg
         "
       >
 
@@ -187,7 +180,7 @@ const EditProfile = () => {
         {/* HEADER */}
         {/* ========================================================= */}
 
-        <div className="relative border-b border-white/10 px-5 py-6 md:px-8">
+        <div className="relative border-b border-gray-200 dark:border-gray-700 px-5 py-6 md:px-8">
 
           <button
             onClick={() =>
@@ -202,24 +195,28 @@ const EditProfile = () => {
               w-11
               items-center
               justify-center
-              rounded-2xl
+              rounded-xl
               border
-              border-white/10
-              bg-white/5
+              border-gray-200
+              dark:border-gray-700
+              bg-white
+              dark:bg-gray-700
               transition-all
-              hover:bg-white/10
+              hover:bg-gray-50
+              dark:hover:bg-gray-600
+              shadow-sm
             "
           >
-            <FaArrowLeft />
+            <FaArrowLeft className="text-gray-600 dark:text-gray-300" />
           </button>
 
           <div className="text-center">
 
-            <h1 className="text-3xl font-black tracking-tight md:text-4xl">
+            <h1 className="text-3xl font-bold tracking-tight md:text-4xl text-gray-900 dark:text-white">
               Edit Profile
             </h1>
 
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               Manage your account information
             </p>
 
@@ -254,9 +251,10 @@ const EditProfile = () => {
                   className="
                     h-32
                     w-32
-                    rounded-3xl
+                    rounded-2xl
                     border
-                    border-white/10
+                    border-gray-200
+                    dark:border-gray-700
                     object-cover
                     shadow-2xl
                   "
@@ -271,12 +269,14 @@ const EditProfile = () => {
                     w-32
                     items-center
                     justify-center
-                    rounded-3xl
+                    rounded-2xl
                     bg-gradient-to-br
                     from-violet-600
                     to-cyan-500
                     text-4xl
                     font-bold
+                    text-white
+                    shadow-2xl
                   "
                 >
                   {name?.charAt(0)?.toUpperCase() ||
@@ -299,14 +299,17 @@ const EditProfile = () => {
                   cursor-pointer
                   items-center
                   justify-center
-                  rounded-2xl
-                  bg-violet-600
+                  rounded-xl
+                  bg-gradient-to-r
+                  from-violet-600
+                  to-cyan-500
                   shadow-lg
                   transition-all
-                  hover:bg-violet-500
+                  hover:shadow-xl
+                  hover:scale-105
                 "
               >
-                <FaCamera />
+                <FaCamera className="text-white" />
               </label>
 
             </div>
@@ -321,7 +324,7 @@ const EditProfile = () => {
               }
             />
 
-            <p className="mt-4 text-sm text-gray-400">
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
               Upload profile picture
             </p>
 
@@ -337,13 +340,13 @@ const EditProfile = () => {
 
             <div className="space-y-2">
 
-              <label className="text-sm font-medium text-gray-300">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Full Name
               </label>
 
               <div className="relative">
 
-                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
 
                 <input
                   type="text"
@@ -357,17 +360,23 @@ const EditProfile = () => {
                   className="
                     h-14
                     w-full
-                    rounded-2xl
+                    rounded-xl
                     border
-                    border-white/10
-                    bg-white/5
+                    border-gray-200
+                    dark:border-gray-700
+                    bg-white
+                    dark:bg-gray-700
                     pl-12
                     pr-4
-                    text-white
+                    text-gray-900
+                    dark:text-white
                     outline-none
                     transition-all
-                    placeholder:text-gray-500
-                    focus:border-violet-500/50
+                    placeholder:text-gray-400
+                    dark:placeholder:text-gray-500
+                    focus:border-violet-500
+                    focus:ring-2
+                    focus:ring-violet-500/20
                   "
                 />
 
@@ -379,13 +388,13 @@ const EditProfile = () => {
 
             <div className="space-y-2">
 
-              <label className="text-sm font-medium text-gray-300">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Phone Number
               </label>
 
               <div className="relative">
 
-                <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
 
                 <input
                   type="tel"
@@ -399,17 +408,23 @@ const EditProfile = () => {
                   className="
                     h-14
                     w-full
-                    rounded-2xl
+                    rounded-xl
                     border
-                    border-white/10
-                    bg-white/5
+                    border-gray-200
+                    dark:border-gray-700
+                    bg-white
+                    dark:bg-gray-700
                     pl-12
                     pr-4
-                    text-white
+                    text-gray-900
+                    dark:text-white
                     outline-none
                     transition-all
-                    placeholder:text-gray-500
-                    focus:border-violet-500/50
+                    placeholder:text-gray-400
+                    dark:placeholder:text-gray-500
+                    focus:border-violet-500
+                    focus:ring-2
+                    focus:ring-violet-500/20
                   "
                 />
 
@@ -425,7 +440,7 @@ const EditProfile = () => {
 
           <div className="space-y-2">
 
-            <label className="text-sm font-medium text-gray-300">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Bio
             </label>
 
@@ -440,24 +455,30 @@ const EditProfile = () => {
               placeholder="Tell something about yourself..."
               className="
                 w-full
-                rounded-2xl
+                rounded-xl
                 border
-                border-white/10
-                bg-white/5
+                border-gray-200
+                dark:border-gray-700
+                bg-white
+                dark:bg-gray-700
                 px-4
                 py-4
-                text-white
+                text-gray-900
+                dark:text-white
                 outline-none
                 transition-all
-                placeholder:text-gray-500
-                focus:border-violet-500/50
+                placeholder:text-gray-400
+                dark:placeholder:text-gray-500
+                focus:border-violet-500
+                focus:ring-2
+                focus:ring-violet-500/20
                 resize-none
               "
             />
 
             <div className="flex justify-end">
 
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {bio.length}/500
               </span>
 
@@ -475,7 +496,7 @@ const EditProfile = () => {
 
             <div className="space-y-2">
 
-              <label className="text-sm font-medium text-gray-300">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Date of Birth
               </label>
 
@@ -490,14 +511,19 @@ const EditProfile = () => {
                 className="
                   h-14
                   w-full
-                  rounded-2xl
+                  rounded-xl
                   border
-                  border-white/10
-                  bg-white/5
+                  border-gray-200
+                  dark:border-gray-700
+                  bg-white
+                  dark:bg-gray-700
                   px-4
-                  text-white
+                  text-gray-900
+                  dark:text-white
                   outline-none
-                  focus:border-violet-500/50
+                  focus:border-violet-500
+                  focus:ring-2
+                  focus:ring-violet-500/20
                 "
               />
 
@@ -507,7 +533,7 @@ const EditProfile = () => {
 
             <div className="space-y-2">
 
-              <label className="text-sm font-medium text-gray-300">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Gender
               </label>
 
@@ -521,41 +547,46 @@ const EditProfile = () => {
                 className="
                   h-14
                   w-full
-                  rounded-2xl
+                  rounded-xl
                   border
-                  border-white/10
-                  bg-white/5
+                  border-gray-200
+                  dark:border-gray-700
+                  bg-white
+                  dark:bg-gray-700
                   px-4
-                  text-white
+                  text-gray-900
+                  dark:text-white
                   outline-none
-                  focus:border-violet-500/50
+                  focus:border-violet-500
+                  focus:ring-2
+                  focus:ring-violet-500/20
                 "
               >
 
                 <option
                   value=""
-                  className="bg-[#0B1120]"
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   Select Gender
                 </option>
 
                 <option
                   value="male"
-                  className="bg-[#0B1120]"
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   Male
                 </option>
 
                 <option
                   value="female"
-                  className="bg-[#0B1120]"
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   Female
                 </option>
 
                 <option
                   value="other"
-                  className="bg-[#0B1120]"
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   Other
                 </option>
@@ -582,14 +613,19 @@ const EditProfile = () => {
               className="
                 h-14
                 flex-1
-                rounded-2xl
+                rounded-xl
                 border
-                border-white/10
-                bg-white/5
+                border-gray-200
+                dark:border-gray-700
+                bg-white
+                dark:bg-gray-700
                 font-medium
-                text-gray-300
+                text-gray-700
+                dark:text-gray-300
                 transition-all
-                hover:bg-white/10
+                hover:bg-gray-50
+                dark:hover:bg-gray-600
+                shadow-sm
               "
             >
               Cancel
@@ -609,15 +645,15 @@ const EditProfile = () => {
               className="
                 h-14
                 flex-1
-                rounded-2xl
+                rounded-xl
                 bg-gradient-to-r
                 from-violet-600
                 to-cyan-500
                 font-semibold
                 text-white
-                shadow-xl
-                shadow-violet-500/20
+                shadow-md
                 transition-all
+                hover:shadow-lg
                 hover:opacity-95
                 disabled:cursor-not-allowed
                 disabled:opacity-60

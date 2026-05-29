@@ -5,7 +5,6 @@ import ProfileCard from '../../components/dashboard/ProfileCard'
 import { motion } from 'framer-motion'
 import { FiPlus } from 'react-icons/fi'
 import { useTheme } from '../../context/ThemeContext'
-import Nav from '../../components/navbar/Navbar'
 
 const Profile = () => {
   const { userData } = useSelector((state) => state.user)
@@ -14,8 +13,7 @@ const Profile = () => {
 
   return (
     <>
-      <Nav />
-      <div className={`p-6 ${isDark ? 'bg-gray-950' : 'bg-gray-50'} min-h-screen pt-[90px]`}>
+      <div className={`p-6 ${isDark ? 'bg-gray-950' : 'bg-gray-50'} min-h-screen`}>
       <ProfileCard userData={userData} />
 
       {/* Create Course Button */}

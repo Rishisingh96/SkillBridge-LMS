@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -8,9 +8,35 @@ import { MdOutlineOndemandVideo } from "react-icons/md";
 
 import img from "../../assets/Empty.png";
 import Nav from "../../components/navbar/Navbar";
+import axios from "axios";
+import { serverUrl } from "../../App";
 
 const MyEnrolledCourses = () => {
   const { userData } = useSelector((state) => state.user);
+  const [enrollments, setEnrollments] = useState([]);
+  const [loadingEnrollments, setLoadingEnrollments] = useState(false);
+
+  // Fetch enrollments with dates
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      if (!userData) return;
+
+      setLoadingEnrollments(true);
+      try {
+        const response = await axios.get(
+          `${serverUrl}/api/course/user-enrollments`,
+          { withCredentials: true }
+        );
+        setEnrollments(response.data.enrollments || []);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoadingEnrollments(false);
+      }
+    };
+
+    fetchEnrollments();
+  }, [userData]);
 
   const navigate = useNavigate();
 
@@ -45,7 +71,12 @@ const MyEnrolledCourses = () => {
       </div>
 
       {/* EMPTY STATE */}
-      {userData?.enrolledCourses?.length === 0 ? (
+      {loadingEnrollments ? (
+        <div className="text-center py-10">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-violet-500 rounded-full animate-spin mx-auto" />
+          <p className="text-gray-600 mt-4">Loading courses...</p>
+        </div>
+      ) : enrollments.length === 0 ? (
         <div
           className="
           max-w-3xl mx-auto bg-white border border-gray-200
@@ -91,9 +122,9 @@ const MyEnrolledCourses = () => {
           gap-6
         "
         >
-          {userData?.enrolledCourses?.map((course, index) => (
+          {enrollments.map((enrollment) => (
             <div
-              key={index}
+              key={enrollment._id}
               className="
               bg-white rounded-[28px]
               border border-gray-200
@@ -107,7 +138,7 @@ const MyEnrolledCourses = () => {
               {/* THUMBNAIL */}
               <div className="relative">
                 <img
-                  src={course?.thumbnail || img}
+                  src={enrollment.course?.thumbnail || img}
                   alt=""
                   className="
                   w-full h-[220px]
@@ -133,7 +164,7 @@ const MyEnrolledCourses = () => {
                   shadow-sm
                 "
                 >
-                  {course?.level || "Beginner"}
+                  {enrollment.course?.level || "Beginner"}
                 </div>
               </div>
 
@@ -142,7 +173,7 @@ const MyEnrolledCourses = () => {
                 
                 {/* CATEGORY */}
                 <p className="text-sm text-gray-500 font-medium">
-                  {course?.category || "Development"}
+                  {enrollment.course?.category || "Development"}
                 </p>
 
                 {/* TITLE */}
@@ -152,7 +183,7 @@ const MyEnrolledCourses = () => {
                   mt-2 leading-snug line-clamp-2
                 "
                 >
-                  {course?.title}
+                  {enrollment.course?.title}
                 </h2>
 
                 {/* DESCRIPTION */}
@@ -162,7 +193,7 @@ const MyEnrolledCourses = () => {
                   mt-3 line-clamp-2
                 "
                 >
-                  {course?.subTitle ||
+                  {enrollment.course?.subTitle ||
                     "Continue mastering new skills with this professional course."}
                 </p>
 
@@ -178,7 +209,7 @@ const MyEnrolledCourses = () => {
                     <FaPlayCircle className="text-[14px]" />
 
                     <span className="text-sm font-medium text-gray-700">
-                      {course?.lectures?.length || 0} Lectures
+                      {enrollment.course?.lectures?.length || 0} Lectures
                     </span>
                   </div>
 
@@ -193,10 +224,48 @@ const MyEnrolledCourses = () => {
                   </div>
                 </div>
 
+                {/* ENROLLMENT DETAILS */}
+                <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">
+                      Enrolled:
+                    </span>
+                    <span className="text-gray-900 font-medium">
+                      {new Date(enrollment.startDate).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">
+                      Valid Till:
+                    </span>
+                    <span className="text-gray-900 font-medium">
+                      {new Date(enrollment.endDate).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">
+                      Status:
+                    </span>
+                    <span
+                      className={`font-medium ${
+                        enrollment.status === "active"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {enrollment.status === "active"
+                        ? `${enrollment.daysRemaining} days left`
+                        : "Expired"}
+                    </span>
+                  </div>
+                </div>
+
                 {/* BUTTON */}
                 <button
                   onClick={() =>
-                    navigate(`/viewlecture/${course?._id}`)
+                    navigate(`/viewlecture/${enrollment.course?._id}`)
                   }
                   className="
                   mt-6 w-full
