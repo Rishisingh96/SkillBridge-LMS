@@ -13,6 +13,7 @@ import {
   LogOut,
   ShieldCheck,
   X,
+  Ticket,
 } from "lucide-react";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,6 +63,12 @@ const AdminSidebar = ({
       title: "Manage Courses",
       path: "/admin/courses",
       icon: <BookOpen size={21} />,
+    },
+
+    {
+      title: "Manage Coupons",
+      path: "/admin/coupons",
+      icon: <Ticket size={21} />,
     },
 
     {

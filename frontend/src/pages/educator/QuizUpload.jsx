@@ -6,11 +6,13 @@ import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { serverUrl } from "../../App";
 import { ClipLoader } from "react-spinners";
+import { useTheme } from "../../context/ThemeContext";
 
 const QuizUpload = ({ quizData,
   setQuizData}) => {
 
   const { lectureId } = useParams();
+  const { isDark } = useTheme();
 
   const [question, setQuestion] = useState("");
 
@@ -154,16 +156,16 @@ const QuizUpload = ({ quizData,
 
   return (
 
-    <div className="bg-gray-50 border border-gray-200 rounded-3xl p-6">
+    <div className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} border rounded-3xl p-6`}>
 
       {/* Heading */}
       <div className="mb-6">
 
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
           Add Quiz Question
         </h2>
 
-        <p className="text-gray-500 mt-1 text-sm">
+        <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1 text-sm`}>
           Create MCQ quiz for this lecture
         </p>
 
@@ -174,7 +176,7 @@ const QuizUpload = ({ quizData,
 
         <div className="mb-8">
 
-          <h3 className="text-xl font-bold text-gray-800 mb-5">
+          <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-5`}>
             Added Quiz Questions
           </h3>
 
@@ -184,14 +186,14 @@ const QuizUpload = ({ quizData,
 
               <div
                 key={quiz._id}
-                className="bg-white border rounded-2xl p-5 shadow-sm"
+                className={`${isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border rounded-2xl p-5 shadow-sm`}
               >
 
                 <div className="flex items-start justify-between gap-5">
 
                   <div>
 
-                    <p className="font-semibold text-gray-800">
+                    <p className={`font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                       Q{index + 1}. {quiz.question}
                     </p>
 
@@ -204,8 +206,8 @@ const QuizUpload = ({ quizData,
                             key={i}
                             className={`text-sm px-3 py-2 rounded-lg ${option ===
                                 quiz.correctAnswer
-                                ? "bg-green-100 text-green-700 font-medium"
-                                : "bg-gray-100 text-gray-700"
+                                ? isDark ? "bg-green-900 text-green-300 font-medium" : "bg-green-100 text-green-700 font-medium"
+                                : isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-700"
                               }`}
                           >
                             {option}
@@ -243,7 +245,7 @@ const QuizUpload = ({ quizData,
       {/* Question */}
       <div className="mb-5">
 
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className={`block text-sm font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
           Question
         </label>
 
@@ -256,7 +258,7 @@ const QuizUpload = ({ quizData,
             )
           }
           placeholder="Enter Question"
-          className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black"
+          className={`w-full border ${isDark ? 'border-gray-600 bg-gray-900 text-white' : 'border-gray-300 bg-white'} rounded-xl p-4 outline-none focus:ring-2 focus:ring-black`}
         />
 
       </div>
@@ -269,7 +271,7 @@ const QuizUpload = ({ quizData,
 
             <div key={index}>
 
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
                 Option {index + 1}
               </label>
 
@@ -284,7 +286,7 @@ const QuizUpload = ({ quizData,
                 }
                 placeholder={`Enter Option ${index + 1
                   }`}
-                className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black"
+                className={`w-full border ${isDark ? 'border-gray-600 bg-gray-900 text-white' : 'border-gray-300 bg-white'} rounded-xl p-4 outline-none focus:ring-2 focus:ring-black`}
               />
 
             </div>
@@ -297,7 +299,7 @@ const QuizUpload = ({ quizData,
       {/* Correct Answer */}
       <div className="mt-5">
 
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className={`block text-sm font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
           Correct Answer
         </label>
 
@@ -308,7 +310,7 @@ const QuizUpload = ({ quizData,
               e.target.value
             )
           }
-          className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black bg-white"
+          className={`w-full border ${isDark ? 'border-gray-600 bg-gray-900 text-white' : 'border-gray-300 bg-white'} rounded-xl p-4 outline-none focus:ring-2 focus:ring-black`}
         >
 
           <option value="">

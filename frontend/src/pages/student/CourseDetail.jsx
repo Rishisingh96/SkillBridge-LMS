@@ -1,17 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { FaStar } from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  FaArrowLeft,
+  FaStar,
+  FaPlay,
+  FaMoon,
+  FaSun,
+} from "react-icons/fa6";
+import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { setModuleData } from "../../redux/slices/moduleSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { setSelectedCourse } from "../../redux/slices/courseSlice";
-import img from "../../assets/Empty.png";
 import axios from "axios";
-import { serverUrl } from "../../App";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+
+import { serverUrl } from "../../App";
+import { setModuleData } from "../../redux/slices/moduleSlice";
+import { setSelectedCourse } from "../../redux/slices/courseSlice";
+
 import ModuleList from "../../components/lecture/ModuleList";
-import LecturePreview from "../../components/lecture/LecturePreview";
+
+
+import img from "../../assets/Empty.png";
+import CheckoutPage from "../student/CheckoutPage";
+import Nav from "../../components/navbar/Navbar";
+import LecturePlayer from "../../components/lecture/LecturePlayer";
 
 const CourseDetail = () => {
   const navigate = useNavigate();
@@ -21,74 +33,182 @@ const CourseDetail = () => {
 
   const { userData } = useSelector((state) => state.user);
   const { moduleData } = useSelector((state) => state.module);
-  const { courseData, selectedCourse } = useSelector((state) => state.course);
+  const { courseData, selectedCourse } = useSelector(
+    (state) => state.course
+  );
 
   const [selectedLecture, setSelectedLecture] = useState(null);
-  const [creatorCourse, setCreatorCourses] = useState(null);
+  const [creatorCourse, setCreatorCourses] = useState([]);
   const [isEnrolled, setIsEnrolled] = useState(false);
+  const [enrollmentData, setEnrollmentData] = useState(null);
+
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Fetch Selected Course Data
-  const fetchCourseData = () => {
-    courseData.map((course) => {
-      if (course._id === courseId) {
-        dispatch(setSelectedCourse(course));
-      }
-      return null;
-    });
-  };
+  const [darkMode, setDarkMode] = useState(true);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
-  // Fetch Modules
+  // ---------------- FETCH COURSE ----------------
+
+  useEffect(() => {
+    if (!courseData?.length) return;
+
+    const course = courseData.find((c) => c._id === courseId);
+
+    if (course) {
+      dispatch(setSelectedCourse(course));
+    }
+  }, [courseData, courseId]);
+
+  // ---------------- FETCH MODULES ----------------
+
   const fetchModules = async () => {
     try {
       const response = await axios.get(
         `${serverUrl}/api/course/course-modules/${courseId}`,
         { withCredentials: true }
       );
+
       dispatch(setModuleData(response.data.modules));
     } catch (error) {
       console.log(error);
     }
   };
 
-  // Check Enrollment
+  // ---------------- CHECK ENROLLMENT ----------------
+
   const checkEnrollment = async () => {
     try {
       const response = await axios.get(
         `${serverUrl}/api/course/check-enrollment/${courseId}`,
         { withCredentials: true }
       );
+
       if (response.data.isEnrolled && response.data.isActive) {
         setIsEnrolled(true);
+        setEnrollmentData(response.data);
       } else {
         setIsEnrolled(false);
+        setEnrollmentData(null);
       }
     } catch (error) {
       console.log(error);
       setIsEnrolled(false);
+      setEnrollmentData(null);
     }
   };
 
   useEffect(() => {
-    fetchCourseData();
     fetchModules();
     checkEnrollment();
-  }, [courseData, courseId, userData]);
+  }, [courseId, userData]);
 
-  // Fetch Other Courses
+  // ---------------- OTHER COURSES ----------------
+
   useEffect(() => {
     if (courseData?.length > 0) {
       const otherCourses = courseData
         .filter((course) => course._id !== courseId)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5);
+        .slice(0, 4);
+
       setCreatorCourses(otherCourses);
     }
   }, [courseData, courseId]);
 
-  // Handle Enrollment Payment
+  // ---------------- AUTO SELECT PREVIEW ----------------
+
+  useEffect(() => {
+    if (moduleData?.length > 0 && !selectedLecture) {
+      for (const module of moduleData) {
+        const freeLecture = module.lectures?.find((l) => l.isPreviewFree);
+
+        if (freeLecture) {
+          setSelectedLecture(freeLecture);
+          break;
+        }
+      }
+    }
+  }, [moduleData]);
+
+  // ---------------- AVG RATING ----------------
+
+  const avgRating = useMemo(() => {
+    if (!selectedCourse?.reviews?.length) return 0;
+
+    const total = selectedCourse.reviews.reduce(
+      (sum, review) => sum + review.rating,
+      0
+    );
+
+    return (total / selectedCourse.reviews.length).toFixed(1);
+  }, [selectedCourse]);
+
+  // ---------------- FORMAT DESCRIPTION ----------------
+
+  const formatDescription = (description) => {
+    if (!description) return null;
+
+    // Split by newlines
+    const lines = description.split('\n');
+    
+    // Detect module pattern: "Module X:" or "Module X" followed by content
+    const moduleRegex = /^(Module\s+\d+[:\s]|Module\s+\d+\.)/i;
+    
+    const formattedContent = [];
+    let currentModule = null;
+    let currentContent = [];
+
+    lines.forEach((line) => {
+      const trimmedLine = line.trim();
+      
+      if (moduleRegex.test(trimmedLine)) {
+        // Save previous module if exists
+        if (currentModule) {
+          formattedContent.push({
+            type: 'module',
+            title: currentModule,
+            content: currentContent
+          });
+        }
+        
+        // Start new module
+        currentModule = trimmedLine;
+        currentContent = [];
+      } else if (currentModule) {
+        // Add to current module content
+        if (trimmedLine) {
+          currentContent.push(trimmedLine);
+        }
+      } else {
+        // Regular content before any module
+        if (trimmedLine) {
+          formattedContent.push({
+            type: 'text',
+            content: trimmedLine
+          });
+        }
+      }
+    });
+
+    // Don't forget the last module
+    if (currentModule) {
+      formattedContent.push({
+        type: 'module',
+        title: currentModule,
+        content: currentContent
+      });
+    }
+
+    return formattedContent;
+  };
+
+  const formattedDescription = useMemo(() => {
+    return formatDescription(selectedCourse?.description);
+  }, [selectedCourse]);
+
+  // ---------------- ENROLL ----------------
+
   const handleEnroll = async (courseId) => {
     try {
       const orderData = await axios.post(
@@ -102,8 +222,9 @@ const CourseDetail = () => {
         amount: orderData.data.order.amount,
         currency: "INR",
         name: "LEARN SKILLS",
-        description: "COURSE ENROLMENT PAYMENT",
+        description: "COURSE ENROLLMENT",
         order_id: orderData.data.order.id,
+
         handler: async function (response) {
           try {
             const verifyPayment = await axios.post(
@@ -111,23 +232,26 @@ const CourseDetail = () => {
               { ...response, courseId },
               { withCredentials: true }
             );
+
             setIsEnrolled(true);
+
             toast.success(verifyPayment.data.message);
           } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message);
           }
         },
       };
 
       const rzp = new window.Razorpay(options);
+
       rzp.open();
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || "Enrollment failed");
     }
   };
 
-  // Handle Free Course Enrollment
+  // ---------------- FREE ENROLL ----------------
+
   const handleFreeEnroll = async (courseId) => {
     try {
       const response = await axios.post(
@@ -135,328 +259,521 @@ const CourseDetail = () => {
         {},
         { withCredentials: true }
       );
+
       if (response.data.success) {
         setIsEnrolled(true);
+
         toast.success(response.data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || "Enrollment failed");
+      toast.error(error.response?.data?.message);
     }
   };
 
-  // Handle Review
+  // ---------------- REVIEW ----------------
+
   const handleReview = async () => {
     setLoading(true);
+
     try {
       await axios.post(
         serverUrl + "/api/review/createreview",
         { rating, comment, courseId },
         { withCredentials: true }
       );
-      toast.success("Review submitted successfully");
+
+      toast.success("Review submitted");
+
       setRating(0);
       setComment("");
     } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Calculate Avg Rating
-  const calculateAvgReview = (reviews) => {
-    if (!reviews || reviews.length === 0) return 0;
-    const total = reviews.reduce((sum, review) => sum + review.rating, 0);
-    return (total / reviews.length).toFixed(1);
-  };
-
-  const avgRating = calculateAvgReview(selectedCourse?.reviews);
-
-  // Auto-select first free lecture
-  useEffect(() => {
-    if (moduleData?.length > 0 && !selectedLecture) {
-      for (const module of moduleData) {
-        const freeLecture = module.lectures?.find((l) => l.isPreviewFree);
-        if (freeLecture) {
-          setSelectedLecture(freeLecture);
-          break;
-        }
-      }
-    }
-  }, [moduleData]);
-
   return (
-    <div className="min-h-screen bg-[#f4f4f5] p-4 md:p-8">
-      <div className="max-w-6xl mx-auto bg-white rounded-[22px] shadow-lg border border-gray-200 p-4 md:p-5">
+    <div
+      className={`min-h-screen transition-all duration-500 ${darkMode
+          ? "bg-[#050816] text-white"
+          : "bg-[#f5f7fb] text-black"
+        }`}
+    >
+      {/* ===================================================== */}
+      {/* NAVBAR */}
+      {/* ===================================================== */}
 
-        {/* Back Button */}
-        <FaArrowLeftLong
-          className="text-black text-[22px] cursor-pointer mb-5 hover:translate-x-[-4px] duration-300"
-          onClick={() => navigate("/allcourses")}
-        />
+      <header
+        className={`sticky top-0 z-50 backdrop-blur-2xl border-b ${darkMode
+            ? "bg-white/5 border-white/10"
+            : "bg-white/70 border-black/10"
+          }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-[75px] flex items-center justify-between">
+          {/* LEFT */}
+          <div className="flex items-center gap-4">
+            <motion.div
+              whileHover={{ x: -3 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => navigate("/allcourses")}
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center cursor-pointer ${darkMode
+                  ? "bg-white/10 hover:bg-white/20"
+                  : "bg-black/5 hover:bg-black/10"
+                }`}
+            >
+              <FaArrowLeft />
+            </motion.div>
 
-        {/* Course Hero Section */}
-        <div className="flex flex-col lg:flex-row gap-6">
+            <div>
+              <h1 className="font-black text-[22px] tracking-tight">
+                SkillBridge
+              </h1>
 
-          {/* Thumbnail */}
-          <div className="w-full lg:w-[52%]">
+              <p
+                className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+              >
+                Premium Learning Platform
+              </p>
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${darkMode
+                  ? "bg-white/10 hover:bg-white/20"
+                  : "bg-black/5 hover:bg-black/10"
+                }`}
+            >
+              {darkMode ? <FaSun /> : <FaMoon />}
+            </button>
+
             <img
-              src={selectedCourse?.thumbnail || img}
+              src={userData?.photoUrl || img}
               alt=""
-              className="w-full h-[240px] md:h-[320px] rounded-[18px] object-cover shadow-md"
+              className="w-11 h-11 rounded-2xl object-cover border border-white/20"
             />
           </div>
+        </div>
+      </header>
 
-          {/* Course Info */}
-          <div className="w-full lg:w-[48%] flex flex-col justify-center">
-            <h1 className="text-2xl md:text-[38px] font-bold text-black leading-tight">
-              {selectedCourse?.title || "Complete Html Course"}
-            </h1>
+      {/* ===================================================== */}
+      {/* HERO */}
+      {/* ===================================================== */}
 
-            <p className="text-gray-500 text-[15px] mt-3 leading-7">
-              {selectedCourse?.subTitle || "Best Course to start Development"}
-            </p>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-[-200px] left-[-200px] w-[400px] h-[400px] bg-purple-500/20 blur-[120px]" />
 
-            {/* Rating */}
-            <div className="flex items-center gap-2 mt-4">
-              <div className="flex items-center gap-[2px] text-yellow-400 text-[14px]">
-                <FaStar />
-              </div>
-              <span className="font-semibold text-gray-700 text-sm">
-                {avgRating}
-              </span>
-              <span className="text-gray-400 text-sm">(1,200 Reviews)</span>
-            </div>
-
-            {/* Price */}
-            <div className="flex items-center gap-3 mt-4">
-              <h2 className="text-3xl font-bold text-black">
-                ₹{selectedCourse?.price || 199}
-              </h2>
-              <span className="line-through text-gray-400 text-lg">₹599</span>
-            </div>
-
-            {/* Features */}
-            <div className="mt-5 space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-green-500 text-sm">✅</span>
-                <p className="text-sm text-gray-700 font-medium">
-                  {selectedCourse?.validity?.value}{" "}
-                  {selectedCourse?.validity?.unit === "month"
-                    ? selectedCourse?.validity?.value > 1
-                      ? "Months Access"
-                      : "Month Access"
-                    : selectedCourse?.validity?.unit === "year"
-                      ? selectedCourse?.validity?.value > 1
-                        ? "Years Access"
-                        : "Year Access"
-                      : "Lifetime Access"}
-                </p>
-              </div>
-            </div>
-
-            {/* Enroll / Watch Button */}
-            {!isEnrolled ? (
-              selectedCourse?.price === 0 ? (
-                <button
-                  onClick={() => handleFreeEnroll(courseId)}
-                  className="
-                    mt-7 group relative overflow-hidden
-                    bg-gradient-to-r from-green-500 via-emerald-500 to-green-600
-                    text-white px-8 py-4 rounded-2xl w-fit
-                    font-semibold text-[15px] tracking-wide
-                    shadow-[0_10px_30px_rgba(34,197,94,0.35)]
-                    border border-green-400/40
-                    hover:scale-[1.03]
-                    hover:shadow-[0_15px_40px_rgba(34,197,94,0.45)]
-                    active:scale-[0.98]
-                    transition-all duration-300
-                  "
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    🚀 Enroll for Free
-                  </span>
-                  <div className="absolute top-0 left-[-100%] h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:left-[100%] transition-all duration-700" />
-                </button>
-              ) : (
-                <button
-                  onClick={() => handleEnroll(courseId)}
-                  className="
-                    mt-7 group relative overflow-hidden
-                    bg-gradient-to-r from-black via-gray-900 to-black
-                    text-white px-8 py-4 rounded-2xl w-fit
-                    font-semibold text-[15px] tracking-wide
-                    shadow-[0_10px_30px_rgba(0,0,0,0.18)]
-                    border border-gray-800
-                    hover:scale-[1.03]
-                    hover:shadow-[0_15px_40px_rgba(0,0,0,0.28)]
-                    active:scale-[0.98]
-                    transition-all duration-300
-                  "
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    🚀 Enroll Now
-                  </span>
-                  <div className="absolute top-0 left-[-100%] h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:left-[100%] transition-all duration-700" />
-                </button>
-              )
-            ) : (
-              <button
-                onClick={() => navigate(`/viewlecture/${courseId}`)}
-                className="
-                  mt-7 group relative overflow-hidden
-                  bg-gradient-to-r from-green-500 via-emerald-500 to-green-600
-                  text-white px-8 py-4 rounded-2xl w-fit
-                  font-semibold text-[15px] tracking-wide
-                  shadow-[0_10px_30px_rgba(34,197,94,0.35)]
-                  border border-green-400/40
-                  hover:scale-[1.03]
-                  hover:shadow-[0_15px_40px_rgba(34,197,94,0.45)]
-                  active:scale-[0.98]
-                  transition-all duration-300
-                "
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  ▶ Watch Now
-                </span>
-                <div className="absolute top-0 left-[-100%] h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:left-[100%] transition-all duration-700" />
-              </button>
-            )}
-          </div>
+          <div className="absolute bottom-[-200px] right-[-200px] w-[400px] h-[400px] bg-cyan-500/20 blur-[120px]" />
         </div>
 
-        {/* Curriculum + Preview */}
-        <div className="mt-10 grid grid-cols-1 lg:grid-cols-[35%_65%] gap-6 items-start">
+        <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-14">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            {/* LEFT */}
+            <motion.div
+              initial={{ opacity: 0, y: 70 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              <div
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 border ${darkMode
+                    ? "bg-white/10 border-white/10"
+                    : "bg-white border-black/10"
+                  }`}
+              >
+                <div className="w-2 h-2 rounded-full bg-green-500" />
 
-          {/* LEFT — Module List */}
-          <div className="bg-[#fafafa] border border-gray-200 rounded-[22px] p-5 shadow-sm h-fit">
-            <div className="mb-5">
-              <h2 className="text-2xl font-bold text-gray-900">
-                Course Curriculum
-              </h2>
+                <span className="text-sm font-medium">
+                  Premium Course Experience
+                </span>
+              </div>
 
-            </div>
+              <h1 className="text-4xl md:text-6xl font-black leading-tight tracking-tight">
+                {selectedCourse?.title || "Modern React Masterclass"}
+              </h1>
 
+              <p
+                className={`mt-6 text-[16px] leading-8 max-w-2xl ${darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+              >
+                {selectedCourse?.subTitle ||
+                  "Build production-ready modern applications with clean architecture, animations, APIs, and scalable frontend systems."}
+              </p>
+
+              {/* STATS */}
+              <div className="flex flex-wrap items-center gap-6 mt-8">
+                <div className="flex items-center gap-2">
+                  <FaStar className="text-yellow-400" />
+
+                  <span className="font-bold">{avgRating}</span>
+
+                  <span
+                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"
+                      }`}
+                  >
+                    Reviews
+                  </span>
+                </div>
+
+                <div
+                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                >
+                  12+ Hours Content
+                </div>
+
+                <div
+                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                >
+                  {enrollmentData?.daysRemaining !== undefined
+                    ? `${enrollmentData.daysRemaining} Days Remaining`
+                    : selectedCourse?.validity
+                      ? `${selectedCourse.validity.value} ${selectedCourse.validity.unit} Access`
+                      : "Lifetime Access"}
+                </div>
+              </div>
+
+              {/* PRICE */}
+              <div className="flex items-center gap-4 mt-8">
+                <h2 className="text-5xl font-black">
+                  ₹{selectedCourse?.price || 199}
+                </h2>
+
+                <span className="line-through text-gray-400 text-xl">
+                  ₹599
+                </span>
+              </div>
+
+              {/* BUTTONS */}
+              <div className="flex flex-wrap gap-4 mt-10">
+                {!isEnrolled ? (
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate(`/checkout/${courseId}`)}
+                    className="px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 text-white font-semibold shadow-2xl"
+                  >
+                    {selectedCourse?.price === 0
+                      ? "Enroll For Free"
+                      : enrollmentData?.status === "expired"
+                        ? "Re-enroll Now"
+                        : "Enroll Now"}
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate(`/viewlecture/${courseId}`)}
+                    className="px-8 py-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-2xl flex items-center gap-2"
+                  >
+                    <FaPlay />
+                    Watch Course
+                  </motion.button>
+                )}
+
+                <button
+                  className={`px-8 py-4 rounded-2xl font-semibold border ${darkMode
+                      ? "bg-white/10 border-white/10 hover:bg-white/20"
+                      : "bg-white border-black/10 hover:bg-black/5"
+                    }`}
+                >
+                  Preview Course
+                </button>
+              </div>
+            </motion.div>
+
+            {/* RIGHT */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7 }}
+              className="relative"
+            >
+              <div
+                className={`absolute inset-0 blur-3xl rounded-full ${darkMode ? "bg-violet-500/20" : "bg-blue-500/20"
+                  }`}
+              />
+
+              <div
+                className={`relative overflow-hidden rounded-[32px] border backdrop-blur-2xl ${darkMode
+                    ? "bg-white/10 border-white/10"
+                    : "bg-white/70 border-white"
+                  }`}
+              >
+                <img
+                  src={selectedCourse?.thumbnail || img}
+                  alt=""
+                  className="w-full h-[260px] md:h-[500px] object-cover"
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================================================== */}
+      {/* CURRICULUM */}
+      {/* ===================================================== */}
+
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+        <div className="grid lg:grid-cols-[420px_1fr] gap-6 items-start">
+          {/* LEFT */}
             <ModuleList
               moduleData={moduleData}
               selectedLecture={selectedLecture}
               onSelectLecture={setSelectedLecture}
               mode="preview"
             />
-          </div>
 
-          {/* RIGHT — Lecture Preview */}
-          <LecturePreview lecture={selectedLecture} />
+          {/* RIGHT */}
+         
+             <LecturePlayer lecture={selectedLecture} />
 
         </div>
+      </section>
 
-        {/* Review Section */}
-        {isEnrolled && (
-          <div className="mt-8 border-t pt-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Write a Review
+      {/* ===================================================== */}
+      {/* REVIEW */}
+      {/* ===================================================== */}
+
+      {isEnrolled && (
+        <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
+          <div
+            className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${darkMode
+                ? "bg-white/10 border-white/10"
+                : "bg-white/70 border-black/10"
+              }`}
+          >
+            <h2 className="text-3xl font-black mb-6">
+              Write A Review
             </h2>
 
-            <div className="bg-[#fafafa] border border-gray-200 rounded-2xl p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <FaStar
-                    key={star}
-                    onClick={() => setRating(star)}
-                    className={`cursor-pointer text-2xl ${star <= rating ? "fill-amber-300" : "fill-gray-300"
-                      }`}
-                  />
-                ))}
-              </div>
-
-              <textarea
-                className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black resize-none text-sm"
-                placeholder="Write your review here..."
-                rows={5}
-                onChange={(e) => setComment(e.target.value)}
-                value={comment}
-              />
-
-              <button
-                className="mt-4 bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300"
-                onClick={handleReview}
-                disabled={loading}
-              >
-                {loading ? <ClipLoader size={30} color="white" /> : "Submit Review"}
-              </button>
+            <div className="flex gap-2 mb-6">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  onClick={() => setRating(star)}
+                  className={`cursor-pointer text-3xl transition-all ${star <= rating
+                      ? "text-yellow-400 scale-110"
+                      : "text-gray-400"
+                    }`}
+                />
+              ))}
             </div>
-          </div>
-        )}
 
-        {/* Course Instructor */}
-        <div className="mt-10 border-t pt-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-5">
-            Course Instructor
+            <textarea
+              rows={5}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Write your premium learning experience..."
+              className={`w-full rounded-3xl border p-5 outline-none resize-none ${darkMode
+                  ? "bg-white/5 border-white/10 placeholder:text-gray-500"
+                  : "bg-white border-black/10"
+                }`}
+            />
+
+            <button
+              onClick={handleReview}
+              disabled={loading}
+              className="mt-6 px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 text-white font-semibold shadow-xl"
+            >
+              {loading ? (
+                <ClipLoader size={22} color="#fff" />
+              ) : (
+                "Submit Review"
+              )}
+            </button>
+          </div>
+        </section>
+      )}
+
+
+
+
+      {/* ===================================================== */}
+      {/* DESCRIPTION */}
+      {/* ===================================================== */}
+
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
+        <div
+          className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${darkMode
+              ? "bg-white/10 border-white/10"
+              : "bg-white/70 border-black/10"
+            }`}
+        >
+          <h2 className="text-3xl font-black mb-6">
+            Course Description
           </h2>
 
-          <div className="flex items-start gap-4 bg-[#fafafa] border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div className={`space-y-6 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+            {formattedDescription?.slice(0, showFullDescription ? formattedDescription.length : 2).map((item, index) => {
+              if (item.type === 'text') {
+                return (
+                  <p key={index} className="leading-8">
+                    {item.content}
+                  </p>
+                );
+              } else if (item.type === 'module') {
+                return (
+                  <div key={index} className={`rounded-2xl p-5 ${darkMode ? "bg-white/5" : "bg-gray-50"}`}>
+                    <h3 className="text-xl font-bold mb-3 text-indigo-600 dark:text-indigo-400">
+                      {item.title}
+                    </h3>
+                    <ul className="space-y-2 ml-4">
+                      {item.content.map((contentItem, contentIndex) => (
+                        <li key={contentIndex} className="flex items-start gap-2">
+                          <span className="text-indigo-500 mt-1">•</span>
+                          <span className="leading-7">{contentItem}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+
+          {formattedDescription?.length > 2 && (
+            <button
+              onClick={() => setShowFullDescription(!showFullDescription)}
+              className={`mt-4 px-6 py-3 rounded-2xl font-semibold transition-all ${darkMode
+                  ? "bg-white/10 hover:bg-white/20 text-white"
+                  : "bg-black/5 hover:bg-black/10 text-black"
+                }`}
+            >
+              {showFullDescription ? "Show Less" : "View All"}
+            </button>
+          )}
+        </div>
+      </section>
+
+      {/* ===================================================== */}
+      {/* INSTRUCTOR */}
+      {/* ===================================================== */}
+
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
+        <div
+          className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${darkMode
+              ? "bg-white/10 border-white/10"
+              : "bg-white/70 border-black/10"
+            }`}
+        >
+          <h2 className="text-3xl font-black mb-8">
+            Meet Your Instructor
+          </h2>
+
+          <div className="flex flex-col md:flex-row gap-6 items-start">
             <img
               src={selectedCourse?.creator?.photoUrl || img}
               alt=""
-              className="w-20 h-20 rounded-full object-cover border"
+              className="w-28 h-28 rounded-3xl object-cover"
             />
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">
-                {selectedCourse?.creator?.name || "Unknown Creator"}
-              </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {selectedCourse?.creator?.email || "No Email"}
+
+            <div>
+              <h3 className="text-3xl font-black">
+                {selectedCourse?.creator?.name || "Unknown"}
+              </h3>
+
+              <p
+                className={`mt-2 ${darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+              >
+                {selectedCourse?.creator?.email}
               </p>
-              <p className="text-sm text-gray-600 leading-6 mt-3">
+
+              <p
+                className={`mt-5 leading-8 max-w-3xl ${darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+              >
                 {selectedCourse?.creator?.description ||
-                  "Experienced instructor passionate about teaching students."}
+                  "Experienced instructor passionate about creating world-class learning experiences for developers."}
               </p>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Other Popular Courses */}
-        <div className="py-6">
-          <p className="text-xl font-semibold mb-2">Other Popular Courses</p>
+      {/* ===================================================== */}
+      {/* OTHER COURSES */}
+      {/* ===================================================== */}
+
+      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-20">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-black">
+            Other Popular Courses
+          </h2>
+
+          <button
+            onClick={() => navigate("/allcourses")}
+            className={`px-5 py-3 rounded-2xl text-sm font-semibold ${darkMode
+                ? "bg-white/10 hover:bg-white/20"
+                : "bg-black/5 hover:bg-black/10"
+              }`}
+          >
+            View All
+          </button>
         </div>
 
-        <div className="w-full transition-all duration-300 py-[20px] flex items-start justify-center lg:justify-start flex-wrap gap-6">
-          {creatorCourse && creatorCourse.length > 0 ? (
-            creatorCourse.map((course) => (
-              <div key={course._id} className="w-[280px]">
-                <div
-                  className="w-full bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                  onClick={() => navigate(`/course/${course._id}`)}
+        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6">
+          {creatorCourse?.map((course, index) => (
+            <motion.div
+              key={course._id}
+              initial={{ opacity: 0, y: 80 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -10 }}
+              onClick={() => navigate(`/course/${course._id}`)}
+              className={`overflow-hidden rounded-[28px] border cursor-pointer group backdrop-blur-2xl ${darkMode
+                  ? "bg-white/10 border-white/10"
+                  : "bg-white/70 border-black/10"
+                }`}
+            >
+              <div className="overflow-hidden">
+                <img
+                  src={course.thumbnail || img}
+                  alt=""
+                  className="w-full h-[220px] object-cover group-hover:scale-110 transition-all duration-700"
+                />
+              </div>
+
+              <div className="p-5">
+                <span
+                  className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold mb-4 ${darkMode
+                      ? "bg-white/10 text-gray-300"
+                      : "bg-black/5 text-gray-700"
+                    }`}
                 >
-                  <img
-                    src={course.thumbnail || img}
-                    alt={course.title}
-                    className="w-full h-52 object-cover hover:scale-105 transition-all duration-300"
-                  />
-                  <div className="p-5 space-y-4">
-                    <h2 className="text-2xl font-bold text-gray-900 line-clamp-2">
-                      {course.title}
-                    </h2>
-                    <span className="inline-block bg-gray-100 text-gray-700 text-sm px-4 py-1 rounded-full">
-                      {course.category}
+                  {course.category}
+                </span>
+
+                <h3 className="text-xl font-black line-clamp-2">
+                  {course.title}
+                </h3>
+
+                <div className="flex items-center justify-between mt-6">
+                  <h4 className="text-2xl font-black">
+                    ₹{course.price}
+                  </h4>
+
+                  <div className="flex items-center gap-1 text-yellow-400">
+                    <FaStar />
+
+                    <span className="text-sm font-semibold text-white">
+                      4.9
                     </span>
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="text-2xl font-bold text-gray-900">
-                        ₹{course.price}
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm">No other courses found.</p>
-          )}
+            </motion.div>
+          ))}
         </div>
-
-      </div>
+      </section>
     </div>
   );
 };

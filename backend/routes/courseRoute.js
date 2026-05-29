@@ -1,12 +1,12 @@
 import express, { Router } from "express";
-import { createCourse, deleteCourse, editCourse, getCourseById, getCreatorById, getCreatorCourses, getPublishedCourses, togglePublishCourse } from "../controller/courseController.js";
+import { createCourse, deleteCourse, editCourse, getCourseById, getCreatorById, getCreatorCourses, getPublishedCourses, togglePublishCourse, getAllCourses } from "../controller/courseController.js";
 import upload from "../middleware/multer.js";
 import isAuth from "../middleware/isAuth.js";
 import isRole from "../middleware/isRole.js";
 import { createLecture, editLecture, getCourseLectures, removeLecture, removeLectureVideo } from "../controller/lectureController.js";
 import { downloadResource, getLectureResources, removeResource, uploadLectureResource } from "../controller/uploadLectureResource.js";
 import { addQuizQuestion, removeQuizQuestion, getLectureQuiz } from "../controller/quizController.js";
-import { enrollCourse, checkEnrollmentStatus } from "../controller/enrollMentController.js";
+import { enrollCourse, checkEnrollmentStatus, getUserEnrollments } from "../controller/enrollMentController.js";
 import { getCourseProgress, resumeLecture, updateLectureProgress, updateWatchTime } from "../controller/progressController.js";
 import { createModule, getCourseModules, removeAllModules, removeModule } from "../controller/moduleController.js";
 import { getDashboardStats, getRecentEnrollments } from "../controller/dashboardController.js";
@@ -28,9 +28,13 @@ courseRoute.post("/enroll/:courseId", isAuth, enrollCourse);
 // Check enrollment status with validity
 courseRoute.get("/check-enrollment/:courseId", isAuth, checkEnrollmentStatus);
 
+// Get user enrollments with validity
+courseRoute.get("/user-enrollments", isAuth, getUserEnrollments);
+
 //published
 // ──────────────────────────────────────────
 courseRoute.get("/getpublished", getPublishedCourses)
+courseRoute.get("/all-courses", isAuth, isRole("admin"), getAllCourses)
 courseRoute.put("/publish/:courseId", isAuth, isRole("educator"), togglePublishCourse);
 courseRoute.put("/unpublish/:courseId", isAuth, isRole("educator"), togglePublishCourse);
 

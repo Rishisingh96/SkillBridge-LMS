@@ -11,7 +11,11 @@ import {
   FiLogOut,
   FiAward,
   FiX,
+  FiMoon,
+  FiSun,
+  FiTag,
 } from "react-icons/fi";
+import { useTheme } from "../../context/ThemeContext";
 
 const navItems = [
   {
@@ -49,11 +53,17 @@ const navItems = [
     path: "/educator/create-course",
     icon: <FiPlusCircle size={18} />,
   },
+  {
+    label: "Coupons",
+    path: "/educator/coupons",
+    icon: <FiTag size={18} />,
+  },
 ];
 
 const EducatorSidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { userData } = useSelector((state) => state.user);
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <>
@@ -69,41 +79,51 @@ const EducatorSidebar = ({ isOpen, onClose }) => {
       <aside
         className={`
           fixed top-0 left-0 h-full w-64 z-30 flex flex-col
-          bg-gray-950 border-r border-gray-800
+          ${isDark ? 'bg-gray-950 border-gray-800' : 'bg-white border-gray-200'} border-r
           transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0 lg:static lg:z-auto
         `}
       >
         {/* Logo / Brand */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-gray-800">
+        <div className={`flex items-center justify-between px-5 py-5 border-b ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
           <div className="flex items-center gap-2">
             <FiAward size={22} className="text-indigo-400" />
-            <span className="text-white font-semibold text-base tracking-tight">
+            <span className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-base tracking-tight`}>
               Educator Panel
             </span>
           </div>
-          {/* Close button — only on mobile */}
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white lg:hidden"
-          >
-            <FiX size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
+            </button>
+            {/* Close button — only on mobile */}
+            <button
+              onClick={onClose}
+              className={`${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} lg:hidden`}
+            >
+              <FiX size={18} />
+            </button>
+          </div>
         </div>
 
         {/* User info */}
         {userData && (
-          <div className="px-5 py-4 border-b border-gray-800">
+          <div className={`px-5 py-4 border-b ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
                 {userData?.name?.charAt(0).toUpperCase() || "E"}
               </div>
               <div className="overflow-hidden">
-                <p className="text-white text-sm font-medium truncate">
+                <p className={`${isDark ? 'text-white' : 'text-gray-900'} text-sm font-medium truncate`}>
                   {userData?.name || "Educator"}
                 </p>
-                <p className="text-gray-400 text-xs truncate">
+                <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-xs truncate`}>
                   {userData?.email || ""}
                 </p>
               </div>
@@ -123,7 +143,7 @@ const EducatorSidebar = ({ isOpen, onClose }) => {
                 ${
                   isActive
                     ? "bg-indigo-600 text-white"
-                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                    : `${isDark ? 'text-gray-400 hover:bg-gray-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`
                 }`
               }
             >
@@ -140,7 +160,7 @@ const EducatorSidebar = ({ isOpen, onClose }) => {
               navigate("/");
               onClose?.();
             }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium ${isDark ? 'text-gray-400 hover:bg-gray-800 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'} transition-colors`}
           >
             <FiLogOut size={18} />
             Back to Student View

@@ -2,11 +2,12 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa6";
 import { FaPlayCircle } from "react-icons/fa";
 import { MdOutlineOndemandVideo } from "react-icons/md";
 
 import img from "../../assets/Empty.png";
+import Nav from "../../components/navbar/Navbar";
 
 const MyEnrolledCourses = () => {
   const { userData } = useSelector((state) => state.user);
@@ -14,7 +15,9 @@ const MyEnrolledCourses = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] px-4 md:px-8 py-7">
+    <>
+      <Nav />
+      <div className="min-h-screen bg-[#f5f5f7] px-4 md:px-8 py-7 pt-[90px]">
       
       {/* HEADER */}
       <div className="max-w-7xl mx-auto mb-8">
@@ -27,7 +30,7 @@ const MyEnrolledCourses = () => {
           hover:-translate-x-1 transition-all duration-300
         "
         >
-          <FaArrowLeftLong className="text-[18px]" />
+          <FaArrowLeft className="text-[18px]" />
         </button>
 
         <div className="mt-5">
@@ -215,6 +218,7 @@ const MyEnrolledCourses = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { createCourse } from "../../redux/actions/courseAction";
 import {
@@ -8,10 +8,13 @@ import {
   MdCategory,
   MdAutoAwesome,
 } from "react-icons/md";
+import { useTheme } from "../../context/ThemeContext";
+import Nav from "../../components/navbar/Navbar";
 
 const CreateCourse = () => {
   const navigate = useNavigate();
    const dispatch = useDispatch();
+  const { isDark } = useTheme();
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -27,10 +30,12 @@ const CreateCourse = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] px-4 py-8 md:py-12 flex items-center justify-center">
+    <>
+      <Nav />
+      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f7fb]'} px-4 py-8 md:py-12 pt-[90px] flex items-center justify-center`}>
 
       {/* Main Container */}
-      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200">
+      <div className={`w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} rounded-3xl shadow-xl overflow-hidden border`}>
 
         {/* Left Side */}
         <div className="hidden md:flex flex-col justify-between bg-black text-white p-10 relative overflow-hidden">
@@ -46,7 +51,7 @@ const CreateCourse = () => {
               onClick={() => navigate(-1)}
               className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center"
             >
-              <FaArrowLeftLong className="text-white text-[18px]" />
+              <FaArrowLeft className="text-white text-[18px]" />
             </button>
 
             <div className="mt-12">
@@ -106,19 +111,19 @@ const CreateCourse = () => {
           <div className="md:hidden mb-6">
             <button
               onClick={() => navigate(-1)}
-              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center"
+              className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
             >
-              <FaArrowLeftLong className="text-gray-700" />
+              <FaArrowLeft />
             </button>
           </div>
 
           {/* Heading */}
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-800">
+            <h2 className={`text-3xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
               Create Course
             </h2>
 
-            <p className="text-gray-500 mt-2">
+            <p className={`mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               Fill the details below to create your new course.
             </p>
           </div>
@@ -128,7 +133,7 @@ const CreateCourse = () => {
 
             {/* Title */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Course Title
               </label>
 
@@ -136,7 +141,7 @@ const CreateCourse = () => {
                 type="text"
                 id="title"
                 placeholder="Enter your course title"
-                className="w-full border border-gray-300 rounded-2xl py-3 px-5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black transition"
+                className={`w-full border rounded-2xl py-3 px-5 focus:outline-none focus:ring-2 focus:ring-black transition ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 bg-gray-50 text-gray-900'}`}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
@@ -144,13 +149,13 @@ const CreateCourse = () => {
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Course Category
               </label>
 
               <select
                 id="category"
-                className="w-full border border-gray-300 rounded-2xl py-3 px-5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black transition"
+                className={`w-full border rounded-2xl py-3 px-5 focus:outline-none focus:ring-2 focus:ring-black transition ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'border-gray-300 bg-gray-50 text-gray-900'}`}
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
@@ -200,13 +205,13 @@ const CreateCourse = () => {
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Course Description
               </label>
               <textarea
                 id="description"
                 placeholder="Enter a brief description of your course"
-                className="w-full border border-gray-300 rounded-2xl py-3 px-5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black transition resize-none h-32"
+                className={`w-full border rounded-2xl py-3 px-5 focus:outline-none focus:ring-2 focus:ring-black transition resize-none h-32 ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 bg-gray-50 text-gray-900'}`}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -219,7 +224,7 @@ const CreateCourse = () => {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="w-full py-3 rounded-2xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
+                className={`w-full py-3 rounded-2xl border font-medium transition ${isDark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
               >
                 Cancel
               </button>
@@ -238,12 +243,13 @@ const CreateCourse = () => {
           </form>
 
           {/* Footer */}
-          <p className="text-sm text-gray-400 text-center mt-8">
+          <p className={`text-sm text-center mt-8 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
             Your course can be edited anytime after creation.
           </p>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

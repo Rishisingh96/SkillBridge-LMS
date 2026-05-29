@@ -8,6 +8,15 @@ import {
   FaImage,
 } from "react-icons/fa";
 
+import {
+  HiOutlineSparkles,
+} from "react-icons/hi";
+
+import {
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
 import axios from "axios";
 
 import { toast } from "react-toastify";
@@ -16,18 +25,30 @@ import { serverUrl } from "../../App";
 
 import { ClipLoader } from "react-spinners";
 
-const LectureResources = ({ lecture  }) => {
+import { useTheme } from "../../context/ThemeContext";
 
+const LectureResources = ({ lecture }) => {
 
-  // RESOURCES
-  const resources =
-    lecture?.resources || [];
+  // =========================================================
+  // STATES
+  // =========================================================
 
-  // LOADING STATE
   const [loadingId, setLoadingId] =
     useState(null);
 
+  const { isDark } = useTheme();
+
+  // =========================================================
+  // DATA
+  // =========================================================
+
+  const resources =
+    lecture?.resources || [];
+
+  // =========================================================
   // DOWNLOAD RESOURCE
+  // =========================================================
+
   const handleDownload = async (
     lectureId,
     resourceId
@@ -47,30 +68,44 @@ const LectureResources = ({ lecture  }) => {
 
       );
 
-      // Find the resource to get the title
-      const resource = resources.find(r => r._id === resourceId);
+      const resource =
+        resources.find(
+          (r) => r._id === resourceId
+        );
 
-      // =========================
-      // DIRECT DOWNLOAD
-      // =========================
-      // Fetch the file as blob to force download
-      const fileResponse = await fetch(response.data.fileUrl);
-      const blob = await fileResponse.blob();
-      const url = window.URL.createObjectURL(blob);
+      const fileResponse =
+        await fetch(
+          response.data.fileUrl
+        );
 
-      const link = document.createElement("a");
+      const blob =
+        await fileResponse.blob();
+
+      const url =
+        window.URL.createObjectURL(blob);
+
+      const link =
+        document.createElement("a");
+
       link.href = url;
-      link.download = resource?.title || "download";
+
+      link.download =
+        resource?.title || "download";
+
       document.body.appendChild(link);
+
       link.click();
 
       setTimeout(() => {
+
         link.remove();
+
         window.URL.revokeObjectURL(url);
+
       }, 100);
 
       toast.success(
-        "Download started"
+        "Download Started 🚀"
       );
 
     } catch (error) {
@@ -81,7 +116,7 @@ const LectureResources = ({ lecture  }) => {
 
         error?.response?.data?.message ||
 
-        "Download failed"
+        "Download Failed"
 
       );
 
@@ -90,223 +125,569 @@ const LectureResources = ({ lecture  }) => {
       setLoadingId(null);
 
     }
-
   };
 
-  // FILE ICON
+  // =========================================================
+  // FILE ICONS
+  // =========================================================
+
   const getFileIcon = (type) => {
 
     switch (type) {
 
       case "pdf":
         return (
-          <FaFilePdf className="text-red-500 text-xl" />
+          <FaFilePdf className="text-red-500 text-2xl" />
         );
 
       case "image":
         return (
-          <FaImage className="text-blue-500 text-xl" />
+          <FaImage className="text-sky-500 text-2xl" />
         );
 
       case "zip":
         return (
-          <FaFileArchive className="text-yellow-500 text-xl" />
+          <FaFileArchive className="text-yellow-500 text-2xl" />
         );
 
       default:
         return (
-          <FaFileCode className="text-green-500 text-xl" />
+          <FaFileCode className="text-emerald-500 text-2xl" />
         );
     }
   };
 
   return (
 
-    <div className="px-5 md:px-7 pb-7">
+    <section
+      className={`
+        relative
+        overflow-hidden
+        rounded-[2rem]
+        border
+        ${isDark ? 'border-white/10' : 'border-gray-200/60'}
+        ${isDark ? 'bg-white/5' : 'bg-white/70'}
+        backdrop-blur-2xl
+        ${isDark ? 'shadow-[0_10px_60px_rgba(0,0,0,0.35)]' : 'shadow-[0_10px_60px_rgba(0,0,0,0.08)]'}
+        p-5
+        sm:p-7
+        lg:p-8
+      `}
+    >
 
-      <div className="border-t border-gray-200 pt-7">
+      {/* =========================================================
+          BACKGROUND GRADIENTS
+      ========================================================= */}
 
-        {/* =========================
-            HEADING
-        ========================== */}
-        <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+      <div
+        className="
+          absolute
+          top-0
+          right-0
+          w-72
+          h-72
+          bg-violet-500/10
+          blur-3xl
+          rounded-full
+          pointer-events-none
+        "
+      />
 
-          <div>
+      <div
+        className="
+          absolute
+          bottom-0
+          left-0
+          w-72
+          h-72
+          bg-cyan-500/10
+          blur-3xl
+          rounded-full
+          pointer-events-none
+        "
+      />
 
-            <h2 className="text-2xl font-bold text-gray-900">
-              Lecture Resources
-            </h2>
+      {/* =========================================================
+          HEADER
+      ========================================================= */}
 
-            <p className="text-sm text-gray-500 mt-1">
-              Download notes, source code,
-              PDFs & lecture files
-            </p>
+      <div
+        className="
+          relative
+          z-10
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+          gap-5
+          mb-8
+        "
+      >
 
-          </div>
+        <div>
 
-          <div className="bg-gray-100 text-gray-700 text-xs font-semibold px-4 py-2 rounded-xl">
-
-            {resources.length} Files
-
-          </div>
-
-        </div>
-
-        {/* =========================
-            RESOURCE LIST
-        ========================== */}
-        {resources.length > 0 ? (
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            {resources.map((resource) => (
-
-              <div
-                key={resource._id}
-                className="
-                  bg-[#fafafa]
-                  border border-gray-200
-                  rounded-2xl
-                  p-4
-                  flex items-center justify-between
-                  hover:shadow-md
-                  transition-all duration-300
-                "
-              >
-
-                {/* =========================
-                    LEFT SECTION
-                ========================== */}
-                <div className="flex items-center gap-4 min-w-0">
-
-                  {/* FILE ICON */}
-                  <div
-                    className="
-                      w-12 h-12
-                      rounded-xl
-                      bg-white
-                      border border-gray-200
-                      flex items-center justify-center
-                      shadow-sm
-                    "
-                  >
-
-                    {getFileIcon(
-                      resource.fileType
-                    )}
-
-                  </div>
-
-                  {/* FILE INFO */}
-                  <div className="min-w-0">
-
-                    <h3 className="font-semibold text-gray-800 truncate">
-
-                      {resource.title}
-
-                    </h3>
-
-                    <p className="text-xs text-gray-500 mt-1 uppercase">
-
-                      {resource.fileType}
-
-                    </p>
-
-                  </div>
-
-                </div>
-
-                {/* =========================
-                    DOWNLOAD BUTTON
-                ========================== */}
-                <button
-
-                  onClick={() =>
-                    handleDownload(
-                      lecture?._id,
-                      resource._id
-                    )
-                  }
-
-                  disabled={
-                    loadingId === resource._id
-                  }
-
-                  className="
-                    min-w-[45px]
-                    h-[45px]
-                    rounded-xl
-                    bg-black
-                    text-white
-                    flex items-center justify-center
-                    hover:scale-105
-                    transition-all duration-300
-                    disabled:opacity-60
-                    disabled:cursor-not-allowed
-                  "
-                >
-
-                  {loadingId === resource._id ? (
-
-                    <ClipLoader
-                      size={18}
-                      color="white"
-                    />
-
-                  ) : (
-
-                    <FaDownload />
-
-                  )}
-
-                </button>
-
-              </div>
-
-            ))}
-
-          </div>
-
-        ) : (
-
-          // =========================
-          // EMPTY STATE
-          // =========================
           <div
             className="
-              bg-[#fafafa]
-              border border-dashed border-gray-300
-              rounded-3xl
-              py-12
-              flex items-center justify-center
-              text-center
+              inline-flex
+              items-center
+              gap-2
+              px-4
+              py-2
+              rounded-full
+              bg-gradient-to-r
+              from-violet-500/10
+              to-cyan-500/10
+              border
+              border-violet-500/20
+              ${isDark ? 'text-violet-300' : 'text-violet-600'}
+              text-sm
+              font-semibold
+              mb-4
             "
           >
 
-            <div>
+            <HiOutlineSparkles />
 
-              <h3 className="text-lg font-semibold text-gray-700">
-
-                No Resources Available
-
-              </h3>
-
-              <p className="text-sm text-gray-500 mt-2">
-
-                Creator has not uploaded
-                any resources yet.
-
-              </p>
-
-            </div>
+            Premium Resources
 
           </div>
 
-        )}
+          <h2
+            className={`
+              text-3xl
+              sm:text-4xl
+              font-black
+              tracking-tight
+              ${isDark ? 'text-white' : 'text-gray-900'}
+            `}
+          >
+            Lecture Resources
+          </h2>
+
+          <p
+            className={`
+              mt-3
+              text-sm
+              sm:text-base
+              ${isDark ? 'text-gray-400' : 'text-gray-600'}
+              max-w-2xl
+              leading-relaxed
+            `}
+          >
+            Download notes, PDFs, source
+            code, images, archives &
+            premium lecture materials with
+            one click.
+          </p>
+
+        </div>
+
+        {/* FILE COUNT */}
+        <motion.div
+
+          whileHover={{
+            scale: 1.04,
+          }}
+
+          className={`
+            self-start
+            lg:self-auto
+            px-5
+            py-3
+            rounded-2xl
+            border
+            ${isDark ? 'border-white/10' : 'border-gray-200'}
+            ${isDark ? 'bg-white/5' : 'bg-white/80'}
+            backdrop-blur-xl
+            shadow-lg
+          `}
+        >
+
+          <h3
+            className={`
+              text-2xl
+              font-black
+              ${isDark ? 'text-white' : 'text-gray-900'}
+            `}
+          >
+            {resources.length}
+          </h3>
+
+          <p
+            className={`
+              text-xs
+              uppercase
+              tracking-widest
+              ${isDark ? 'text-gray-400' : 'text-gray-500'}
+              mt-1
+            `}
+          >
+            Total Files
+          </p>
+
+        </motion.div>
 
       </div>
 
-    </div>
+      {/* =========================================================
+          RESOURCE GRID
+      ========================================================= */}
+
+      {resources.length > 0 ? (
+
+        <motion.div
+          layout
+          className="
+            relative
+            z-10
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-3
+            gap-5
+          "
+        >
+
+          <AnimatePresence>
+
+            {resources.map(
+              (resource, index) => (
+
+                <motion.div
+
+                  key={resource._id}
+
+                  initial={{
+                    opacity: 0,
+                    y: 30,
+                  }}
+
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+
+                  exit={{
+                    opacity: 0,
+                    scale: 0.9,
+                  }}
+
+                  transition={{
+                    duration: 0.35,
+                    delay: index * 0.05,
+                  }}
+
+                  whileHover={{
+                    y: -6,
+                  }}
+
+                  className={`
+                    group
+                    relative
+                    overflow-hidden
+                    rounded-[2rem]
+                    border
+                    ${isDark ? 'border-white/10' : 'border-gray-200/70'}
+                    ${isDark ? 'bg-[#0F172A]/80' : 'bg-white/80'}
+                    backdrop-blur-2xl
+                    p-5
+                    ${isDark ? 'shadow-[0_10px_40px_rgba(0,0,0,0.25)]' : 'shadow-[0_10px_40px_rgba(0,0,0,0.06)]'}
+                    transition-all
+                    duration-500
+                  `}
+                >
+
+                  {/* HOVER GLOW */}
+                  <div
+                    className="
+                      absolute
+                      inset-0
+                      opacity-0
+                      group-hover:opacity-100
+                      transition-all
+                      duration-500
+                      bg-gradient-to-br
+                      from-violet-500/10
+                      to-cyan-500/10
+                    "
+                  />
+
+                  {/* TOP */}
+                  <div
+                    className="
+                      relative
+                      z-10
+                      flex
+                      items-start
+                      justify-between
+                      gap-4
+                    "
+                  >
+
+                    {/* LEFT */}
+                    <div
+                      className="
+                        flex
+                        items-start
+                        gap-4
+                        min-w-0
+                      "
+                    >
+
+                      {/* ICON */}
+                      <div
+                        className={`
+                          shrink-0
+                          w-14
+                          h-14
+                          rounded-2xl
+                          bg-gradient-to-br
+                          ${isDark ? 'from-white/10 to-white/5' : 'from-white to-gray-100'}
+                          border
+                          ${isDark ? 'border-white/10' : 'border-gray-200'}
+                          flex
+                          items-center
+                          justify-center
+                          shadow-lg
+                        `}
+                      >
+
+                        {getFileIcon(
+                          resource.fileType
+                        )}
+
+                      </div>
+
+                      {/* INFO */}
+                      <div className="min-w-0">
+
+                        <h3
+                          className={`
+                            text-base
+                            sm:text-lg
+                            font-bold
+                            ${isDark ? 'text-white' : 'text-gray-900'}
+                            truncate
+                          `}
+                        >
+                          {resource.title}
+                        </h3>
+
+                        <p
+                          className={`
+                            mt-2
+                            inline-flex
+                            items-center
+                            px-3
+                            py-1
+                            rounded-full
+                            ${isDark ? 'bg-white/10' : 'bg-gray-100'}
+                            text-[11px]
+                            font-semibold
+                            uppercase
+                            tracking-wider
+                            ${isDark ? 'text-gray-300' : 'text-gray-600'}
+                          `}
+                        >
+                          {resource.fileType}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                    {/* DOWNLOAD */}
+                    <motion.button
+
+                      whileTap={{
+                        scale: 0.92,
+                      }}
+
+                      whileHover={{
+                        scale: 1.05,
+                      }}
+
+                      onClick={() =>
+                        handleDownload(
+                          lecture?._id,
+                          resource._id
+                        )
+                      }
+
+                      disabled={
+                        loadingId ===
+                        resource._id
+                      }
+
+                      className="
+                        shrink-0
+                        w-14
+                        h-14
+                        rounded-2xl
+                        bg-gradient-to-r
+                        from-violet-600
+                        to-indigo-500
+                        text-white
+                        flex
+                        items-center
+                        justify-center
+                        shadow-xl
+                        shadow-violet-500/25
+                        hover:shadow-violet-500/40
+                        transition-all
+                        duration-300
+                        disabled:opacity-60
+                        disabled:cursor-not-allowed
+                      "
+                    >
+
+                      {loadingId ===
+                      resource._id ? (
+
+                        <ClipLoader
+                          size={18}
+                          color="white"
+                        />
+
+                      ) : (
+
+                        <FaDownload className="text-lg" />
+
+                      )}
+
+                    </motion.button>
+
+                  </div>
+
+                  {/* BOTTOM BAR */}
+                  <div
+                    className={`
+                      relative
+                      z-10
+                      mt-6
+                      pt-4
+                      border-t
+                      ${isDark ? 'border-white/10' : 'border-gray-200/70'}
+                      flex
+                      items-center
+                      justify-between
+                    `}
+                  >
+
+                    <span
+                      className={`
+                        text-xs
+                        ${isDark ? 'text-gray-400' : 'text-gray-500'}
+                      `}
+                    >
+                      Ready to download
+                    </span>
+
+                    <span
+                      className={`
+                        text-xs
+                        font-semibold
+                        ${isDark ? 'text-violet-300' : 'text-violet-600'}
+                      `}
+                    >
+                      Secure File
+                    </span>
+
+                  </div>
+
+                </motion.div>
+              )
+            )}
+
+          </AnimatePresence>
+
+        </motion.div>
+
+      ) : (
+
+        // =========================================================
+        // EMPTY STATE
+        // =========================================================
+
+        <motion.div
+
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+
+          className={`
+            relative
+            z-10
+            rounded-[2rem]
+            border
+            border-dashed
+            ${isDark ? 'border-white/10' : 'border-gray-300'}
+            ${isDark ? 'bg-white/5' : 'bg-white/50'}
+            backdrop-blur-xl
+            py-20
+            px-6
+            text-center
+          `}
+        >
+
+          <div
+            className="
+              mx-auto
+              w-20
+              h-20
+              rounded-3xl
+              bg-gradient-to-br
+              from-violet-500/20
+              to-cyan-500/20
+              flex
+              items-center
+              justify-center
+              text-3xl
+              mb-6
+            "
+          >
+            📂
+          </div>
+
+          <h3
+            className={`
+              text-2xl
+              font-bold
+              ${isDark ? 'text-white' : 'text-gray-900'}
+            `}
+          >
+            No Resources Available
+          </h3>
+
+          <p
+            className={`
+              mt-3
+              text-sm
+              sm:text-base
+              ${isDark ? 'text-gray-400' : 'text-gray-500'}
+              max-w-md
+              mx-auto
+              leading-relaxed
+            `}
+          >
+            The educator hasn’t uploaded
+            any lecture resources yet.
+            Files, notes & premium
+            materials will appear here.
+          </p>
+
+        </motion.div>
+
+      )}
+
+    </section>
 
   );
 

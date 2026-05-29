@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setModuleData } from "../../redux/slices/moduleSlice";
@@ -12,11 +12,13 @@ import Card from "../../components/course/Card";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import ModuleList from "../../components/lecture/ModuleList";
-import LecturePreview from "../../components/lecture/LecturePreview";
+import { useTheme } from "../../context/ThemeContext";
+import LecturePlayer from "../../components/lecture/LecturePlayer";
 
 const ViewCourse = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
 
   const { courseId } = useParams();
 
@@ -173,12 +175,12 @@ const ViewCourse = () => {
   }, [moduleData]);
 
   return (
-    <div className="min-h-screen bg-[#f4f4f5] p-4 md:p-8">
-      <div className="max-w-6xl mx-auto bg-white rounded-[22px] shadow-lg border border-gray-200 p-4 md:p-5">
+    <div className={`min-h-screen p-4 md:p-8 ${isDark ? 'bg-gray-950' : 'bg-[#f4f4f5]'}`}>
+      <div className={`max-w-6xl mx-auto rounded-[22px] shadow-lg border p-4 md:p-5 ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'}`}>
 
         {/* Back Button */}
-        <FaArrowLeftLong
-          className="text-black text-[22px] cursor-pointer mb-5 hover:translate-x-[-4px] duration-300"
+        <FaArrowLeft
+          className={`text-[22px] cursor-pointer mb-5 hover:translate-x-[-4px] duration-300 ${isDark ? 'text-gray-300 hover:text-white' : 'text-black'}`}
           onClick={() => navigate("/")}
         />
 
@@ -196,11 +198,11 @@ const ViewCourse = () => {
 
           {/* Course Info */}
           <div className="w-full lg:w-[48%] flex flex-col justify-center">
-            <h1 className="text-2xl md:text-[38px] font-bold text-black leading-tight">
+            <h1 className={`text-2xl md:text-[38px] font-bold leading-tight ${isDark ? 'text-gray-100' : 'text-black'}`}>
               {selectedCourse?.title || "Complete Html Course"}
             </h1>
 
-            <p className="text-gray-500 text-[15px] mt-3 leading-7">
+            <p className={`text-[15px] mt-3 leading-7 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               {selectedCourse?.subTitle || "Best Course to start Development"}
             </p>
 
@@ -209,18 +211,18 @@ const ViewCourse = () => {
               <div className="flex items-center gap-[2px] text-yellow-400 text-[14px]">
                 <FaStar />
               </div>
-              <span className="font-semibold text-gray-700 text-sm">
+              <span className={`font-semibold text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 {avgRating}
               </span>
-              <span className="text-gray-400 text-sm">(1,200 Reviews)</span>
+              <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>(1,200 Reviews)</span>
             </div>
 
             {/* Price */}
             <div className="flex items-center gap-3 mt-4">
-              <h2 className="text-3xl font-bold text-black">
+              <h2 className={`text-3xl font-bold ${isDark ? 'text-gray-100' : 'text-black'}`}>
                 ₹{selectedCourse?.price || 199}
               </h2>
-              <span className="line-through text-gray-400 text-lg">₹599</span>
+              <span className={`line-through text-lg ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>₹599</span>
             </div>
 
             {/* Features */}
@@ -229,7 +231,7 @@ const ViewCourse = () => {
 
               <div className="flex items-center gap-2">
                 <span className="text-green-500 text-sm">✅</span>
-                <p className="text-sm text-gray-700 font-medium">
+                <p className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                   {selectedCourse?.validity?.value}{" "}
                   {selectedCourse?.validity?.unit === "month"
                     ? selectedCourse?.validity?.value > 1
@@ -295,47 +297,40 @@ const ViewCourse = () => {
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-[35%_65%] gap-6 items-start">
 
           {/* LEFT — Module List */}
-          <div className="bg-[#fafafa] border border-gray-200 rounded-[22px] p-5 shadow-sm h-fit">
-            <div className="mb-5">
-              <h2 className="text-2xl font-bold text-gray-900">
-                Course Curriculum
-              </h2>
-
-            </div>
-
+       
             <ModuleList
               moduleData={moduleData}
               selectedLecture={selectedLecture}
               onSelectLecture={setSelectedLecture}
               mode="preview"
             />
-          </div>
+          
 
           {/* RIGHT — Lecture Preview */}
-          <LecturePreview lecture={selectedLecture} />
+           <LecturePlayer lecture={selectedLecture} />
 
         </div>
 
         {/* Review Section */}
-        <div className="mt-8 border-t pt-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <div className={`mt-8 border-t pt-6 ${isDark ? 'border-gray-800' : ''}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
             Write a Review
           </h2>
 
-          <div className="bg-[#fafafa] border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div className={`border rounded-2xl p-5 shadow-sm ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-[#fafafa] border-gray-200'}`}>
             <div className="flex items-center gap-2 mb-4">
               {[1, 2, 3, 4, 5].map((star) => (
                 <FaStar
                   key={star}
                   onClick={() => setRating(star)}
-                  className={`cursor-pointer text-2xl ${star <= rating ? "fill-amber-300" : "fill-gray-300"
+                  className={`cursor-pointer text-2xl ${star <= rating ? "fill-amber-300" : isDark ? "fill-gray-600" : "fill-gray-300"
                     }`}
                 />
               ))}
             </div>
 
             <textarea
-              className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black resize-none text-sm"
+              className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black resize-none text-sm ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 text-gray-900'}`}
               placeholder="Write your review here..."
               rows={5}
               onChange={(e) => setComment(e.target.value)}
@@ -353,25 +348,25 @@ const ViewCourse = () => {
         </div>
 
         {/* Course Instructor */}
-        <div className="mt-10 border-t pt-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-5">
+        <div className={`mt-10 border-t pt-6 ${isDark ? 'border-gray-800' : ''}`}>
+          <h2 className={`text-2xl font-bold mb-5 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
             Course Instructor
           </h2>
 
-          <div className="flex items-start gap-4 bg-[#fafafa] border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div className={`flex items-start gap-4 border rounded-2xl p-5 shadow-sm ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-[#fafafa] border-gray-200'}`}>
             <img
               src={selectedCourse?.creator?.photoUrl || img}
               alt=""
               className="w-20 h-20 rounded-full object-cover border"
             />
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className={`text-xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>
                 {selectedCourse?.creator?.name || "Unknown Creator"}
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                 {selectedCourse?.creator?.email || "No Email"}
               </p>
-              <p className="text-sm text-gray-600 leading-6 mt-3">
+              <p className={`text-sm leading-6 mt-3 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 {selectedCourse?.creator?.description ||
                   "Experienced instructor passionate about teaching students."}
               </p>
@@ -381,7 +376,7 @@ const ViewCourse = () => {
 
         {/* Other Popular Courses */}
         <div className="py-6">
-          <p className="text-xl font-semibold mb-2">Other Popular Courses</p>
+          <p className={`text-xl font-semibold mb-2 ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>Other Popular Courses</p>
         </div>
 
         <div className="w-full transition-all duration-300 py-[20px] flex items-start justify-center lg:justify-start flex-wrap gap-6">
@@ -398,7 +393,7 @@ const ViewCourse = () => {
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-sm">No other courses found.</p>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>No other courses found.</p>
           )}
         </div>
 

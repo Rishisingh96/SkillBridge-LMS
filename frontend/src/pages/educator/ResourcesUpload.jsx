@@ -6,11 +6,13 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import { serverUrl } from "../../App";
+import { useTheme } from "../../context/ThemeContext";
 
 const ResourcesUpload = ({ resources,
   setResources }) => {
 
   const { lectureId } = useParams();
+  const { isDark } = useTheme();
 
   const [files, setFiles] = useState([]);
 
@@ -188,16 +190,16 @@ const ResourcesUpload = ({ resources,
 
   return (
 
-    <div className="bg-gray-50 border border-gray-200 rounded-3xl p-6">
+    <div className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'} border rounded-3xl p-6`}>
 
       {/* Heading */}
       <div className="mb-5">
 
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
           Upload Notes & Resources
         </h2>
 
-        <p className="text-gray-500 mt-1 text-sm">
+        <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1 text-sm`}>
           Upload PDFs, Images, ZIP,
           Source Code & Documents
         </p>
@@ -205,7 +207,7 @@ const ResourcesUpload = ({ resources,
       </div>
 
       {/* Upload Box */}
-      <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 bg-white">
+      <div className={`border-2 border-dashed ${isDark ? 'border-gray-600 bg-gray-900' : 'border-gray-300 bg-white'} rounded-2xl p-6`}>
 
         <input
           type="file"
@@ -219,7 +221,7 @@ const ResourcesUpload = ({ resources,
 
           <div className="mt-8">
 
-            <h3 className="text-xl font-bold text-gray-800 mb-5">
+            <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-5`}>
               Uploaded Notes & Resources
             </h3>
 
@@ -229,19 +231,19 @@ const ResourcesUpload = ({ resources,
 
                 <div
                   key={resource._id || index}
-                  className="bg-white border rounded-2xl p-5 shadow-sm"
+                  className={`${isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border rounded-2xl p-5 shadow-sm`}
                 >
 
                   <div className="flex items-center justify-between gap-5">
 
                     <div>
 
-                      <p className="font-semibold text-gray-800">
+                      <p className={`font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                         {resource.title ||
                           `Resource ${index + 1}`}
                       </p>
 
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
                         PDF / Notes File
                       </p>
 
@@ -292,16 +294,16 @@ const ResourcesUpload = ({ resources,
 
               <div
                 key={`${file.name}-${file.size}-${index}`}
-                className="flex items-center justify-between bg-gray-100 px-4 py-3 rounded-xl"
+                className={`flex items-center justify-between ${isDark ? 'bg-gray-800' : 'bg-gray-100'} px-4 py-3 rounded-xl`}
               >
 
                 <div>
 
-                  <p className="font-medium text-gray-800 text-sm">
+                  <p className={`font-medium ${isDark ? 'text-white' : 'text-gray-800'} text-sm`}>
                     {file.name}
                   </p>
 
-                  <p className="text-xs text-gray-500">
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     {(
                       file.size /
                       (1024 * 1024)
@@ -326,7 +328,7 @@ const ResourcesUpload = ({ resources,
 
         <div className="mt-6">
 
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          <div className={`w-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-3 overflow-hidden`}>
 
             <div
               className="bg-black h-3 transition-all duration-300"
@@ -337,7 +339,7 @@ const ResourcesUpload = ({ resources,
 
           </div>
 
-          <p className="text-sm text-gray-600 mt-2">
+          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mt-2`}>
             Uploading Resources...
             {" "}
             {progress}%

@@ -56,6 +56,8 @@ import ManageUsers from "./pages/admin/ManageUsers";
 import ManageCourses from "./pages/admin/ManageCourses";
 
 import PlatformStats from "./pages/admin/PlatformStats";
+import AdminCoupons from "./pages/admin/Coupons";
+import CheckoutPage from "./pages/student/CheckoutPage";
 
 export const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -86,7 +88,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-black text-white text-2xl">
+      <div className="w-full h-screen flex items-center justify-center bg-white dark:bg-slate-900 text-gray-900 dark:text-white text-2xl">
         Loading...
       </div>
     );
@@ -167,6 +169,8 @@ function App() {
           element={userData ? <MyEnrolledCourses /> : <Navigate to="/login" />}
         />
 
+        <Route path="/checkout/:courseId" element={<CheckoutPage />} />
+
         {/* Educator redirect */}
         <Route
           path="/dashboard"
@@ -203,6 +207,7 @@ function App() {
           <Route path="course-performance" element={<CoursePerformance />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<Courses />} />
+          <Route path="coupons" element={<AdminCoupons />} />
           <Route path="create-course" element={<CreateCourse />} />
           <Route path="edit-course/:courseId" element={<EditCourse />} />
           <Route path="create-module/:courseId" element={<Module />} />
@@ -250,6 +255,10 @@ function App() {
           {/* COURSES */}
 
           <Route path="courses" element={<ManageCourses />} />
+
+          {/* COUPONS */}
+
+          <Route path="coupons" element={<AdminCoupons />} />
 
           {/* STATS */}
 

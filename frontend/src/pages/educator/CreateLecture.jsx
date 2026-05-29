@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeftLong, FaPlus, FaTrash, FaVideo } from "react-icons/fa6";
+import { FaArrowLeft, FaPlus, FaTrash, FaVideo } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,11 +12,13 @@ import {
   clearError,
 } from "../../redux/slices/lectureSlice";
 import { serverUrl } from "../../App";
+import { useTheme } from "../../context/ThemeContext";
 
 const CreateLecture = () => {
   const navigate = useNavigate();
   const { courseId, moduleId } = useParams();
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
 
   const { lectureData, loading, error } = useSelector((state) => state.lecture);
 
@@ -80,20 +82,20 @@ const CreateLecture = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+    <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-gray-50'} p-6 md:p-10`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <FaArrowLeftLong
+            <FaArrowLeft
               onClick={() => navigate(`/educator/create-module/${courseId}`)}
-              className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
+              className={`text-2xl cursor-pointer ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-black'} transition-all`}
             />
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+              <h1 className={`text-3xl md:text-4xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                 Lecture Management
               </h1>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-sm mt-1`}>
                 Manage lectures for this module
               </p>
             </div>
@@ -109,15 +111,15 @@ const CreateLecture = () => {
 
         {/* Create Lecture Form */}
         {showCreateForm && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <div className={`${isDark ? 'bg-gray-900' : 'bg-white'} rounded-2xl shadow-lg p-6 md:p-8 mb-8`}>
+            <h2 className={`text-2xl font-bold mb-6 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
               Create New Lecture
             </h2>
             <form onSubmit={handleCreateLecture}>
               <div className="space-y-6">
                 {/* Lecture Title */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     Lecture Title *
                   </label>
                   <input
@@ -125,7 +127,7 @@ const CreateLecture = () => {
                     value={lectureTitle}
                     onChange={(e) => setLectureTitle(e.target.value)}
                     placeholder="e.g. Introduction to React Components"
-                    className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all"
+                    className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 text-gray-900'}`}
                     required
                   />
                 </div>
@@ -160,14 +162,14 @@ const CreateLecture = () => {
               <ClipLoader size={40} color="black" />
             </div>
           ) : lectureData.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-              <div className="text-gray-400 text-6xl mb-4">
+            <div className={`${isDark ? 'bg-gray-900' : 'bg-white'} rounded-2xl shadow-lg p-8 text-center`}>
+              <div className={`${isDark ? 'text-gray-600' : 'text-gray-400'} text-6xl mb-4`}>
                 <FaVideo />
               </div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 No Lectures Yet
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} mb-6`}>
                 Start by creating your first lecture for this module.
               </p>
               <button
@@ -182,7 +184,7 @@ const CreateLecture = () => {
             lectureData.map((lecture, index) => (
               <div
                 key={lecture._id}
-                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all"
+                className={`${isDark ? 'bg-gray-900' : 'bg-white'} rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all`}
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   {/* Lecture Info */}
@@ -191,12 +193,12 @@ const CreateLecture = () => {
                       <span className="bg-blue-600 text-white text-sm font-bold px-3 py-1 rounded-full">
                         Lecture {index + 1}
                       </span>
-                      <h3 className="text-xl font-bold text-gray-800">
+                      <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                         {lecture.lectureTitle}
                       </h3>
                     </div>
                     {lecture.videoUrl && (
-                      <div className="flex items-center gap-2 text-gray-600 text-sm">
+                      <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                         <FaVideo className="text-green-600" />
                         <span>Video uploaded</span>
                       </div>
@@ -219,7 +221,7 @@ const CreateLecture = () => {
                     </button>
                     <button
                       onClick={() => handleDeleteLecture(lecture._id)}
-                      className="flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-lg font-medium transition-all text-sm"
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${isDark ? 'bg-red-900/50 hover:bg-red-900 text-red-400' : 'bg-red-100 hover:bg-red-200 text-red-600'}`}
                     >
                       <FaTrash />
                       Delete
@@ -233,13 +235,13 @@ const CreateLecture = () => {
 
         {/* Statistics */}
         {lectureData.length > 0 && (
-          <div className="mt-8 bg-white rounded-2xl shadow-lg p-6">
+          <div className={`mt-8 rounded-2xl shadow-lg p-6 ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-gray-800">
+                <h3 className={`text-lg font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
                   Module Statistics
                 </h3>
-                <p className="text-gray-500 text-sm">
+                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   Total lectures in this module
                 </p>
               </div>
@@ -247,7 +249,7 @@ const CreateLecture = () => {
                 <div className="text-3xl font-bold text-blue-600">
                   {lectureData.length}
                 </div>
-                <div className="text-gray-500 text-sm">
+                <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   {lectureData.length === 1 ? "Lecture" : "Lectures"}
                 </div>
               </div>

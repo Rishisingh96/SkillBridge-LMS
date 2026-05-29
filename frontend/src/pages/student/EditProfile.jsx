@@ -5,63 +5,102 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import {
-  FaArrowLeftLong,
+  FaArrowLeft,
   FaCamera,
   FaUser,
+  FaPhone,
 } from "react-icons/fa6";
+
+import { motion } from "framer-motion";
 
 import { toast } from "react-toastify";
 
 import { updateProfileData } from "../../redux/slices/userSlice";
+import Nav from "../../components/navbar/Navbar";
 
 const EditProfile = () => {
-
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  // ─────────────────────────────────────────
-  // Redux State
-  // ─────────────────────────────────────────
+  // =========================================================
+  // REDUX
+  // =========================================================
+
   const { userData, loading } = useSelector(
     (state) => state.user
   );
 
-  // ─────────────────────────────────────────
-  // Form States
-  // ─────────────────────────────────────────
-  const [name, setName] = useState(userData?.name || "");
+  // =========================================================
+  // STATES
+  // =========================================================
 
-  const [bio, setBio] = useState(userData?.bio || "");
+  const [name, setName] = useState(
+    userData?.name || ""
+  );
 
-  const [phone, setPhone] = useState(userData?.phone || "");
+  const [bio, setBio] = useState(
+    userData?.bio || ""
+  );
+
+  const [phone, setPhone] = useState(
+    userData?.phone || ""
+  );
 
   const [gender, setGender] = useState(
     userData?.gender || ""
   );
 
-  const [dateOfBirth, setDateOfBirth] = useState(
-    userData?.dateOfBirth
-      ? userData.dateOfBirth.split("T")[0]
-      : ""
-  );
+  const [dateOfBirth, setDateOfBirth] =
+    useState(
+      userData?.dateOfBirth
+        ? userData.dateOfBirth.split("T")[0]
+        : ""
+    );
 
-  // ─────────────────────────────────────────
-  // Image States
-  // ─────────────────────────────────────────
-  const [photoUrl, setPhotoUrl] = useState(null);
+  const [photoUrl, setPhotoUrl] =
+    useState(null);
 
-  const [previewImage, setPreviewImage] = useState(
-    userData?.photoUrl || null
-  );
+  const [previewImage, setPreviewImage] =
+    useState(userData?.photoUrl || null);
 
-  // ─────────────────────────────────────────
-  // Handle Edit Profile
-  // ─────────────────────────────────────────
-  const handleEditProfile = async () => {
+  // =========================================================
+  // IMAGE CHANGE
+  // =========================================================
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(
+        "Image size must be less than 5MB"
+      );
+      return;
+    }
+
+    setPhotoUrl(file);
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  // =========================================================
+  // UPDATE PROFILE
+  // =========================================================
+
+  const handleEditProfile = async (
+    e
+  ) => {
+    e.preventDefault();
 
     try {
-
       const formData = new FormData();
 
       formData.append("name", name);
@@ -72,128 +111,202 @@ const EditProfile = () => {
 
       formData.append("gender", gender);
 
-      formData.append("dateOfBirth", dateOfBirth);
+      formData.append(
+        "dateOfBirth",
+        dateOfBirth
+      );
 
-      // Image Upload
-      if (photoUrl && photoUrl instanceof File) {
-
-        formData.append("photo", photoUrl);
-
+      if (photoUrl instanceof File) {
+        formData.append(
+          "photo",
+          photoUrl
+        );
       }
 
-      // Redux Thunk
       await dispatch(
         updateProfileData(formData)
       ).unwrap();
 
-      toast.success("Profile Updated Successfully");
+      toast.success(
+        "Profile updated successfully"
+      );
 
       navigate("/profile");
-
     } catch (error) {
-
       toast.error(
         error || "Failed to update profile"
       );
-
-    }
-  };
-
-  // ─────────────────────────────────────────
-  // Handle Image Change
-  // ─────────────────────────────────────────
-  const handleImageChange = (e) => {
-
-    const file = e.target.files[0];
-
-    if (file) {
-
-      // File Size Validation
-      if (file.size > 5 * 1024 * 1024) {
-
-        toast.error(
-          "File size must be less than 5MB"
-        );
-
-        return;
-      }
-
-      setPhotoUrl(file);
-
-      // Preview
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-
-        setPreviewImage(reader.result);
-
-      };
-
-      reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-8">
+    <>
+      <Nav />
+      <div className="relative min-h-screen overflow-hidden bg-[#0B1120] text-white pt-[90px] pb-10 px-4 md:px-6">
 
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden">
+      {/* ========================================================= */}
+      {/* BACKGROUND */}
+      {/* ========================================================= */}
 
-        {/* ───────────────── HEADER ───────────────── */}
-        <div className="bg-gradient-to-r from-black to-gray-700 p-6 relative">
+      <div className="fixed -z-10 top-[-150px] right-[-120px] h-[320px] w-[320px] rounded-full bg-violet-600/20 blur-[120px]" />
 
-          {/* Back Button */}
+      <div className="fixed -z-10 bottom-[-150px] left-[-120px] h-[320px] w-[320px] rounded-full bg-cyan-500/20 blur-[120px]" />
+
+      {/* ========================================================= */}
+      {/* CARD */}
+      {/* ========================================================= */}
+
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 30,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.4,
+        }}
+        className="
+          relative
+          z-10
+          mx-auto
+          max-w-4xl
+          overflow-hidden
+          rounded-[32px]
+          border
+          border-white/10
+          bg-white/[0.05]
+          backdrop-blur-2xl
+          shadow-[0_10px_80px_rgba(0,0,0,0.45)]
+        "
+      >
+
+        {/* ========================================================= */}
+        {/* HEADER */}
+        {/* ========================================================= */}
+
+        <div className="relative border-b border-white/10 px-5 py-6 md:px-8">
+
           <button
-            onClick={() => navigate(-1)}
-            className="absolute top-6 left-6 bg-white p-3 rounded-full shadow-md hover:scale-110 transition-transform duration-300"
+            onClick={() =>
+              navigate(-1)
+            }
+            className="
+              absolute
+              left-5
+              top-6
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/5
+              transition-all
+              hover:bg-white/10
+            "
           >
-            <FaArrowLeftLong className="text-black text-xl" />
+            <FaArrowLeft />
           </button>
 
-          <h1 className="text-3xl font-bold text-white text-center pt-8 pb-4">
-            Edit Profile
-          </h1>
+          <div className="text-center">
+
+            <h1 className="text-3xl font-black tracking-tight md:text-4xl">
+              Edit Profile
+            </h1>
+
+            <p className="mt-2 text-sm text-gray-400">
+              Manage your account information
+            </p>
+
+          </div>
 
         </div>
 
-        {/* ───────────────── FORM ───────────────── */}
+        {/* ========================================================= */}
+        {/* FORM */}
+        {/* ========================================================= */}
+
         <form
-          className="p-6 space-y-5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleEditProfile();
-          }}
+          onSubmit={
+            handleEditProfile
+          }
+          className="space-y-8 p-5 md:p-8"
         >
 
-          {/* Profile Image */}
-          <div className="flex flex-col items-center space-y-4">
+          {/* ========================================================= */}
+          {/* PROFILE IMAGE */}
+          {/* ========================================================= */}
 
-            <div className="relative group">
+          <div className="flex flex-col items-center">
+
+            <div className="relative">
 
               {previewImage ? (
 
                 <img
                   src={previewImage}
-                  alt="Profile Preview"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl"
+                  alt="profile"
+                  className="
+                    h-32
+                    w-32
+                    rounded-3xl
+                    border
+                    border-white/10
+                    object-cover
+                    shadow-2xl
+                  "
                 />
 
               ) : (
 
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-4xl font-bold text-white shadow-xl">
-
-                  {name?.charAt(0)?.toUpperCase() || "U"}
-
+                <div
+                  className="
+                    flex
+                    h-32
+                    w-32
+                    items-center
+                    justify-center
+                    rounded-3xl
+                    bg-gradient-to-br
+                    from-violet-600
+                    to-cyan-500
+                    text-4xl
+                    font-bold
+                  "
+                >
+                  {name?.charAt(0)?.toUpperCase() ||
+                    "U"}
                 </div>
+
               )}
 
-              {/* Camera Icon */}
+              {/* CAMERA */}
+
               <label
                 htmlFor="image"
-                className="absolute bottom-0 right-0 bg-black text-white p-3 rounded-full cursor-pointer hover:bg-gray-800 transition-colors shadow-lg"
+                className="
+                  absolute
+                  -bottom-2
+                  -right-2
+                  flex
+                  h-11
+                  w-11
+                  cursor-pointer
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  bg-violet-600
+                  shadow-lg
+                  transition-all
+                  hover:bg-violet-500
+                "
               >
-
-                <FaCamera className="text-lg" />
-
+                <FaCamera />
               </label>
 
             </div>
@@ -201,92 +314,168 @@ const EditProfile = () => {
             <input
               id="image"
               type="file"
+              hidden
               accept="image/*"
-              className="hidden"
-              onChange={handleImageChange}
+              onChange={
+                handleImageChange
+              }
             />
 
-            <p className="text-sm text-gray-500">
-              Click camera icon to change photo
+            <p className="mt-4 text-sm text-gray-400">
+              Upload profile picture
             </p>
 
           </div>
 
-          {/* Full Name */}
-          <div className="space-y-2">
+          {/* ========================================================= */}
+          {/* INPUTS */}
+          {/* ========================================================= */}
 
-            <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              Full Name
-            </label>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
-            <div className="relative">
+            {/* NAME */}
 
-              <FaUser className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <div className="space-y-2">
 
-              <input
-                type="text"
-                value={name}
-                onChange={(e) =>
-                  setName(e.target.value)
-                }
-                placeholder="Enter your full name"
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-800"
-              />
+              <label className="text-sm font-medium text-gray-300">
+                Full Name
+              </label>
+
+              <div className="relative">
+
+                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) =>
+                    setName(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Enter your name"
+                  className="
+                    h-14
+                    w-full
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-white/5
+                    pl-12
+                    pr-4
+                    text-white
+                    outline-none
+                    transition-all
+                    placeholder:text-gray-500
+                    focus:border-violet-500/50
+                  "
+                />
+
+              </div>
+
+            </div>
+
+            {/* PHONE */}
+
+            <div className="space-y-2">
+
+              <label className="text-sm font-medium text-gray-300">
+                Phone Number
+              </label>
+
+              <div className="relative">
+
+                <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) =>
+                    setPhone(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Enter phone number"
+                  className="
+                    h-14
+                    w-full
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-white/5
+                    pl-12
+                    pr-4
+                    text-white
+                    outline-none
+                    transition-all
+                    placeholder:text-gray-500
+                    focus:border-violet-500/50
+                  "
+                />
+
+              </div>
 
             </div>
 
           </div>
 
-          {/* Bio */}
+          {/* ========================================================= */}
+          {/* BIO */}
+          {/* ========================================================= */}
+
           <div className="space-y-2">
 
-            <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              Bio / Description
+            <label className="text-sm font-medium text-gray-300">
+              Bio
             </label>
 
             <textarea
+              rows={5}
               value={bio}
               onChange={(e) =>
-                setBio(e.target.value)
+                setBio(
+                  e.target.value
+                )
               }
-              rows={4}
-              placeholder="Tell us about yourself..."
-              maxLength={500}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-800 resize-none"
+              placeholder="Tell something about yourself..."
+              className="
+                w-full
+                rounded-2xl
+                border
+                border-white/10
+                bg-white/5
+                px-4
+                py-4
+                text-white
+                outline-none
+                transition-all
+                placeholder:text-gray-500
+                focus:border-violet-500/50
+                resize-none
+              "
             />
 
-            <p className="text-xs text-gray-500 text-right">
-              {bio.length}/500
-            </p>
+            <div className="flex justify-end">
+
+              <span className="text-xs text-gray-500">
+                {bio.length}/500
+              </span>
+
+            </div>
 
           </div>
 
-          {/* Phone */}
-          <div className="space-y-2">
+          {/* ========================================================= */}
+          {/* DOB + GENDER */}
+          {/* ========================================================= */}
 
-            <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-              Phone Number
-            </label>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) =>
-                setPhone(e.target.value)
-              }
-              placeholder="Enter your phone number"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-800"
-            />
+            {/* DOB */}
 
-          </div>
-
-          {/* DOB + Gender */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-            {/* Date of Birth */}
             <div className="space-y-2">
 
-              <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              <label className="text-sm font-medium text-gray-300">
                 Date of Birth
               </label>
 
@@ -294,41 +483,80 @@ const EditProfile = () => {
                 type="date"
                 value={dateOfBirth}
                 onChange={(e) =>
-                  setDateOfBirth(e.target.value)
+                  setDateOfBirth(
+                    e.target.value
+                  )
                 }
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-800"
+                className="
+                  h-14
+                  w-full
+                  rounded-2xl
+                  border
+                  border-white/10
+                  bg-white/5
+                  px-4
+                  text-white
+                  outline-none
+                  focus:border-violet-500/50
+                "
               />
 
             </div>
 
-            {/* Gender */}
+            {/* GENDER */}
+
             <div className="space-y-2">
 
-              <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              <label className="text-sm font-medium text-gray-300">
                 Gender
               </label>
 
               <select
                 value={gender}
                 onChange={(e) =>
-                  setGender(e.target.value)
+                  setGender(
+                    e.target.value
+                  )
                 }
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-800"
+                className="
+                  h-14
+                  w-full
+                  rounded-2xl
+                  border
+                  border-white/10
+                  bg-white/5
+                  px-4
+                  text-white
+                  outline-none
+                  focus:border-violet-500/50
+                "
               >
 
-                <option value="">
+                <option
+                  value=""
+                  className="bg-[#0B1120]"
+                >
                   Select Gender
                 </option>
 
-                <option value="male">
+                <option
+                  value="male"
+                  className="bg-[#0B1120]"
+                >
                   Male
                 </option>
 
-                <option value="female">
+                <option
+                  value="female"
+                  className="bg-[#0B1120]"
+                >
                   Female
                 </option>
 
-                <option value="other">
+                <option
+                  value="other"
+                  className="bg-[#0B1120]"
+                >
                   Other
                 </option>
 
@@ -338,39 +566,76 @@ const EditProfile = () => {
 
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-4 pt-4">
+          {/* ========================================================= */}
+          {/* BUTTONS */}
+          {/* ========================================================= */}
 
-            {/* Cancel */}
+          <div className="flex flex-col gap-4 pt-2 sm:flex-row">
+
+            {/* CANCEL */}
+
             <button
               type="button"
-              onClick={() => navigate(-1)}
-              className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              onClick={() =>
+                navigate(-1)
+              }
+              className="
+                h-14
+                flex-1
+                rounded-2xl
+                border
+                border-white/10
+                bg-white/5
+                font-medium
+                text-gray-300
+                transition-all
+                hover:bg-white/10
+              "
             >
-
               Cancel
-
             </button>
 
-            {/* Save */}
-            <button
+            {/* SAVE */}
+
+            <motion.button
+              whileHover={{
+                scale: 1.01,
+              }}
+              whileTap={{
+                scale: 0.98,
+              }}
               type="submit"
               disabled={loading}
-              className="flex-1 bg-gradient-to-r from-black to-gray-700 text-white px-6 py-3 rounded-xl hover:from-gray-800 hover:to-gray-600 transition-all duration-300 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="
+                h-14
+                flex-1
+                rounded-2xl
+                bg-gradient-to-r
+                from-violet-600
+                to-cyan-500
+                font-semibold
+                text-white
+                shadow-xl
+                shadow-violet-500/20
+                transition-all
+                hover:opacity-95
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
             >
-
               {loading
                 ? "Saving..."
                 : "Save Changes"}
-
-            </button>
+            </motion.button>
 
           </div>
 
         </form>
 
-      </div>
+      </motion.div>
+
     </div>
+    </>
   );
 };
 

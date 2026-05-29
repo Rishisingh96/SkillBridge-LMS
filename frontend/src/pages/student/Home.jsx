@@ -1,97 +1,92 @@
-
 import React from "react";
-import Nav from '../../components/common/Navbar'
-import AnimatedBG from '../../components/AnimatedBG'
+import Nav from "../../components/navbar/Navbar";
+import Videobg from "../../components/common/Videobg";
 import ai from "../../assets/ai.png";
 import { SiViaplay } from "react-icons/si";
-import Logos from "../../components/Logos";
-import { motion } from 'framer-motion';
+import Logos from "../../components/common/Logos";
+import { motion } from "framer-motion";
 import ExploreCourses from "../../components/course/ExploreCourses";
 import CardPage from "../../components/course/CardPage";
 import { useNavigate } from "react-router-dom";
-import About from "../../components/About";
+import About from "../../components/common/About";
 import Footer from "../../components/common/Footer";
 import ReviewPage from "../../components/course/ReviewPage";
 
+
 function Home() {
   const navigate = useNavigate();
+
   return (
-    <div className="w-[100%] overflow-hidden">
-      
-      {/* Animated Background with Navigation and Content */}
-      <AnimatedBG darkMode={true}>
+    <div className="w-full overflow-hidden bg-white dark:bg-slate-900 pt-[68px]">
+
+      {/* HERO SECTION */}
+      <Videobg>
         <Nav />
-        
-        {/* Hero Content */}
-        <div className="min-h-screen flex items-center justify-center relative">
+
+        <div className="min-h-screen flex items-center justify-center text-center px-4">
+
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="text-center px-4"
+            transition={{ duration: 0.8 }}
           >
+
             {/* Heading */}
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="lg:text-[70px] md:text-[40px] text-[28px] text-white font-bold mb-4"
+              transition={{ delay: 0.2 }}
+              className="text-white font-bold lg:text-[70px] md:text-[45px] text-[28px]"
             >
               Grow Your Skills to Advance
             </motion.h1>
 
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.9 }}
-              className="lg:text-[70px] md:text-[40px] text-[28px] text-white font-bold mb-8"
+              transition={{ delay: 0.4 }}
+              className="text-white font-bold lg:text-[70px] md:text-[45px] text-[28px] mt-2"
             >
               Your Career Path
             </motion.h2>
 
-            {/* Action Buttons */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.1 }}
-              className="flex items-center justify-center gap-4 flex-wrap"
+            {/* Buttons */}
+            <motion.div
+              className="flex flex-wrap justify-center gap-4 mt-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
             >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-[20px] py-[10px] border-2 border-white text-white rounded-[10px] text-[18px] font-light flex gap-2 items-center cursor-pointer bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all"
+
+              {/* Courses Button */}
+              <button
                 onClick={() => navigate("/allcourses")}
+                className="px-6 py-3 border border-white text-white rounded-xl flex items-center gap-2 bg-white/10 backdrop-blur-md hover:bg-white/20 transition"
               >
                 View All Courses
-                <SiViaplay className="w-[30px] h-[30px] fill-white" />
-              </motion.button>
+                <SiViaplay className="text-xl" />
+              </button>
 
-              {/* AI Search Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-[20px] py-[10px] bg-white text-black rounded-[10px] text-[18px] font-light flex gap-2 items-center justify-center cursor-pointer hover:bg-gray-100 transition-all"
-              >
+              {/* AI Button */}
+              <button className="px-6 py-3 bg-white text-black rounded-xl flex items-center gap-2 hover:bg-gray-100 transition">
                 Search With AI
-                <img
-                  src={ai}
-                  className="w-[30px] h-[30px] rounded-full"
-                  alt=""
-                />
-              </motion.button>
+                <img src={ai} alt="ai" className="w-6 h-6 rounded-full" />
+              </button>
+
             </motion.div>
+
           </motion.div>
         </div>
-      </AnimatedBG>
+      </Videobg>
 
-      {/* Logos Section */}
+      {/* OTHER SECTIONS */}
       <Logos />
-
-      {/* Explore Courses Section */}
       <ExploreCourses />
       <CardPage />
-      <About />
+    
       <ReviewPage />
+      <About />
+      
       <Footer />
 
     </div>

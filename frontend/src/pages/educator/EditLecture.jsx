@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setLectureData, fetchLectures } from "../../redux/slices/lectureSlice";
@@ -9,10 +9,12 @@ import axios from "axios";
 import { serverUrl } from "../../App";
 import ResourcesUpload from "./ResourcesUpload";
 import QuizUpload from "./QuizUpload";
+import { useTheme } from "../../context/ThemeContext";
 
 const EditLecture = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
 
   const { courseId, moduleId, lectureId } = useParams();
 
@@ -167,21 +169,21 @@ const EditLecture = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
+    <div className={`min-h-screen flex items-center justify-center px-4 py-10 ${isDark ? 'bg-gray-950' : 'bg-gray-100'}`}>
 
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-8">
+      <div className={`w-full max-w-4xl rounded-3xl shadow-xl p-8 ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
 
         {/* Header */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
 
           <div className="flex items-center gap-4">
 
-            <FaArrowLeftLong
+            <FaArrowLeft
               onClick={() => navigate(`/educator/create-lecture/${courseId}/${moduleId}`)}
-              className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
+              className={`text-2xl cursor-pointer transition-all ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-black'}`}
             />
 
-            <h2 className="text-3xl font-bold text-gray-800">
+            <h2 className={`text-3xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
               Edit Lecture
             </h2>
 
@@ -208,7 +210,7 @@ const EditLecture = () => {
           {/* Lecture Title */}
           <div>
 
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Lecture Title
             </label>
 
@@ -217,7 +219,7 @@ const EditLecture = () => {
               value={lectureTitle}
               onChange={(e) => setLectureTitle(e.target.value)}
               placeholder="Enter Lecture Title"
-              className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all"
+              className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 text-gray-900'}`}
             />
 
           </div>
@@ -225,11 +227,11 @@ const EditLecture = () => {
           {/* Video Upload */}
           <div>
 
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Upload Video
             </label>
 
-            <div className="border border-dashed border-gray-300 rounded-2xl p-6 bg-gray-50">
+            <div className={`border border-dashed rounded-2xl p-6 ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-300 bg-gray-50'}`}>
 
               <input
                 type="file"
@@ -245,7 +247,7 @@ const EditLecture = () => {
                     Selected File: {videoUrl.name}
                   </p>
 
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     Size: {(videoUrl.size / (1024 * 1024)).toFixed(2)} MB
                   </p>
 
@@ -259,9 +261,9 @@ const EditLecture = () => {
           {/* Existing Video */}
           {existingVideo && !videoUrl && (
 
-            <div className="border rounded-2xl p-5 bg-gray-50 shadow-sm">
+            <div className={`border rounded-2xl p-5 shadow-sm ${isDark ? 'border-gray-700 bg-gray-800' : 'bg-gray-50'}`}>
 
-              <h3 className="font-bold text-lg text-gray-800 mb-4">
+              <h3 className={`font-bold text-lg mb-4 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
                 Current Lecture Video
               </h3>
 
@@ -284,7 +286,7 @@ const EditLecture = () => {
               className="w-5 h-5 cursor-pointer"
             />
 
-            <label className="text-gray-700 font-medium cursor-pointer">
+            <label className={`font-medium cursor-pointer ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Is this lecture FREE preview?
             </label>
 
@@ -294,7 +296,7 @@ const EditLecture = () => {
           {loading && (
             <div>
 
-              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+              <div className={`w-full rounded-full h-3 overflow-hidden ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
 
                 <div
                   className="bg-black h-3 transition-all duration-300"
@@ -303,7 +305,7 @@ const EditLecture = () => {
 
               </div>
 
-              <p className="text-sm text-gray-600 mt-2">
+              <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                 Uploading Video... {progress}%
               </p>
 

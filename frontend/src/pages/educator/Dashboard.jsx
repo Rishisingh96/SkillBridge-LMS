@@ -11,11 +11,14 @@ import { fetchDashboardStats } from "../../redux/slices/dashboardSlice";
 import CoursePerformanceTable from "../../components/dashboard/CoursePerformanceTable";
 import RecentEnrollments from "../../components/dashboard/RecentEnrollments";
 import TopPerformingCourse from "../../components/dashboard/TopPerformingCourse";
+import { useTheme } from "../../context/ThemeContext";
+import Nav from "../../components/navbar/Navbar";
 
 const Dashboard = () => {
   const { userData } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
 
   const { creatorCourseData } = useSelector((state) => state.course);
   const { stats, loading } = useSelector((state) => state.dashboard);
@@ -34,7 +37,9 @@ const Dashboard = () => {
   const enrollmentByCourse = stats.enrollmentByCourse;
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] px-4 md:px-8 py-6">
+    <>
+      <Nav />
+      <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-[#f5f7fb]'} px-4 md:px-8 py-6 pt-[90px]`}>
       <DashboardHeader
         title="Educator Dashboard"
         subtitle="Manage your courses, students and revenue"
@@ -68,6 +73,7 @@ const Dashboard = () => {
         <TopPerformingCourse />
       </div>
     </div>
+    </>
   );
 };
 

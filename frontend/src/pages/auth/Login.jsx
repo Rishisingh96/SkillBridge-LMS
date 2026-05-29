@@ -137,7 +137,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0f172a] flex items-center justify-center px-4 py-8 overflow-hidden relative">
+    <div className="min-h-screen w-full bg-[#0f172a] dark:bg-slate-950 flex items-center justify-center px-4 py-8 overflow-hidden relative">
       {/* BACKGROUND GLOW */}
 
       <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-indigo-500 opacity-30 blur-[120px] rounded-full"></div>
@@ -157,7 +157,7 @@ const Login = () => {
         {/* LEFT SECTION */}
         {/* ========================================= */}
 
-        <div className="w-full lg:w-[50%] bg-white px-8 md:px-14 py-10 flex flex-col justify-center">
+        <div className="w-full lg:w-[50%] bg-white dark:bg-slate-800 px-8 md:px-14 py-10 flex flex-col justify-center">
           {/* LOGO MOBILE */}
 
           <div className="flex lg:hidden items-center gap-3 mb-8">
@@ -169,11 +169,11 @@ const Login = () => {
           {/* TEXT */}
 
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               Welcome Back 👋
             </h1>
 
-            <p className="text-gray-500 mt-3 text-[15px]">
+            <p className="text-gray-500 dark:text-gray-400 mt-3 text-[15px]">
               Login to continue your learning journey with SkillBridge LMS
               Platform.
             </p>
@@ -182,7 +182,7 @@ const Login = () => {
           {/* EMAIL */}
 
           <div className="flex flex-col gap-2 mb-5">
-            <label htmlFor="email" className="font-semibold text-gray-700">
+            <label htmlFor="email" className="font-semibold text-gray-700 dark:text-gray-300">
               Email Address
             </label>
 
@@ -190,7 +190,7 @@ const Login = () => {
               id="email"
               type="email"
               placeholder="Enter your email"
-              className="w-full h-[55px] px-5 rounded-2xl border border-gray-200 outline-none focus:border-black transition bg-[#f8fafc]"
+              className="w-full h-[55px] px-5 rounded-2xl border border-gray-200 dark:border-slate-600 outline-none focus:border-black dark:focus:border-white transition bg-[#f8fafc] dark:bg-slate-700 dark:text-white"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
             />
@@ -199,7 +199,7 @@ const Login = () => {
           {/* PASSWORD */}
 
           <div className="flex flex-col gap-2 mb-3 relative">
-            <label htmlFor="password" className="font-semibold text-gray-700">
+            <label htmlFor="password" className="font-semibold text-gray-700 dark:text-gray-300">
               Password
             </label>
 
@@ -207,19 +207,19 @@ const Login = () => {
               id="password"
               type={show ? "text" : "password"}
               placeholder="Enter your password"
-              className="w-full h-[55px] px-5 rounded-2xl border border-gray-200 outline-none focus:border-black transition bg-[#f8fafc]"
+              className="w-full h-[55px] px-5 rounded-2xl border border-gray-200 dark:border-slate-600 outline-none focus:border-black dark:focus:border-white transition bg-[#f8fafc] dark:bg-slate-700 dark:text-white"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
             />
 
             {!show ? (
               <FaRegEye
-                className="absolute right-5 bottom-5 text-gray-500 cursor-pointer text-[20px]"
+                className="absolute right-5 bottom-5 text-gray-500 dark:text-gray-400 cursor-pointer text-[20px]"
                 onClick={() => setShow((prev) => !prev)}
               />
             ) : (
               <IoEye
-                className="absolute right-5 bottom-5 text-gray-500 cursor-pointer text-[20px]"
+                className="absolute right-5 bottom-5 text-gray-500 dark:text-gray-400 cursor-pointer text-[20px]"
                 onClick={() => setShow((prev) => !prev)}
               />
             )}
@@ -229,7 +229,7 @@ const Login = () => {
 
           <div className="flex justify-end mb-7">
             <span
-              className="text-sm text-indigo-600 cursor-pointer hover:underline"
+              className="text-sm text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline"
               onClick={() => navigate("/forget-password")}
             >
               Forgot Password?
@@ -243,7 +243,7 @@ const Login = () => {
             whileTap={{ scale: 0.97 }}
             disabled={loading}
             onClick={hangleLogin}
-            className="w-full h-[58px] rounded-2xl bg-black text-white font-semibold text-[17px] shadow-xl flex items-center justify-center"
+            className="w-full h-[58px] rounded-2xl bg-black dark:bg-white dark:text-black text-white font-semibold text-[17px] shadow-xl flex items-center justify-center"
           >
             {loading ? <ClipLoader size={28} color="white" /> : "Login"}
           </motion.button>
@@ -253,7 +253,7 @@ const Login = () => {
           <div className="flex items-center gap-3 my-7">
             <div className="flex-1 h-[1px] bg-gray-200"></div>
 
-            <span className="text-gray-400 text-sm">OR CONTINUE WITH</span>
+            <span className="text-gray-400 dark:text-gray-500 text-sm">OR CONTINUE WITH</span>
 
             <div className="flex-1 h-[1px] bg-gray-200"></div>
           </div>
@@ -265,7 +265,7 @@ const Login = () => {
             whileTap={{ scale: 0.97 }}
             type="button"
             onClick={googleLogin}
-            className="w-full h-[58px] rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 transition flex items-center justify-center gap-3 font-semibold text-gray-700 shadow-sm"
+            className="w-full h-[58px] rounded-2xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 transition flex items-center justify-center gap-3 font-semibold text-gray-700 dark:text-gray-200 shadow-sm"
           >
             <FcGoogle className="text-2xl" />
             Continue with Google

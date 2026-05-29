@@ -1,17 +1,19 @@
-// src/component/Lecture/ModuleList.jsx
 import React, { useState } from "react";
-import { FaPlayCircle } from "react-icons/fa";
-import { MdOutlineLock } from "react-icons/md";
 
-/**
- * Props:
- *  - moduleData       : array of modules (from Redux)
- *  - selectedLecture  : currently selected lecture object
- *  - onSelectLecture  : (lecture) => void
- *  - mode             : "watch" | "preview"
- *    "watch"   → ViewLecture — sab lectures clickable, active = black bg
- *    "preview" → ViewCourse  — sirf isPreviewFree wale clickable, locked icon
- */
+import {
+  FaPlayCircle,
+} from "react-icons/fa";
+
+import {
+  MdOutlineLock,
+} from "react-icons/md";
+
+import {
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
+import { useTheme } from "../../context/ThemeContext";
 
 const ModuleList = ({
   moduleData,
@@ -19,132 +21,385 @@ const ModuleList = ({
   onSelectLecture,
   mode = "watch",
 }) => {
-  const [openModule, setOpenModule] = useState(null);
+
+  const [openModule, setOpenModule] =
+    useState(0);
+
+  const { isDark } = useTheme();
 
   const totalLectures =
-    moduleData?.reduce((total, m) => total + m.lectures.length, 0) || 0;
+    moduleData?.reduce(
+      (total, module) =>
+        total +
+        module.lectures.length,
+      0
+    ) || 0;
 
   return (
-    <div className="bg-white rounded-[24px] border border-gray-200 shadow-lg p-5">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+
+    <div
+      className={`
+        rounded-[2rem]
+        border
+        backdrop-blur-2xl
+        p-5
+        sm:p-6
+        ${isDark ? 'border-white/10 bg-white/5 shadow-[0_10px_50px_rgba(0,0,0,0.35)]' : 'border-gray-200/70 bg-white/70 shadow-[0_10px_50px_rgba(0,0,0,0.08)]'}
+      `}
+    >
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between mb-6">
+
         <div>
-          <h2 className="text-xl font-bold text-gray-900">All Lectures</h2>
-          <p className="text-sm text-gray-500 mt-1">{totalLectures} Lectures</p>
+
+          <h2
+            className={`
+              text-2xl
+              font-black
+              ${isDark ? 'text-white' : 'text-gray-900'}
+            `}
+          >
+            Course Content
+          </h2>
+
+          <p
+            className={`
+              text-sm
+              mt-1
+              ${isDark ? 'text-gray-400' : 'text-gray-500'}
+            `}
+          >
+            {totalLectures} Lectures
+          </p>
+
         </div>
-        <div className="bg-gray-100 text-gray-700 text-xs font-semibold px-3 py-2 rounded-xl">
-          Course
+
+        <div
+          className="
+            px-4
+            py-2
+            rounded-2xl
+            bg-gradient-to-r
+            from-violet-600
+            to-indigo-500
+            text-white
+            text-xs
+            font-semibold
+            shadow-lg
+          "
+        >
+          Premium
         </div>
+
       </div>
 
-      {/* Module accordion */}
-      <div className="flex flex-col gap-5">
-        {moduleData?.map((module, moduleIndex) => (
-          <div
-            key={module._id}
-            className="border rounded-2xl p-4 bg-[#fafafa]"
-          >
-            {/* Module header */}
-            <div
-              className="flex items-center justify-between cursor-pointer"
-              onClick={() =>
-                setOpenModule(openModule === module._id ? null : module._id)
-              }
-            >
-              <div>
-                <h2 className="text-lg font-bold text-black">
-                  Module {moduleIndex + 1}: {module.title}
-                </h2>
-                <p className="text-sm text-gray-500">{module.description}</p>
-              </div>
-              <span className="text-2xl font-bold">
-                {openModule === module._id ? "−" : "+"}
-              </span>
-            </div>
+      {/* MODULES */}
+      <div className="space-y-4">
 
-            {/* Lectures list */}
-            {openModule === module._id && (
-              <div className="flex flex-col gap-3 mt-4">
-                {module.lectures?.map((lecture, lectureIndex) => {
-                  const isActive = selectedLecture?._id === lecture?._id;
-                  const isLocked = mode === "preview" && !lecture.isPreviewFree;
-                  const isFree   = mode === "preview" && lecture.isPreviewFree;
+        {moduleData?.map(
+          (module, moduleIndex) => {
 
-                  return (
-                    <button
-                      key={lecture._id}
-                      disabled={isLocked}
-                      onClick={() => !isLocked && onSelectLecture(lecture)}
+            const isOpen =
+              openModule === moduleIndex;
+
+            return (
+
+              <motion.div
+
+                key={module._id}
+
+                layout
+
+                className={`
+                  rounded-3xl
+                  border
+                  backdrop-blur-xl
+                  overflow-hidden
+                  ${isDark ? 'border-white/10 bg-[#0F172A]/80' : 'border-gray-200/70 bg-white/80'}
+                `}
+              >
+
+                {/* MODULE HEADER */}
+                <button
+                  onClick={() =>
+                    setOpenModule(
+                      isOpen
+                        ? null
+                        : moduleIndex
+                    )
+                  }
+                  className="
+                    w-full
+                    flex
+                    items-center
+                    justify-between
+                    p-5
+                    text-left
+                  "
+                >
+
+                  <div>
+
+                    <h3
                       className={`
-                        w-full flex items-center justify-between
-                        px-4 py-4 rounded-2xl border transition-all duration-300 text-left
-                        ${isLocked
-                          ? "bg-gray-100 border-gray-200 opacity-70 cursor-not-allowed"
-                          : isActive
-                          ? "bg-black text-white border-black shadow-lg"
-                          : "bg-white border-gray-200 hover:border-black"
-                        }
+                        text-lg
+                        font-bold
+                        ${isDark ? 'text-white' : 'text-gray-900'}
                       `}
                     >
-                      {/* Left — icon + title */}
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`
-                            w-11 h-11 rounded-xl flex items-center justify-center
-                            ${isActive ? "bg-white/20" : "bg-gray-100"}
-                          `}
-                        >
-                          {isLocked ? (
-                            <MdOutlineLock className="text-[18px] text-gray-400" />
-                          ) : (
-                            <FaPlayCircle
-                              className={`text-[18px] ${isActive ? "text-white" : "text-black"}`}
-                            />
-                          )}
-                        </div>
+                      Module {moduleIndex + 1}
+                    </h3>
 
-                        <div>
-                          <h3
-                            className={`text-[15px] font-semibold
-                              ${isActive ? "text-white" : "text-gray-800"}
-                            `}
-                          >
-                            {lecture.lectureTitle}
-                          </h3>
-                          <p
-                            className={`text-xs mt-1
-                              ${isActive ? "text-gray-300" : "text-gray-500"}
-                            `}
-                          >
-                            Lecture {lectureIndex + 1}
-                          </p>
-                        </div>
-                      </div>
+                    <p
+                      className={`
+                        text-sm
+                        mt-1
+                        ${isDark ? 'text-gray-400' : 'text-gray-500'}
+                      `}
+                    >
+                      {module.title}
+                    </p>
 
-                      {/* Right — badge */}
-                      <span
-                        className={`
-                          text-xs font-semibold px-3 py-1 rounded-full
-                          ${isActive
-                            ? "bg-white text-black"
-                            : isFree
-                            ? "bg-green-100 text-green-700"
-                            : isLocked
-                            ? "bg-gray-200 text-gray-500"
-                            : "bg-green-100 text-green-700"
-                          }
-                        `}
-                      >
-                        {isLocked ? "Locked" : isFree ? "Free" : "Watch"}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
+                  </div>
+
+                  <motion.div
+                    animate={{
+                      rotate: isOpen
+                        ? 180
+                        : 0,
+                    }}
+                    className={`
+                      w-10
+                      h-10
+                      rounded-xl
+                      flex
+                      items-center
+                      justify-center
+                      text-lg
+                      font-bold
+                      ${isDark ? 'bg-white/10' : 'bg-gray-100'}
+                    `}
+                  >
+                    +
+                  </motion.div>
+
+                </button>
+
+                {/* LECTURES */}
+                <AnimatePresence>
+
+                  {isOpen && (
+
+                    <motion.div
+
+                      initial={{
+                        opacity: 0,
+                        height: 0,
+                      }}
+
+                      animate={{
+                        opacity: 1,
+                        height: "auto",
+                      }}
+
+                      exit={{
+                        opacity: 0,
+                        height: 0,
+                      }}
+
+                      className="
+                        px-5
+                        pb-5
+                        space-y-3
+                      "
+                    >
+
+                      {module.lectures?.map(
+                        (
+                          lecture,
+                          lectureIndex
+                        ) => {
+
+                          const isActive =
+                            selectedLecture?._id ===
+                            lecture?._id;
+
+                          const isLocked =
+                            mode ===
+                              "preview" &&
+                            !lecture.isPreviewFree;
+
+                          return (
+
+                            <motion.button
+
+                              whileHover={{
+                                y: -2,
+                              }}
+
+                              whileTap={{
+                                scale: 0.98,
+                              }}
+
+                              key={lecture._id}
+
+                              disabled={isLocked}
+
+                              onClick={() =>
+                                !isLocked &&
+                                onSelectLecture(
+                                  lecture
+                                )
+                              }
+
+                              className={`
+                                w-full
+                                flex
+                                items-center
+                                justify-between
+                                gap-4
+                                rounded-2xl
+                                p-4
+                                border
+                                transition-all
+                                duration-300
+                                ${
+                                  isActive
+                                    ? "bg-gradient-to-r from-violet-600 to-indigo-500 text-white border-transparent shadow-xl"
+                                    : `${isDark ? 'bg-white/5 border-white/10 hover:border-violet-500' : 'bg-white border-gray-200 hover:border-violet-400'}`
+                                }
+                                ${
+                                  isLocked
+                                    ? "opacity-60 cursor-not-allowed"
+                                    : ""
+                                }
+                              `}
+                            >
+
+                              {/* LEFT */}
+                              <div className="flex items-center gap-4 min-w-0">
+
+                                {/* ICON */}
+                                <div
+                                  className={`
+                                    w-12
+                                    h-12
+                                    rounded-2xl
+                                    flex
+                                    items-center
+                                    justify-center
+                                    shrink-0
+                                    ${
+                                      isActive
+                                        ? "bg-white/20"
+                                        : `${isDark ? 'bg-white/10' : 'bg-gray-100'}`
+                                    }
+                                  `}
+                                >
+
+                                  {isLocked ? (
+
+                                    <MdOutlineLock className="text-xl text-gray-400" />
+
+                                  ) : (
+
+                                    <FaPlayCircle
+                                      className={`
+                                        text-xl
+                                        ${
+                                          isActive
+                                            ? "text-white"
+                                            : "text-violet-600"
+                                        }
+                                      `}
+                                    />
+                                  )}
+
+                                </div>
+
+                                {/* TEXT */}
+                                <div className="min-w-0 text-left">
+
+                                  <h4
+                                    className={`
+                                      text-sm
+                                      sm:text-base
+                                      font-semibold
+                                      truncate
+                                      ${
+                                        isActive
+                                          ? "text-white"
+                                          : `${isDark ? 'text-white' : 'text-gray-900'}`
+                                      }
+                                    `}
+                                  >
+                                    {
+                                      lecture.lectureTitle
+                                    }
+                                  </h4>
+
+                                  <p
+                                    className={`
+                                      text-xs
+                                      mt-1
+                                      ${
+                                        isActive
+                                          ? "text-gray-200"
+                                          : `${isDark ? 'text-gray-400' : 'text-gray-500'}`
+                                      }
+                                    `}
+                                  >
+                                    Lecture{" "}
+                                    {lectureIndex + 1}
+                                  </p>
+
+                                </div>
+
+                              </div>
+
+                              {/* BADGE */}
+                              <div
+                                className={`
+                                  px-3
+                                  py-1.5
+                                  rounded-full
+                                  text-xs
+                                  font-semibold
+                                  shrink-0
+                                  ${
+                                    isLocked
+                                      ? "bg-gray-200 text-gray-600"
+                                      : isActive
+                                      ? "bg-white text-black"
+                                      : "bg-green-100 text-green-700"
+                                  }
+                                `}
+                              >
+
+                                {isLocked
+                                  ? "Locked"
+                                  : "Watch"}
+
+                              </div>
+
+                            </motion.button>
+                          );
+                        }
+                      )}
+
+                    </motion.div>
+                  )}
+
+                </AnimatePresence>
+
+              </motion.div>
+            );
+          }
+        )}
+
       </div>
+
     </div>
   );
 };

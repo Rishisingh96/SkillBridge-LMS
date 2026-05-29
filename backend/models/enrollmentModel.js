@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const enrollmentSchema = new mongoose.Schema(
   {
+    // 👤 User
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -9,6 +10,7 @@ const enrollmentSchema = new mongoose.Schema(
       index: true,
     },
 
+    // 📚 Course
     course: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
@@ -16,27 +18,91 @@ const enrollmentSchema = new mongoose.Schema(
       index: true,
     },
 
-    pricePaid: {
+    // 🎟️ Coupon Reference
+    coupon: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Coupon",
+      default: null,
+    },
+
+    // 🏷️ Snapshot Coupon Code
+    couponCode: {
+      type: String,
+      default: "",
+    },
+
+    // 💰 Original Course Price
+    originalPrice: {
       type: Number,
       required: true,
+    },
+
+    // 🎁 Snapshot Discount
+    discountAmount: {
+      type: Number,
       default: 0,
     },
 
-    // ⏳ subscription start time
+    // 💵 Final Paid Amount
+    pricePaid: {
+      type: Number,
+      required: true,
+    },
+
+    // 👤 Checkout Details
+    studentName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    studentEmail: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    studentPhone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    // 💳 Payment
+    paymentId: {
+      type: String,
+      default: "",
+    },
+
+    orderId: {
+      type: String,
+      default: "",
+    },
+
+    paymentMethod: {
+      type: String,
+      default: "razorpay",
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
+
+    // ⏳ Subscription Start
     startDate: {
       type: Date,
       default: Date.now,
-      index: true,
     },
 
-    // ⏳ subscription end time
+    // ⏳ Subscription End
     endDate: {
       type: Date,
       required: true,
-      index: true,
     },
 
-    // 📌 active / expired status
+    // 📌 Active / Expired
     status: {
       type: String,
       enum: ["active", "expired"],
@@ -48,10 +114,15 @@ const enrollmentSchema = new mongoose.Schema(
   }
 );
 
-// 🚨 Prevent duplicate enrollment (VERY IMPORTANT)
-enrollmentSchema.index({ user: 1, course: 1 }, { unique: true });
+// 🚨 prevent duplicate enrollment
+enrollmentSchema.index(
+  { user: 1, course: 1 },
+  { unique: true }
+);
 
-// ⚡ Model
-const Enrollment = mongoose.model("Enrollment", enrollmentSchema);
+const Enrollment = mongoose.model(
+  "Enrollment",
+  enrollmentSchema
+);
 
 export default Enrollment;

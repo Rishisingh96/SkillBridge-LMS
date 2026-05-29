@@ -9,6 +9,7 @@ import courseRoute from './routes/courseRoute.js'
 import paymentRouter from './routes/paymentRoute.js'
 import reviewRoter from './routes/reviewRoute.js'
 import adminRouter from './routes/adminRoute.js'
+import couponRouter from './routes/coupon.routes.js'
 
 // ✅ IMPORTANT MODEL IMPORTS
 import "./models/moduleModel.js";
@@ -37,6 +38,7 @@ app.use("/api/course", courseRoute)
 app.use("/api/order", paymentRouter)
 app.use("/api/review", reviewRoter)
 app.use("/api/admin", adminRouter)
+app.use("/api/coupon", couponRouter)
 
 app.get("/", (req, res)=>{
     res.send("Hello from Server")

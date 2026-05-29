@@ -253,3 +253,19 @@ export const deleteCourse = async (req, res) => {
     return res.status(500).json({ message: `Failed to delete course: ${error.message}` });
   }
 };
+
+// ── Get All Courses (Admin) ─────────────────
+export const getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find()
+      .populate("creator", "name email photoUrl role")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      courses,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: `Failed to fetch courses: ${error.message}` });
+  }
+};

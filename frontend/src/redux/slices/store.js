@@ -19,6 +19,9 @@ import moduleSlice from "./moduleSlice";
 import dashboardSlice from "./dashboardSlice"; // ✅ Add kiya
 import commentSlice from "./commentSlice";
 import adminSlice from "./adminSlice"
+import couponSlice from "./couponSlice"
+
+
 // Combine Reducers
 const rootReducer = combineReducers({
   user: userSlice,
@@ -29,6 +32,9 @@ const rootReducer = combineReducers({
   dashboard: dashboardSlice, 
   comment: commentSlice,
   admin: adminSlice,
+  coupon: couponSlice,
+
+
 });
 
 // Persist Config
@@ -72,5 +78,8 @@ Final Redux State Structure
   lecture:{},
   module:{},
   review:{},
-  dashboard:{}
+  dashboard:{},
+  comment:{},
+  admin:{},
+  coupon:{}
 } */

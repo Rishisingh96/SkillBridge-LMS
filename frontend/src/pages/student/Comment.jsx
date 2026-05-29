@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FaHeart,
   FaReply,
   FaTrash,
   FaPaperPlane,
   FaThumbtack,
+  FaChevronDown,
+  FaChevronUp,
 } from "react-icons/fa";
 
+import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
+import { ClipLoader } from "react-spinners";
 
 import {
   addComment,
@@ -21,8 +24,6 @@ import {
   togglePinComment,
 } from "../../redux/slices/commentSlice";
 
-import { ClipLoader } from "react-spinners";
-
 const Comment = ({ lectureId }) => {
   const dispatch = useDispatch();
 
@@ -33,23 +34,41 @@ const Comment = ({ lectureId }) => {
   const { userData } = useSelector((state) => state.user);
 
   const [message, setMessage] = useState("");
+  const [replyMessage, setReplyMessage] =
+    useState("");
 
   const [replyBox, setReplyBox] = useState(null);
 
-  const [replyMessage, setReplyMessage] = useState("");
+  const [showReplies, setShowReplies] =
+    useState({});
 
-  // =========================
+  const [showAllComments, setShowAllComments] =
+    useState(false);
+
+  // ==================================================
   // FETCH COMMENTS
-  // =========================
+  // ==================================================
+
   useEffect(() => {
     if (lectureId) {
       dispatch(fetchLectureComments(lectureId));
     }
-  }, [lectureId]);
+  }, [lectureId, dispatch]);
 
-  // =========================
+  // ==================================================
+  // SHOW ONLY 1 COMMENT
+  // ==================================================
+
+  const visibleComments = useMemo(() => {
+    return showAllComments
+      ? comments
+      : comments?.slice(0, 1);
+  }, [comments, showAllComments]);
+
+  // ==================================================
   // ADD COMMENT
-  // =========================
+  // ==================================================
+
   const handleAddComment = () => {
     if (!message.trim()) return;
 
@@ -63,9 +82,10 @@ const Comment = ({ lectureId }) => {
     setMessage("");
   };
 
-  // =========================
+  // ==================================================
   // ADD REPLY
-  // =========================
+  // ==================================================
+
   const handleReply = (commentId) => {
     if (!replyMessage.trim()) return;
 
@@ -81,343 +101,575 @@ const Comment = ({ lectureId }) => {
     setReplyBox(null);
   };
 
-  // =========================
-  // CHECK IF USER LIKED
-  // =========================
+  // ==================================================
+  // LIKE CHECK
+  // ==================================================
+
   const isLiked = (likes) => {
     if (!likes || !userData?._id) return false;
+
     return likes.includes(userData._id);
   };
 
   return (
-    <div className="bg-white rounded-[22px] shadow-lg border border-gray-200 p-5 mt-8">
+    <div className="w-full rounded-3xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900 overflow-hidden">
 
-      {/* Heading */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-black">
-          Discussion
-        </h2>
+      {/* ================================================== */}
+      {/* HEADER */}
+      {/* ================================================== */}
 
-        <span className="text-sm text-gray-500">
-          {comments?.length} Comments
-        </span>
+      <div className="p-5 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between">
+
+        <div>
+          <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
+            Discussion
+          </h2>
+
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            Ask questions & interact with students
+          </p>
+        </div>
+
+        <div className="px-3 py-2 rounded-xl bg-zinc-100 dark:bg-white/5 text-sm text-zinc-600 dark:text-zinc-300">
+          {comments?.length || 0} Comments
+        </div>
+
       </div>
 
-      {/* Add Comment */}
-      <div className="mt-6 flex gap-3">
+      {/* ================================================== */}
+      {/* ADD COMMENT */}
+      {/* ================================================== */}
 
-        <img
-          src={userData?.photoUrl || "/default-avatar.png"}
-          alt=""
-          className="w-11 h-11 rounded-full object-cover"
-        />
+      <div className="p-5 border-b border-zinc-200 dark:border-white/10">
 
-        <div className="flex-1">
+        <div className="flex gap-3">
 
-          <textarea
-            rows={3}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Write your thoughts..."
-            className="w-full border border-gray-300 rounded-xl p-4 outline-none resize-none focus:border-black"
+          <img
+            src={
+              userData?.photoUrl ||
+              "/default-avatar.png"
+            }
+            alt=""
+            className="w-11 h-11 rounded-xl object-cover"
           />
 
-          <div className="flex justify-end mt-3">
+          <div className="flex-1">
 
-            <button
-              onClick={handleAddComment}
-              className="bg-black text-white px-5 py-2 rounded-xl flex items-center gap-2 hover:opacity-90"
-            >
-              <FaPaperPlane />
-              Comment
-            </button>
+            <textarea
+              rows={3}
+              value={message}
+              onChange={(e) =>
+                setMessage(e.target.value)
+              }
+              placeholder="Write a comment..."
+              className="
+                w-full
+                rounded-2xl
+                border
+                border-zinc-200
+                dark:border-white/10
+                bg-zinc-50
+                dark:bg-zinc-950
+                p-4
+                text-zinc-800
+                dark:text-white
+                placeholder:text-zinc-400
+                outline-none
+                resize-none
+                focus:border-violet-500
+              "
+            />
+
+            <div className="flex justify-end mt-4">
+
+              <button
+                onClick={handleAddComment}
+                className="
+                  px-5 py-3 rounded-xl
+                  bg-violet-600 hover:bg-violet-500
+                  text-white font-medium
+                  flex items-center gap-2
+                  transition-all
+                "
+              >
+                <FaPaperPlane />
+
+                Comment
+              </button>
+
+            </div>
 
           </div>
+
         </div>
+
       </div>
 
+      {/* ================================================== */}
       {/* COMMENTS */}
-      <div className="mt-8 space-y-6">
+      {/* ================================================== */}
+
+      <div className="p-5 space-y-5">
 
         {loading ? (
+
           <div className="flex justify-center py-10">
-            <ClipLoader size={35} />
+            <ClipLoader size={30} color="#7c3aed" />
           </div>
-        ) : comments?.length > 0 ? (
-          comments.map((comment) => (
 
-            <div
-              key={comment._id}
-              className={`border rounded-2xl p-4 ${comment.isPinned ? "border-yellow-400 bg-yellow-50" : "border-gray-200"}`}
-            >
+        ) : visibleComments?.length > 0 ? (
 
-              {/* USER */}
-              <div className="flex items-start justify-between">
+          <>
+            {visibleComments.map((comment) => (
 
-                <div className="flex gap-3">
+              <motion.div
+                key={comment._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`
+                  rounded-2xl border p-4
+                  ${
+                    comment.isPinned
+                      ? "border-yellow-500/30 bg-yellow-500/5"
+                      : "border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-950"
+                  }
+                `}
+              >
 
-                  <img
-                    src={comment?.user?.photoUrl || "/default-avatar.png"}
-                    alt=""
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                {/* TOP */}
 
-                  <div className="flex-1">
+                <div className="flex justify-between gap-4">
 
-                    <div className="flex items-center gap-2">
+                  <div className="flex gap-3 flex-1">
 
-                      <h3 className="font-semibold text-black">
-                        {comment?.user?.name}
-                      </h3>
+                    <img
+                      src={
+                        comment?.user?.photoUrl ||
+                        "/default-avatar.png"
+                      }
+                      alt=""
+                      className="w-12 h-12 rounded-xl object-cover"
+                    />
 
-                      {comment?.user?.role === "educator" && (
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
-                          Educator
-                        </span>
-                      )}
+                    <div className="flex-1">
 
-                      {comment.isPinned && (
-                        <span className="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full flex items-center gap-1">
-                          <FaThumbtack className="text-xs" />
-                          Pinned
-                        </span>
-                      )}
+                      {/* USER */}
+
+                      <div className="flex items-center gap-2 flex-wrap">
+
+                        <h3 className="font-semibold text-zinc-900 dark:text-white">
+                          {comment?.user?.name}
+                        </h3>
+
+                        {comment?.user?.role ===
+                          "educator" && (
+                          <span className="px-2 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs">
+                            Educator
+                          </span>
+                        )}
+
+                        {comment.isPinned && (
+                          <span className="px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-500 text-xs flex items-center gap-1">
+                            <FaThumbtack />
+                            Pinned
+                          </span>
+                        )}
+
+                      </div>
+
+                      {/* MESSAGE */}
+
+                      <p className="mt-3 text-sm leading-7 text-zinc-600 dark:text-zinc-300">
+                        {comment?.message}
+                      </p>
+
+                      {/* ACTIONS */}
+
+                      <div className="flex items-center gap-5 mt-4">
+
+                        {/* LIKE */}
+
+                        <button
+                          onClick={() =>
+                            dispatch(
+                              toggleCommentLike({
+                                lectureId,
+                                commentId:
+                                  comment._id,
+                                userId:
+                                  userData?._id,
+                              })
+                            )
+                          }
+                          className={`
+                            flex items-center gap-2 text-sm transition-all
+                            ${
+                              isLiked(comment?.likes)
+                                ? "text-red-500"
+                                : "text-zinc-500 hover:text-red-500"
+                            }
+                          `}
+                        >
+                          <FaHeart
+                            className={
+                              isLiked(comment?.likes)
+                                ? "fill-current"
+                                : ""
+                            }
+                          />
+
+                          {comment?.likes?.length || 0}
+                        </button>
+
+                        {/* REPLY */}
+
+                        <button
+                          onClick={() =>
+                            setReplyBox(
+                              replyBox ===
+                                comment._id
+                                ? null
+                                : comment._id
+                            )
+                          }
+                          className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all"
+                        >
+                          <FaReply />
+                          Reply
+                        </button>
+
+                        {/* TOGGLE REPLIES */}
+
+                        {comment?.replies?.length >
+                          0 && (
+                          <button
+                            onClick={() =>
+                              setShowReplies(
+                                (prev) => ({
+                                  ...prev,
+                                  [comment._id]:
+                                    !prev[
+                                      comment._id
+                                    ],
+                                })
+                              )
+                            }
+                            className="flex items-center gap-2 text-sm text-violet-500"
+                          >
+                            {showReplies[
+                              comment._id
+                            ] ? (
+                              <>
+                                <FaChevronUp />
+                                Hide Replies
+                              </>
+                            ) : (
+                              <>
+                                <FaChevronDown />
+                                View Replies (
+                                {
+                                  comment.replies
+                                    .length
+                                }
+                                )
+                              </>
+                            )}
+                          </button>
+                        )}
+
+                      </div>
 
                     </div>
 
-                    <p className="text-gray-600 mt-1">
-                      {comment?.message}
-                    </p>
+                  </div>
+
+                  {/* RIGHT ACTIONS */}
+
+                  <div className="flex gap-2">
+
+                    {userData?.role ===
+                      "educator" && (
+                      <button
+                        onClick={() =>
+                          dispatch(
+                            togglePinComment({
+                              lectureId,
+                              commentId:
+                                comment._id,
+                            })
+                          )
+                        }
+                        className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-zinc-500 hover:text-yellow-500"
+                      >
+                        <FaThumbtack />
+                      </button>
+                    )}
+
+                    {userData?._id ===
+                      comment?.user?._id && (
+                      <button
+                        onClick={() =>
+                          dispatch(
+                            deleteComment({
+                              lectureId,
+                              commentId:
+                                comment._id,
+                            })
+                          )
+                        }
+                        className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500"
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
 
                   </div>
-                </div>
-
-                {/* ACTIONS - DELETE & PIN */}
-                <div className="flex items-center gap-2">
-
-                  {/* PIN - Only Educator */}
-                  {userData?.role === "educator" && (
-                    <button
-                      onClick={() =>
-                        dispatch(
-                          togglePinComment({
-                            lectureId,
-                            commentId: comment._id,
-                          })
-                        )
-                      }
-                      className={`p-2 rounded-lg ${comment.isPinned ? "text-yellow-600 bg-yellow-100" : "text-gray-400 hover:text-yellow-600 hover:bg-yellow-50"}`}
-                      title={comment.isPinned ? "Unpin comment" : "Pin comment"}
-                    >
-                      <FaThumbtack />
-                    </button>
-                  )}
-
-                  {/* DELETE - Only Owner */}
-                  {userData?._id === comment?.user?._id && (
-                    <button
-                      onClick={() =>
-                        dispatch(
-                          deleteComment({
-                            lectureId,
-                            commentId: comment._id,
-                          })
-                        )
-                      }
-                      className="p-2 rounded-lg text-red-500 hover:bg-red-50"
-                      title="Delete comment"
-                    >
-                      <FaTrash />
-                    </button>
-                  )}
 
                 </div>
-              </div>
 
-              {/* ACTIONS - LIKE & REPLY */}
-              <div className="flex items-center gap-5 mt-4 ml-14">
+                {/* ================================================== */}
+                {/* REPLY BOX */}
+                {/* ================================================== */}
 
-                {/* LIKE */}
-                <button
-                  onClick={() =>
-                    dispatch(
-                      toggleCommentLike({
-                        lectureId,
-                        commentId: comment._id,
-                        userId: userData?._id,
-                      })
-                    )
-                  }
-                  className={`flex items-center gap-2 text-sm ${isLiked(comment?.likes) ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
-                >
-                  <FaHeart className={isLiked(comment?.likes) ? "fill-current" : ""} />
+                <AnimatePresence>
 
-                  {comment?.likes?.length || 0}
-                </button>
+                  {replyBox === comment._id && (
 
-                {/* REPLY */}
-                <button
-                  onClick={() =>
-                    setReplyBox(
-                      replyBox === comment._id
-                        ? null
-                        : comment._id
-                    )
-                  }
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-black"
-                >
-                  <FaReply />
-                  Reply
-                </button>
-
-              </div>
-
-              {/* REPLY BOX */}
-              {replyBox === comment._id && (
-
-                <div className="mt-4 ml-14">
-
-                  <textarea
-                    rows={2}
-                    value={replyMessage}
-                    onChange={(e) =>
-                      setReplyMessage(e.target.value)
-                    }
-                    placeholder="Write a reply..."
-                    className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-black"
-                  />
-
-                  <div className="flex gap-2 mt-2">
-
-                    <button
-                      onClick={() =>
-                        handleReply(comment._id)
-                      }
-                      className="bg-black text-white px-4 py-2 rounded-xl hover:opacity-90"
-                    >
-                      Reply
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setReplyBox(null);
-                        setReplyMessage("");
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        height: 0,
                       }}
-                      className="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-300"
-                    >
-                      Cancel
-                    </button>
-
-                  </div>
-
-                </div>
-              )}
-
-              {/* REPLIES */}
-              {comment?.replies?.length > 0 && (
-
-                <div className="mt-5 ml-14 space-y-4">
-
-                  {comment.replies.map((reply) => (
-
-                    <div
-                      key={reply._id}
-                      className="bg-gray-100 rounded-xl p-3"
+                      animate={{
+                        opacity: 1,
+                        height: "auto",
+                      }}
+                      exit={{
+                        opacity: 0,
+                        height: 0,
+                      }}
+                      className="overflow-hidden"
                     >
 
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="mt-5 ml-0 md:ml-16">
 
-                        <div className="flex gap-3 flex-1">
+                        <textarea
+                          rows={2}
+                          value={replyMessage}
+                          onChange={(e) =>
+                            setReplyMessage(
+                              e.target.value
+                            )
+                          }
+                          placeholder="Write a reply..."
+                          className="
+                            w-full
+                            rounded-2xl
+                            border
+                            border-zinc-200
+                            dark:border-white/10
+                            bg-white
+                            dark:bg-zinc-900
+                            p-4
+                            text-zinc-800
+                            dark:text-white
+                            outline-none
+                          "
+                        />
 
-                          <img
-                            src={reply?.user?.photoUrl || "/default-avatar.png"}
-                            alt=""
-                            className="w-9 h-9 rounded-full object-cover"
-                          />
+                        <div className="flex gap-3 mt-4">
 
-                          <div className="flex-1">
+                          <button
+                            onClick={() =>
+                              handleReply(
+                                comment._id
+                              )
+                            }
+                            className="px-5 py-2 rounded-xl bg-violet-600 text-white"
+                          >
+                            Reply
+                          </button>
 
-                            <div className="flex items-center gap-2">
-
-                              <h4 className="font-medium text-sm text-black">
-                                {reply?.user?.name}
-                              </h4>
-
-                              {reply?.user?.role === "educator" && (
-                                <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
-                                  Educator
-                                </span>
-                              )}
-
-                            </div>
-
-                            <p className="text-gray-700 text-sm mt-1">
-                              {reply?.message}
-                            </p>
-
-                            {/* REPLY ACTIONS */}
-                            <div className="flex items-center gap-4 mt-2">
-
-                              {/* LIKE REPLY */}
-                              <button
-                                onClick={() =>
-                                  dispatch(
-                                    toggleReplyLike({
-                                      lectureId,
-                                      commentId: comment._id,
-                                      replyId: reply._id,
-                                      userId: userData?._id,
-                                    })
-                                  )
-                                }
-                                className={`flex items-center gap-1 text-xs ${isLiked(reply?.likes) ? "text-red-500" : "text-gray-500 hover:text-red-500"}`}
-                              >
-                                <FaHeart className={isLiked(reply?.likes) ? "fill-current" : ""} />
-                                {reply?.likes?.length || 0}
-                              </button>
-
-                              {/* DELETE REPLY - Only Owner */}
-                              {userData?._id === reply?.user?._id && (
-                                <button
-                                  onClick={() =>
-                                    dispatch(
-                                      deleteReply({
-                                        lectureId,
-                                        commentId: comment._id,
-                                        replyId: reply._id,
-                                      })
-                                    )
-                                  }
-                                  className="text-red-500 hover:text-red-600 text-xs"
-                                  title="Delete reply"
-                                >
-                                  <FaTrash />
-                                </button>
-                              )}
-
-                            </div>
-
-                          </div>
+                          <button
+                            onClick={() => {
+                              setReplyBox(
+                                null
+                              );
+                              setReplyMessage(
+                                ""
+                              );
+                            }}
+                            className="px-5 py-2 rounded-xl bg-zinc-200 dark:bg-white/10 text-zinc-700 dark:text-zinc-300"
+                          >
+                            Cancel
+                          </button>
 
                         </div>
 
                       </div>
 
-                    </div>
-                  ))}
+                    </motion.div>
+                  )}
 
-                </div>
-              )}
+                </AnimatePresence>
 
-            </div>
-          ))
+                {/* ================================================== */}
+                {/* REPLIES */}
+                {/* ================================================== */}
+
+                <AnimatePresence>
+
+                  {showReplies[comment._id] && (
+
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        height: 0,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        height: "auto",
+                      }}
+                      exit={{
+                        opacity: 0,
+                        height: 0,
+                      }}
+                      className="overflow-hidden"
+                    >
+
+                      <div className="mt-5 ml-0 md:ml-16 space-y-3">
+
+                        {comment.replies.map(
+                          (reply) => (
+
+                            <div
+                              key={reply._id}
+                              className="rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-4"
+                            >
+
+                              <div className="flex justify-between gap-4">
+
+                                <div className="flex gap-3 flex-1">
+
+                                  <img
+                                    src={
+                                      reply?.user
+                                        ?.photoUrl ||
+                                      "/default-avatar.png"
+                                    }
+                                    alt=""
+                                    className="w-10 h-10 rounded-xl object-cover"
+                                  />
+
+                                  <div className="flex-1">
+
+                                    <h4 className="font-medium text-sm text-zinc-900 dark:text-white">
+                                      {
+                                        reply?.user
+                                          ?.name
+                                      }
+                                    </h4>
+
+                                    <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-2 leading-6">
+                                      {
+                                        reply?.message
+                                      }
+                                    </p>
+
+                                  </div>
+
+                                </div>
+
+                                {userData?._id ===
+                                  reply?.user
+                                    ?._id && (
+                                  <button
+                                    onClick={() =>
+                                      dispatch(
+                                        deleteReply(
+                                          {
+                                            lectureId,
+                                            commentId:
+                                              comment._id,
+                                            replyId:
+                                              reply._id,
+                                          }
+                                        )
+                                      )
+                                    }
+                                    className="text-red-500"
+                                  >
+                                    <FaTrash />
+                                  </button>
+                                )}
+
+                              </div>
+
+                            </div>
+                          )
+                        )}
+
+                      </div>
+
+                    </motion.div>
+                  )}
+
+                </AnimatePresence>
+
+              </motion.div>
+            ))}
+
+            {/* ================================================== */}
+            {/* VIEW MORE COMMENTS */}
+            {/* ================================================== */}
+
+            {comments?.length > 1 && (
+
+              <div className="flex justify-center">
+
+                <button
+                  onClick={() =>
+                    setShowAllComments(
+                      !showAllComments
+                    )
+                  }
+                  className="px-5 py-3 rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-700 dark:text-zinc-300 flex items-center gap-2"
+                >
+                  {showAllComments ? (
+                    <>
+                      <FaChevronUp />
+                      Show Less
+                    </>
+                  ) : (
+                    <>
+                      <FaChevronDown />
+                      View All (
+                      {comments.length})
+                    </>
+                  )}
+                </button>
+
+              </div>
+            )}
+
+          </>
         ) : (
-          <div className="text-center py-10 text-gray-500">
-            No comments yet. Be the first to comment!
+
+          <div className="rounded-2xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-950 p-10 text-center">
+
+            <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">
+              No Comments Yet
+            </h3>
+
+            <p className="text-zinc-500 dark:text-zinc-400 mt-3">
+              Be the first student to start the discussion.
+            </p>
+
           </div>
         )}
 
       </div>
+
     </div>
   );
 };

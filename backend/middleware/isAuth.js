@@ -3,51 +3,76 @@ import User from "../models/userModel.js";
 
 const isAuth = async (req, res, next) => {
   try {
+    let token = req.cookies.token;
 
-
-    const { token } = req.cookies;
+    // If not in cookies, check Authorization header
+    if (!token && req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      if (authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
 
     if (!token) {
-      // console.log("No token found in cookies");
-      return res.status(401).json({ message: "Access denied. No token found" });
-    }
-
-    // console.log("Token found:", token.substring(0, 20) + "...");
-
-    const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (!verifyToken) {
-      // console.log("Token verification failed");
-      return res.status(401).json({ message: "Invalid token" });
-    }
-
-    // console.log("Token verified successfully");
-    // console.log("User ID from token:", verifyToken.userId);
-
-    // ✅ Ek hi DB call — role bhi saath mein lo
-    const user = await User.findById(verifyToken.userId).select("_id role isBanned");
-
-    if (!user) {
-      // console.log("User not found in database");
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (user.isBanned) {
-      return res.status(403).json({
-        message: "Your account has been banned",
+      return res.status(401).json({
+        success: false,
+        message: "Access denied",
       });
     }
 
-    // console.log("User found in database:", user._id);
+    // verify token
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    // find user
+    const user = await User.findById(
+      decoded.userId
+    ).select("_id role isBanned");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // banned
+    if (user.isBanned) {
+      return res.status(403).json({
+        success: false,
+        message: "Account banned",
+      });
+    }
+
+    // ✅ attach full object
+    req.user = {
+      _id: user._id,
+      role: user.role,
+    };
+
+    // ✅ attach userId for backward compatibility
     req.userId = user._id;
-    req.userRole = user.role;  // ✅ role attach kiya
-
-
 
     next();
   } catch (error) {
-    // console.log("isAuth error:", error);
-    return res.status(500).json({ message: `isAuth error: ${error.message}` });
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: "Token expired",
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 

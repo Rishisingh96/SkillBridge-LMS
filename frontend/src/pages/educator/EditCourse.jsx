@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeft } from "react-icons/fa6";
 import { LuImagePlus } from "react-icons/lu";
 import { useNavigate, useParams } from "react-router-dom";
 import empty from "../../assets/empty.png";
 import axios from "axios";
 import { serverUrl } from "../../App";
 import { toast } from "react-toastify";
+import { useTheme } from "../../context/ThemeContext";
 
 const EditCourse = () => {
   const navigate = useNavigate();
   const { courseId } = useParams();
   const fileInputRef = useRef(null);
+  const { isDark } = useTheme();
 
   const [isPublished, setIsPublished] = useState(false);
 
@@ -219,17 +221,17 @@ const getFormattedValidity = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+    <div className={`min-h-screen py-10 px-4 ${isDark ? 'bg-gray-950' : 'bg-gray-50'}`}>
+      <div className={`max-w-4xl mx-auto p-8 rounded-2xl shadow-sm border ${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-100'}`}>
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <FaArrowLeftLong
-            className="text-xl text-gray-600 cursor-pointer hover:text-black transition-all"
+          <FaArrowLeft
+            className={`text-xl cursor-pointer transition-all ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}
             onClick={() => navigate("/educator/courses")}
           />
 
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
             Add Detail Information regarding the Course
           </h2>
 
@@ -244,7 +246,7 @@ const getFormattedValidity = () => {
         </div>
 
         {/* Publish Section */}
-        <div className="flex justify-between items-center mb-8 p-4 bg-gray-50 rounded-xl">
+        <div className={`flex justify-between items-center mb-8 p-4 rounded-xl ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
           <div className="flex gap-3">
 
             <button
@@ -262,14 +264,14 @@ const getFormattedValidity = () => {
 
             <button
               type="button"
-              className="bg-red-50 text-red-600 border border-red-100 px-5 py-2 rounded-lg hover:bg-red-600 hover:text-white transition-all font-medium text-sm"
+              className={`px-5 py-2 rounded-lg transition-all font-medium text-sm ${isDark ? 'bg-red-900/50 text-red-400 border-red-800 hover:bg-red-600 hover:text-white' : 'bg-red-50 text-red-600 border-red-100 hover:bg-red-600 hover:text-white'}`}
               onClick={handleRemoveCourse}
             >
               Remove Course
             </button>
           </div>
 
-          <span className="text-sm font-medium text-gray-500">
+          <span className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Status: {isPublished ? "🟢 Live" : "⚪ Draft"}
           </span>
         </div>
@@ -282,7 +284,7 @@ const getFormattedValidity = () => {
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Course Title
             </label>
 
@@ -291,13 +293,13 @@ const getFormattedValidity = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Advanced MERN Stack"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-black outline-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
             />
           </div>
 
           {/* Subtitle */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Subtitle
             </label>
 
@@ -306,13 +308,13 @@ const getFormattedValidity = () => {
               value={subTitle}
               onChange={(e) => setSubTitle(e.target.value)}
               placeholder="Brief course subtitle"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-black outline-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Description
             </label>
 
@@ -321,7 +323,7 @@ const getFormattedValidity = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Write course description..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none resize-none"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-black outline-none resize-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
             />
           </div>
 
@@ -330,14 +332,14 @@ const getFormattedValidity = () => {
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Category
               </label>
 
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none"
+                className={`w-full border rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
               >
                 <option value="">Select Category</option>
 
@@ -385,14 +387,14 @@ const getFormattedValidity = () => {
 
             {/* Level */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Level
               </label>
 
               <select
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none"
+                className={`w-full border rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
               >
                 <option value="">Select Level</option>
 
@@ -412,12 +414,12 @@ const getFormattedValidity = () => {
 
             {/* Price */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Price
               </label>
 
               <div className="relative">
-                <span className="absolute left-3 top-3 text-gray-500">
+                <span className={`absolute left-3 top-3 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   ₹
                 </span>
 
@@ -426,7 +428,7 @@ const getFormattedValidity = () => {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="499"
-                  className="w-full border border-gray-300 rounded-xl py-3 pl-8 pr-4 focus:ring-2 focus:ring-black outline-none"
+                  className={`w-full border rounded-xl py-3 pl-8 pr-4 focus:ring-2 focus:ring-black outline-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
             </div>
@@ -437,7 +439,7 @@ const getFormattedValidity = () => {
 
             {/* Validity Value */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Course Validity
               </label>
 
@@ -446,20 +448,20 @@ const getFormattedValidity = () => {
                 value={validityValue}
                 onChange={(e) => setValidityValue(e.target.value)}
                 placeholder="6"
-                className="w-full border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-black outline-none"
+                className={`w-full border rounded-xl py-3 px-4 focus:ring-2 focus:ring-black outline-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
               />
             </div>
 
             {/* Validity Unit */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Validity Unit
               </label>
 
               <select
                 value={validityUnit}
                 onChange={(e) => setValidityUnit(e.target.value)}
-                className="w-full border border-gray-300 rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none"
+                className={`w-full border rounded-xl py-3 px-3 focus:ring-2 focus:ring-black outline-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}`}
               >
                 <option value="day">Day</option>
                 <option value="month">Month</option>
@@ -471,12 +473,12 @@ const getFormattedValidity = () => {
 
           {/* Thumbnail */}
           <div className="mt-8">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
+            <label className={`block text-sm font-semibold mb-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Course Thumbnail
             </label>
 
             <div
-              className="relative w-full md:w-72 h-44 border-2 border-dashed border-gray-300 rounded-2xl overflow-hidden cursor-pointer hover:border-black transition-all bg-gray-50 group"
+              className={`relative w-full md:w-72 h-44 border-2 border-dashed rounded-2xl overflow-hidden cursor-pointer transition-all group ${isDark ? 'border-gray-700 hover:border-gray-500 bg-gray-800' : 'border-gray-300 hover:border-black bg-gray-50'}`}
               onClick={() => fileInputRef.current.click()}
             >
 
@@ -498,8 +500,8 @@ const getFormattedValidity = () => {
               </div>
 
               {/* Small Icon */}
-              <div className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md">
-                <LuImagePlus className="text-lg text-gray-700" />
+              <div className={`absolute top-3 right-3 p-2 rounded-full shadow-md ${isDark ? 'bg-gray-700' : 'bg-white'}`}>
+                <LuImagePlus className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`} />
               </div>
 
               {/* File Input */}
@@ -514,12 +516,12 @@ const getFormattedValidity = () => {
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-4 pt-6 border-t border-gray-100">
+          <div className={`flex justify-end gap-4 pt-6 border-t ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
 
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-8 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-all"
+              className={`px-8 py-3 rounded-xl border font-semibold transition-all ${isDark ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
             >
               Cancel
             </button>

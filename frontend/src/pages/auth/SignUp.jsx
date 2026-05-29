@@ -93,7 +93,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-black via-[#111111] to-[#1d1d1d] flex items-center justify-center px-4 py-10 overflow-hidden relative">
+    <div className="min-h-screen w-full bg-gradient-to-br from-black via-[#111111] to-[#1d1d1d] dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center px-4 py-10 overflow-hidden relative">
       {/* Background Blur */}
       <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-purple-500 rounded-full blur-[140px] opacity-20"></div>
 
@@ -107,7 +107,7 @@ const SignUp = () => {
         className="w-full max-w-6xl bg-white/10 backdrop-blur-2xl border border-white/10 rounded-[35px] shadow-2xl overflow-hidden flex flex-col lg:flex-row"
       >
         {/* Left Section */}
-        <div className="w-full lg:w-[50%] bg-black text-white p-10 lg:p-14 flex flex-col justify-between relative overflow-hidden">
+        <div className="w-full lg:w-[50%] bg-black dark:bg-slate-900 text-white p-10 lg:p-14 flex flex-col justify-between relative overflow-hidden">
           {/* Glow */}
           <div className="absolute top-[-100px] right-[-100px] w-[250px] h-[250px] bg-purple-500 rounded-full blur-[120px] opacity-30"></div>
 
@@ -163,7 +163,7 @@ const SignUp = () => {
         </div>
 
         {/* Right Section */}
-        <div className="w-full lg:w-[50%] bg-white p-8 md:p-12 flex items-center justify-center">
+        <div className="w-full lg:w-[50%] bg-white dark:bg-slate-800 p-8 md:p-12 flex items-center justify-center">
           <motion.form
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -172,18 +172,18 @@ const SignUp = () => {
             className="w-full max-w-md"
           >
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                 Create Account
               </h1>
 
-              <p className="text-gray-500 mt-2">
+              <p className="text-gray-500 dark:text-gray-400 mt-2">
                 Join SkillBridge and start learning today 🚀
               </p>
             </div>
 
             {/* Name */}
             <div className="mb-5">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Full Name
               </label>
 
@@ -192,13 +192,13 @@ const SignUp = () => {
                 placeholder="Enter your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 outline-none focus:border-black transition"
+                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 dark:border-slate-600 outline-none focus:border-black dark:focus:border-white dark:text-white transition"
               />
             </div>
 
             {/* Email */}
             <div className="mb-5">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Email Address
               </label>
 
@@ -207,13 +207,13 @@ const SignUp = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 outline-none focus:border-black transition"
+                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 dark:border-slate-600 outline-none focus:border-black dark:focus:border-white dark:text-white transition"
               />
             </div>
 
             {/* Password */}
             <div className="mb-5 relative">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Password
               </label>
 
@@ -222,24 +222,24 @@ const SignUp = () => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 outline-none focus:border-black transition"
+                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 dark:border-slate-600 outline-none focus:border-black dark:focus:border-white dark:text-white transition"
               />
 
               {!show ? (
                 <FaRegEye
-                  className="absolute right-5 top-[52px] text-gray-500 cursor-pointer text-[20px]"
+                  className="absolute right-5 top-[52px] text-gray-500 dark:text-gray-400 cursor-pointer text-[20px]"
                   onClick={() => setShow(true)}
                 />
               ) : (
                 <IoEye
-                  className="absolute right-5 top-[52px] text-gray-500 cursor-pointer text-[20px]"
+                  className="absolute right-5 top-[52px] text-gray-500 dark:text-gray-400 cursor-pointer text-[20px]"
                   onClick={() => setShow(false)}
                 />
               )}
             </div>
             {/* Confirm Password */}
             <div className="mb-5 relative">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Confirm Password
               </label>
 
@@ -248,7 +248,7 @@ const SignUp = () => {
                 placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 outline-none focus:border-black transition"
+                className="w-full mt-2 h-[52px] px-5 rounded-2xl border border-gray-200 dark:border-slate-600 outline-none focus:border-black dark:focus:border-white dark:text-white transition"
               />
 
               {/* Password Match Message */}
@@ -269,7 +269,7 @@ const SignUp = () => {
 
             {/* Role */}
             <div className="mb-7">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Select Role
               </label>
 
@@ -279,8 +279,8 @@ const SignUp = () => {
                   onClick={() => setRole("student")}
                   className={`flex-1 h-[50px] rounded-2xl font-semibold transition-all duration-300 ${
                     role === "student"
-                      ? "bg-black text-white shadow-lg"
-                      : "border border-gray-300 text-gray-700 hover:border-black"
+                      ? "bg-black dark:bg-white dark:text-black text-white shadow-lg"
+                      : "border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-black dark:hover:border-white"
                   }`}
                 >
                   Student
@@ -291,8 +291,8 @@ const SignUp = () => {
                   onClick={() => setRole("educator")}
                   className={`flex-1 h-[50px] rounded-2xl font-semibold transition-all duration-300 ${
                     role === "educator"
-                      ? "bg-black text-white shadow-lg"
-                      : "border border-gray-300 text-gray-700 hover:border-black"
+                      ? "bg-black dark:bg-white dark:text-black text-white shadow-lg"
+                      : "border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-black dark:hover:border-white"
                   }`}
                 >
                   Educator
@@ -303,8 +303,8 @@ const SignUp = () => {
                   onClick={() => setRole("admin")}
                   className={`flex-1 h-[50px] rounded-2xl font-semibold transition-all duration-300 ${
                     role === "admin"
-                      ? "bg-black text-white shadow-lg"
-                      : "border border-gray-300 text-gray-700 hover:border-black"
+                      ? "bg-black dark:bg-white dark:text-black text-white shadow-lg"
+                      : "border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-black dark:hover:border-white"
                   }`}
                 >
                   Admin
@@ -316,7 +316,7 @@ const SignUp = () => {
             <button
               onClick={handleSignup}
               disabled={loading}
-              className="w-full h-[55px] rounded-2xl bg-black hover:bg-gray-900 text-white font-semibold text-lg transition-all duration-300 shadow-xl hover:scale-[1.02] flex items-center justify-center"
+              className="w-full h-[55px] rounded-2xl bg-black dark:bg-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-200 text-white font-semibold text-lg transition-all duration-300 shadow-xl hover:scale-[1.02] flex items-center justify-center"
             >
               {loading ? (
                 <ClipLoader size={28} color="white" />
@@ -329,7 +329,7 @@ const SignUp = () => {
             <div className="flex items-center gap-4 my-7">
               <div className="flex-1 h-[1px] bg-gray-200"></div>
 
-              <span className="text-gray-400 text-sm">OR CONTINUE WITH</span>
+              <span className="text-gray-400 dark:text-gray-500 text-sm">OR CONTINUE WITH</span>
 
               <div className="flex-1 h-[1px] bg-gray-200"></div>
             </div>
@@ -338,18 +338,18 @@ const SignUp = () => {
             <button
               type="button"
               onClick={googleSignUp}
-              className="w-full h-[55px] rounded-2xl border border-gray-200 hover:border-black transition flex items-center justify-center gap-3 font-semibold text-gray-700"
+              className="w-full h-[55px] rounded-2xl border border-gray-200 dark:border-slate-600 hover:border-black dark:hover:border-white dark:text-gray-200 transition flex items-center justify-center gap-3 font-semibold text-gray-700"
             >
               <FcGoogle className="text-2xl" />
               Continue with Google
             </button>
 
             {/* Login */}
-            <div className="mt-8 text-center text-gray-500">
+            <div className="mt-8 text-center text-gray-500 dark:text-gray-400">
               Already have an account?{" "}
               <span
                 onClick={() => navigate("/login")}
-                className="text-black font-semibold cursor-pointer hover:underline"
+                className="text-black dark:text-white font-semibold cursor-pointer hover:underline"
               >
                 Login
               </span>

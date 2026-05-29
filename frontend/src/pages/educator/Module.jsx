@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaArrowLeftLong, FaPlus, FaTrash, FaFolderOpen } from "react-icons/fa6";
+import { FaArrowLeft, FaPlus, FaTrash, FaFolderOpen } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
@@ -14,11 +14,13 @@ import {
 } from "../../redux/slices/moduleSlice";
 import { serverUrl } from "../../App";
 import axios from "axios";
+import { useTheme } from "../../context/ThemeContext";
 
 const Module = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
 
   const { moduleData, error } = useSelector((state) => state.module);
 
@@ -131,16 +133,16 @@ const Module = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+    <div className={`min-h-screen ${isDark ? 'bg-gray-950' : 'bg-gray-50'} p-6 md:p-10`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <FaArrowLeftLong
+            <FaArrowLeft
               onClick={() => navigate(`/educator/edit-course/${courseId}`)}
-              className="text-2xl cursor-pointer text-gray-700 hover:text-black transition-all"
+              className={`text-2xl cursor-pointer ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-black'} transition-all`}
             />
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+            <h1 className={`text-3xl md:text-4xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
               Module Management
             </h1>
           </div>
@@ -155,15 +157,15 @@ const Module = () => {
 
         {/* Create/Edit Module Form */}
         {showCreateForm && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          <div className={`${isDark ? 'bg-gray-900' : 'bg-white'} rounded-2xl shadow-lg p-6 md:p-8 mb-8`}>
+            <h2 className={`text-2xl font-bold mb-6 ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
               {editingModule ? "Edit Module" : "Create New Module"}
             </h2>
             <form onSubmit={editingModule ? handleUpdateModule : handleCreateModule}>
               <div className="space-y-6">
                 {/* Module Title */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     Module Title *
                   </label>
                   <input
@@ -171,14 +173,14 @@ const Module = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Introduction to React"
-                    className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all"
+                    className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                     required
                   />
                 </div>
 
                 {/* Module Description */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     Module Description
                   </label>
                   <textarea
@@ -186,7 +188,7 @@ const Module = () => {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Brief description of what this module covers..."
                     rows={4}
-                    className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all resize-none"
+                    className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all resize-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   />
                 </div>
 
@@ -213,7 +215,7 @@ const Module = () => {
                     <button
                       type="button"
                       onClick={handleCancelEdit}
-                      className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-semibold transition-all"
+                      className={`px-6 py-3 ${isDark ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'} rounded-xl font-semibold transition-all`}
                     >
                       Cancel
                     </button>
@@ -231,14 +233,14 @@ const Module = () => {
               <ClipLoader size={40} color="black" />
             </div>
           ) : moduleData.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-              <div className="text-gray-400 text-6xl mb-4">
+            <div className={`${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white'} rounded-2xl shadow-lg border p-8 text-center`}>
+              <div className={`${isDark ? 'text-gray-600' : 'text-gray-400'} text-6xl mb-4`}>
                 <FaFolderOpen />
               </div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              <h3 className={`text-xl font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
                 No Modules Yet
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} mb-6`}>
                 Start by creating your first module to organize your course content.
               </p>
               <button
@@ -253,7 +255,7 @@ const Module = () => {
             moduleData.map((module, index) => (
               <div
                 key={module._id}
-                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all"
+                className={`${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white'} rounded-2xl shadow-lg border p-6 hover:shadow-xl transition-all`}
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   {/* Module Info */}
@@ -262,12 +264,12 @@ const Module = () => {
                       <span className="bg-black text-white text-sm font-bold px-3 py-1 rounded-full">
                         Module {index + 1}
                       </span>
-                      <h3 className="text-xl font-bold text-gray-800">
+                      <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                         {module.title}
                       </h3>
                     </div>
                     {module.description && (
-                      <p className="text-gray-600 text-sm">
+                      <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
                         {module.description}
                       </p>
                     )}
@@ -284,14 +286,14 @@ const Module = () => {
                     </button>
                     <button
                       onClick={() => handleEditModule(module)}
-                      className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-all text-sm"
+                      className={`flex items-center gap-2 ${isDark ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'} px-4 py-2 rounded-lg font-medium transition-all text-sm`}
                     >
                       <FaEdit />
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteModule(module._id)}
-                      className="flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-lg font-medium transition-all text-sm"
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${isDark ? 'bg-red-900/50 hover:bg-red-900 text-red-400' : 'bg-red-100 hover:bg-red-200 text-red-600'}`}
                     >
                       <FaTrash />
                       Delete

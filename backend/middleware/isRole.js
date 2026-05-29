@@ -1,11 +1,20 @@
 const isRole = (...roles) => {
   return (req, res, next) => {
-    if (!req.userRole) {
-      return res.status(401).json({ message: "User not authenticated" });
+
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
-    if (!roles.includes(req.userRole)) {
-      return res.status(403).json({ message: `Access denied. ${roles.join(" or ")} role required` });
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
     }
+
     next();
   };
 };

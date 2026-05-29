@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
-import Nav from "../../components/common/Navbar";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import React, { useEffect, useMemo, useState } from "react";
+import Nav from "../../components/navbar/Navbar";
+import { FaArrowLeft } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
+import { HiSparkles } from "react-icons/hi2";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPublishedCourses } from "../../redux/slices/courseSlice";
 import Card from "../../components/course/Card";
-import ai from "../../assets/ai.png";
 
 // Categories
 const categories = [
@@ -25,218 +26,229 @@ const AllCourses = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Redux Data
-  const { courseData } = useSelector((state) => state.course);
+  const { courseData, loading } = useSelector((state) => state.course);
 
-  // States
   const [category, setCategory] = useState([]);
-  const [filterCourse, setFilterCourse] = useState([]);
   const [search, setSearch] = useState("");
 
-  // Fetch published courses on mount
+  // Fetch Courses
   useEffect(() => {
     dispatch(fetchPublishedCourses());
   }, [dispatch]);
 
   // Toggle Category
-  const toggleCategory = (e) => {
-    const value = e.target.value;
-
-    if (category.includes(value)) {
-      setCategory((prev) => prev.filter((item) => item !== value));
-    } else {
-      setCategory((prev) => [...prev, value]);
-    }
+  const toggleCategory = (value) => {
+    setCategory((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value]
+    );
   };
 
-  // Apply Filter
-  const applyFilter = () => {
-    let courseCopy = [...courseData];
+  // Filter Courses
+  const filteredCourses = useMemo(() => {
+    let courses = [...(courseData || [])];
 
-    // Category Filter
     if (category.length > 0) {
-      courseCopy = courseCopy.filter((item) =>
-        category.includes(item.category),
+      courses = courses.filter((item) =>
+        category.includes(item.category)
       );
     }
 
-    // Search Filter
-    if (search.trim() !== "") {
-      courseCopy = courseCopy.filter((course) =>
-        course.title.toLowerCase().includes(search.toLowerCase()),
+    if (search.trim()) {
+      courses = courses.filter((course) =>
+        course.title.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    setFilterCourse(courseCopy);
-  };
-
-  useEffect(() => {
-    applyFilter();
-  }, [category, search, courseData]);
+    return courses;
+  }, [courseData, category, search]);
 
   return (
-    <div className="min-h-screen bg-gray-100 overflow-x-hidden">
+    <div className="min-h-screen overflow-hidden bg-[#f5f7fb] dark:bg-[#050816] text-black dark:text-white transition-colors duration-300">
+      {/* Background Blur */}
+      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-500/20 blur-[140px] rounded-full -z-10" />
+      <div className="fixed bottom-0 right-0 w-[400px] h-[400px] bg-pink-500/20 blur-[120px] rounded-full -z-10" />
+
       <Nav />
 
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col lg:flex-row">
+        
         {/* ================= Sidebar ================= */}
 
-        <aside className="w-full md:w-[360px] lg:w-[380px] bg-black text-white md:min-h-screen md:sticky md:top-0 py-16 overflow-hidden">
-          
-          {/* Header */}
-          <div className="flex items-center gap-4 px-6 py-10 flex-wrap">
-            <button
-              onClick={() => navigate("/")}
-              className="text-white hover:text-purple-400 transition duration-300"
-            >
-              <FaArrowLeftLong className="text-2xl" />
-            </button>
-
-            <h2 className="text-2xl md:text-3xl font-bold leading-tight">
-              Filter by Category
-            </h2>
-          </div>
-
-          {/* Filter Box */}
-          <div className="mx-4 mb-6 bg-gradient-to-b from-gray-700 to-gray-800 p-5 rounded-3xl border border-gray-600 shadow-2xl">
+        <motion.aside
+          initial={{ x: -60, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="w-full lg:w-[340px] xl:w-[370px] 
+          border-r border-white/10 
+          bg-white/60 dark:bg-white/5 
+          backdrop-blur-2xl 
+          lg:min-h-screen 
+          sticky top-0 z-20"
+        >
+          <div className="p-6 md:p-8">
             
-            {/* AI Search Button */}
-            <button className="w-full mb-6 bg-black border border-purple-500 hover:border-purple-400 rounded-2xl px-4 py-4 flex items-center justify-between transition-all duration-300 group shadow-lg hover:shadow-purple-500/20">
-              
-              <div className="flex items-center gap-3">
-                {/* AI Icon */}
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
-                  <img
-                    src={ai}
-                    alt="AI"
-                    className="w-6 h-6 object-contain"
-                  />
-                </div>
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-8 py-12 mt-3">
+              <button
+                onClick={() => navigate("/")}
+                className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/10 hover:bg-purple-500 hover:text-white transition-all duration-300 flex items-center justify-center"
+              >
+                <FaArrowLeft className="text-lg" />
+              </button>
 
-                {/* Text */}
-                <div className="flex flex-col items-start">
-                  <span className="text-base font-semibold text-white">
-                    Search with AI
-                  </span>
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Explore Courses
+                </h2>
 
-                  <span className="text-sm text-gray-400">
-                    Smart course discovery
-                  </span>
-                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Discover premium learning paths
+                </p>
               </div>
+            </div>
 
-              <FiSearch className="text-purple-400 text-2xl group-hover:scale-110 transition" />
-            </button>
+           
 
-            {/* Search Input */}
-            <div className="relative mb-6">
+            {/* Search */}
+            <div className="relative mt-2">
               <input
                 type="text"
-                placeholder="Search courses..."
+                placeholder="Search premium courses..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-black/70 border border-gray-600 rounded-2xl py-4 pl-5 pr-12 text-base outline-none focus:border-purple-500 text-white placeholder:text-gray-400"
+                className="w-full h-14 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-xl px-5 pr-14 outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
               />
 
-              <FiSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 text-xl" />
+              <FiSearch className="absolute right-5 top-1/2 -translate-y-1/2 text-xl text-purple-500" />
             </div>
 
-            {/* ================= Desktop Categories ================= */}
+            {/* Categories */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-5">
+                Categories
+              </h3>
 
-            <div className="hidden md:flex flex-col space-y-4">
-              {categories.map((item, index) => (
-                <label
-                  key={index}
-                  className={`flex items-center gap-4 cursor-pointer border rounded-2xl px-4 py-4 transition-all duration-300 ${
-                    category.includes(item.value)
-                      ? "bg-purple-500/20 border-purple-500"
-                      : "bg-black/30 border-gray-700 hover:bg-purple-500/10"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    value={item.value}
-                    checked={category.includes(item.value)}
-                    className="w-5 h-5 accent-purple-500 cursor-pointer"
-                    onChange={toggleCategory}
-                  />
+              <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible scrollbar-hide pb-2">
+                {categories.map((item, index) => {
+                  const active = category.includes(item.value);
 
-                  <span className="text-base font-medium text-gray-200">
-                    {item.label}
-                  </span>
-                </label>
-              ))}
-            </div>
+                  return (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      whileHover={{ y: -2 }}
+                      key={index}
+                      onClick={() => toggleCategory(item.value)}
+                      className={`group whitespace-nowrap lg:w-full flex items-center justify-between px-5 py-4 rounded-2xl border transition-all duration-300 ${
+                        active
+                          ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent shadow-lg shadow-purple-500/30"
+                          : "bg-white/60 dark:bg-white/5 border-black/10 dark:border-white/10 hover:border-purple-500/40 hover:bg-purple-500/10"
+                      }`}
+                    >
+                      <span className="font-medium text-sm md:text-base">
+                        {item.label}
+                      </span>
 
-            {/* ================= Mobile Categories ================= */}
-
-            <div className="flex md:hidden gap-3 overflow-x-auto pb-2 scrollbar-hide">
-              {categories.map((item, index) => (
-                <label
-                  key={index}
-                  className={`flex items-center gap-2 whitespace-nowrap px-5 py-3 rounded-full border cursor-pointer transition-all ${
-                    category.includes(item.value)
-                      ? "bg-purple-500 border-purple-500 text-white"
-                      : "bg-black border-gray-600 text-gray-300"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    value={item.value}
-                    checked={category.includes(item.value)}
-                    className="hidden"
-                    onChange={toggleCategory}
-                  />
-
-                  <span className="text-sm font-medium">
-                    {item.label}
-                  </span>
-                </label>
-              ))}
+                      <div
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                          active
+                            ? "border-white bg-white"
+                            : "border-gray-400"
+                        }`}
+                      >
+                        {active && (
+                          <div className="w-2 h-2 rounded-full bg-purple-500" />
+                        )}
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </aside>
+        </motion.aside>
 
         {/* ================= Main Content ================= */}
 
-        <div className="flex-1 px-6 sm:px-8 lg:px-12 py-10 md:py-12 overflow-hidden">
+        <main className="flex-1 px-4 sm:px-6 lg:px-10 py-8 md:py-10">
           
-          {/* Heading */}
-          <div className="mb-10 md:mb-12 mt-2 py-10 px-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl text-center text-white shadow-lg">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-              Explore Courses
-            </h1>
+          {/* Hero Section */}
+         
 
-            <p className="text-gray-800 mt-3 text-base sm:text-lg">
-              Learn trending skills and grow your career with modern
-              industry-ready courses.
-            </p>
+          {/* Top Bar */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-10 mb-8">
+            <div>
+              <h2 className="text-2xl font-bold">
+                Available Courses
+              </h2>
+
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                {filteredCourses.length} courses found
+              </p>
+            </div>
+
+            <div className="px-5 py-3 rounded-2xl bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-xl">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Trending Learning Paths 🚀
+              </span>
+            </div>
           </div>
 
-          {/* ================= Course Grid ================= */}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filterCourse?.length > 0 ? (
-              filterCourse.map((course, index) => (
-                <Card
+          {/* Loading Skeleton */}
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-7">
+              {[...Array(6)].map((_, index) => (
+                <div
                   key={index}
-                  thumbnail={course.thumbnail}
-                  title={course.title}
-                  category={course.category}
-                  price={course.price}
-                  id={course._id}
-                  reviews={course.reviews}
+                  className="h-[320px] rounded-3xl bg-white/60 dark:bg-white/5 animate-pulse border border-black/10 dark:border-white/10"
                 />
-              ))
-            ) : (
-              <div className="col-span-full flex items-center justify-center h-[300px]">
-                <h1 className="text-2xl font-bold text-gray-500">
-                  No Courses Found
-                </h1>
-              </div>
-            )}
-          </div>
-        </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              {/* Course Grid */}
+              {filteredCourses.length > 0 ? (
+                <motion.div
+                  layout
+                  className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-7"
+                >
+                  {filteredCourses.map((course, index) => (
+                    <motion.div
+                      key={course._id}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <Card
+                        thumbnail={course.thumbnail}
+                        title={course.title}
+                        category={course.category}
+                        price={course.price}
+                        id={course._id}
+                        reviews={course.reviews}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-24">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-2xl">
+                    <FiSearch className="text-4xl text-white" />
+                  </div>
+
+                  <h2 className="text-3xl font-bold mt-6">
+                    No Courses Found
+                  </h2>
+
+                  <p className="text-gray-500 dark:text-gray-400 mt-3 text-center max-w-md">
+                    Try changing your search keywords or selecting different categories.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </main>
       </div>
     </div>
   );

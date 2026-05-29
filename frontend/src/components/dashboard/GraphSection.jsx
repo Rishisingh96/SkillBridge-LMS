@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import {
@@ -12,220 +12,342 @@ import {
   Cell,
 } from "recharts";
 
-
-
 import { motion } from "framer-motion";
 
-const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
-  const { creatorCourseData: reduxCourseData } = useSelector((state) => state.course);
+const COLORS = [
+  "#6366F1",
+  "#8B5CF6",
+  "#06B6D4",
+  "#10B981",
+  "#F59E0B",
+  "#EC4899",
+];
 
-  // Use props if available, otherwise fallback to Redux
-  const courseData = creatorCourseData || reduxCourseData;
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
 
-  // Course Lecture Data
-  const CourseProgressData =
-    courseData?.map((course) => ({
-      name:
-        course.title?.length > 12
-          ? course.title.slice(0, 12) + "..."
-          : course.title,
+const chartVariants = {
+  hidden: { opacity: 0, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
 
-      lectures: course.modules?.reduce((total, module) => total + (module.lectures?.length || 0), 0) || 0,
-    })) || [];
-
-  // Enrollment Data - Use enrollmentByCourse from API if available
-  const EnrollData =
-    enrollmentByCourse?.map((item) => ({
-      name:
-        item.courseTitle?.length > 12
-          ? item.courseTitle.slice(0, 12) + "..."
-          : item.courseTitle,
-
-      enrolled: item.enrollmentCount || 0,
-    })) ||
-    courseData?.map((course) => ({
-      name:
-        course.title?.length > 12
-          ? course.title.slice(0, 12) + "..."
-          : course.title,
-
-      enrolled: course.enrolledStudents?.length || 0,
-    })) || [];
-
-  const COLORS = [
-    "#111111",
-    "#4F46E5",
-    "#9333EA",
-    "#0EA5E9",
-    "#F59E0B",
-    "#10B981",
-  ];
-
-  // Custom Tooltip
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-black text-white px-4 py-3 rounded-xl shadow-xl border border-gray-700">
-          <p className="font-semibold">{label}</p>
-
-          <p className="text-sm mt-1">
-            {payload[0].dataKey}: {payload[0].value}
-          </p>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
+const GlassCard = ({ children, glow, delay = 0 }) => {
   return (
-    <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-8 mt-10">
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      transition={{ delay }}
+      className="relative overflow-hidden rounded-3xl border border-white/20 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-2xl shadow-[0_10px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_60px_rgba(0,0,0,0.4)]"
+    >
+      {/* Glow */}
+      <div
+        className={`absolute inset-0 opacity-30 blur-3xl ${glow}`}
+      ></div>
 
-      {/* Course Progress */}
+      {/* Noise Overlay */}
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/noise.png')] opacity-[0.03]"></div>
+
+      <div className="relative z-10 p-5 sm:p-7 lg:p-8">{children}</div>
+    </motion.div>
+  );
+};
+
+const Header = ({ title, subtitle, icon, iconBg }) => {
+  return (
+    <div className="flex items-start justify-between gap-4 mb-8">
+      <div>
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {title}
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          {subtitle}
+        </p>
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative overflow-hidden bg-white/80 backdrop-blur-xl border border-gray-200 rounded-[30px] p-7 shadow-lg hover:shadow-2xl transition duration-500"
+        whileHover={{ scale: 1.08, rotate: 4 }}
+        whileTap={{ scale: 0.95 }}
+        className={`flex h-14 w-14 items-center justify-center rounded-2xl ${iconBg} text-white shadow-xl`}
       >
-        {/* Glow Effect */}
-        <div className="absolute top-0 right-0 w-40 h-40 bg-gray-200 rounded-full blur-3xl opacity-30"></div>
-
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">
-                Course Progress
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Lectures available in every course
-              </p>
-            </div>
-
-            <div className="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center text-xl shadow-lg">
-              📚
-            </div>
-          </div>
-
-          {CourseProgressData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={CourseProgressData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#E5E7EB"
-                />
-
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                <YAxis
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                <Tooltip content={<CustomTooltip />} />
-
-                <Bar
-                  dataKey="lectures"
-                  radius={[12, 12, 0, 0]}
-                  animationDuration={2000}
-                >
-                  {CourseProgressData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[322px] flex items-center justify-center text-gray-400">
-              No Course Data Available
-            </div>
-          )}
-        </div>
-      </motion.div>
-
-      {/* Student Enrollment */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="relative overflow-hidden bg-white/80 backdrop-blur-xl border border-gray-200 rounded-[30px] p-7 shadow-lg hover:shadow-2xl transition duration-500"
-      >
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-200 rounded-full blur-3xl opacity-30"></div>
-
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">
-                Student Enrollment
-              </h2>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Students enrolled in each course
-              </p>
-            </div>
-
-            <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-lg">
-              👨‍🎓
-            </div>
-          </div>
-
-          {EnrollData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={EnrollData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#E5E7EB"
-                />
-
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                <YAxis
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                <Tooltip content={<CustomTooltip />} />
-
-                <Bar
-                  dataKey="enrolled"
-                  radius={[12, 12, 0, 0]}
-                  animationDuration={2500}
-                >
-                  {EnrollData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[(index + 2) % COLORS.length]}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[400px] flex items-center justify-center text-gray-400">
-              No Enrollment Data Available
-            </div>
-          )}
-        </div>
+        <span className="text-2xl">{icon}</span>
       </motion.div>
     </div>
+  );
+};
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload?.length) {
+    return (
+      <div className="rounded-2xl border border-white/20 bg-black/80 backdrop-blur-xl px-4 py-3 shadow-2xl">
+        <p className="text-sm font-semibold text-white">{label}</p>
+
+        <div className="mt-2 flex items-center gap-2">
+          <div className="h-2.5 w-2.5 rounded-full bg-indigo-400"></div>
+
+          <p className="text-sm text-gray-200">
+            {payload[0].dataKey}:{" "}
+            <span className="font-bold text-white">
+              {payload[0].value}
+            </span>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const EmptyState = ({ text }) => {
+  return (
+    <div className="flex h-[340px] flex-col items-center justify-center text-center">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10">
+        📊
+      </div>
+
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+        No Data Found
+      </h3>
+
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        {text}
+      </p>
+    </div>
+  );
+};
+
+const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
+  const { creatorCourseData: reduxCourseData } = useSelector(
+    (state) => state.course
+  );
+
+  const courseData = creatorCourseData || reduxCourseData;
+
+  const CourseProgressData = useMemo(() => {
+    return (
+      courseData?.map((course) => ({
+        name:
+          course.title?.length > 14
+            ? course.title.slice(0, 14) + "..."
+            : course.title,
+
+        lectures:
+          course.modules?.reduce(
+            (total, module) =>
+              total + (module.lectures?.length || 0),
+            0
+          ) || 0,
+      })) || []
+    );
+  }, [courseData]);
+
+  const EnrollData = useMemo(() => {
+    return (
+      enrollmentByCourse?.map((item) => ({
+        name:
+          item.courseTitle?.length > 14
+            ? item.courseTitle.slice(0, 14) + "..."
+            : item.courseTitle,
+
+        enrolled: item.enrollmentCount || 0,
+      })) ||
+      courseData?.map((course) => ({
+        name:
+          course.title?.length > 14
+            ? course.title.slice(0, 14) + "..."
+            : course.title,
+
+        enrolled: course.enrolledStudents?.length || 0,
+      })) ||
+      []
+    );
+  }, [enrollmentByCourse, courseData]);
+
+  return (
+    <section className="relative w-full py-6">
+      {/* Background Blur */}
+      <div className="absolute left-0 top-0 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl"></div>
+
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        {/* Course Progress */}
+        <GlassCard
+          glow="bg-indigo-500/20"
+          delay={0.1}
+        >
+          <Header
+            title="Course Progress"
+            subtitle="Lectures available inside each course"
+            icon="📚"
+            iconBg="bg-gradient-to-br from-indigo-500 to-violet-600"
+          />
+
+          {CourseProgressData.length > 0 ? (
+            <motion.div
+              variants={chartVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="h-[340px] w-full"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={CourseProgressData}
+                  margin={{
+                    top: 10,
+                    right: 10,
+                    left: -15,
+                    bottom: 0,
+                  }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#E5E7EB20"
+                  />
+
+                  <XAxis
+                    dataKey="name"
+                    tick={{
+                      fill: "#94A3B8",
+                      fontSize: 12,
+                    }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+
+                  <YAxis
+                    tick={{
+                      fill: "#94A3B8",
+                      fontSize: 12,
+                    }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+
+                  <Tooltip
+                    cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                    content={<CustomTooltip />}
+                  />
+
+                  <Bar
+                    dataKey="lectures"
+                    radius={[14, 14, 0, 0]}
+                    animationDuration={2000}
+                  >
+                    {CourseProgressData.map((_, index) => (
+                      <Cell
+                        key={index}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </motion.div>
+          ) : (
+            <EmptyState text="No course progress data available." />
+          )}
+        </GlassCard>
+
+        {/* Enrollment */}
+        <GlassCard
+          glow="bg-cyan-500/20"
+          delay={0.2}
+        >
+          <Header
+            title="Student Enrollment"
+            subtitle="Track how many students joined your courses"
+            icon="👨‍🎓"
+            iconBg="bg-gradient-to-br from-cyan-500 to-blue-600"
+          />
+
+          {EnrollData.length > 0 ? (
+            <motion.div
+              variants={chartVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="h-[340px] w-full"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={EnrollData}
+                  margin={{
+                    top: 10,
+                    right: 10,
+                    left: -15,
+                    bottom: 0,
+                  }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#E5E7EB20"
+                  />
+
+                  <XAxis
+                    dataKey="name"
+                    tick={{
+                      fill: "#94A3B8",
+                      fontSize: 12,
+                    }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+
+                  <YAxis
+                    tick={{
+                      fill: "#94A3B8",
+                      fontSize: 12,
+                    }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+
+                  <Tooltip
+                    cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                    content={<CustomTooltip />}
+                  />
+
+                  <Bar
+                    dataKey="enrolled"
+                    radius={[14, 14, 0, 0]}
+                    animationDuration={2500}
+                  >
+                    {EnrollData.map((_, index) => (
+                      <Cell
+                        key={index}
+                        fill={COLORS[(index + 2) % COLORS.length]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </motion.div>
+          ) : (
+            <EmptyState text="No enrollment analytics available." />
+          )}
+        </GlassCard>
+      </div>
+    </section>
   );
 };
 

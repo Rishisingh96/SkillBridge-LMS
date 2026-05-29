@@ -7,7 +7,7 @@ import Module from "../models/moduleModel.js";
 // Cloudinary
 import uploadOnCloudinary from "../config/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
-import { isCourseActive } from "../middleware/isCourseActive.js";
+import { isCourseActive } from "../utils/isCourseActive.js";
 
 
 // Upload Lecture Resources

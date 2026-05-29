@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { FaArrowLeftLong } from 'react-icons/fa6'
+import { FaArrowLeft } from 'react-icons/fa6'
 
 const DashboardHeader = ({ title, subtitle, buttonText, buttonAction }) => {
   const navigate = useNavigate()
@@ -15,7 +15,7 @@ const DashboardHeader = ({ title, subtitle, buttonText, buttonAction }) => {
           onClick={() => navigate("/")}
           className="w-11 h-11 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-gray-100 transition"
         >
-          <FaArrowLeftLong className="text-[18px] text-gray-700" />
+          <FaArrowLeft className="text-[18px] text-gray-700" />
         </motion.button>
 
         <div>
