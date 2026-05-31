@@ -1,7 +1,7 @@
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 
 // Redux
@@ -20,51 +20,48 @@ import {
 // Layouts
 import EducatorLayout from "./components/educator/EducatorLayout";
 import StudentLayout from "./components/student/StudentLayout";
-
-// Pages
-import Home from "./pages/student/Home";
-import SignUp from "./pages/auth/SignUp";
-import Login from "./pages/auth/Login";
-import Profile from "./pages/student/Profile";
-import StudentDashboard from "./pages/student/StudentDashboard";
-import PurchaseHistory from "./pages/student/PurchaseHistory";
-import ForgetPassword from "./pages/auth/ForgetPassword";
-import EditProfile from "./pages/student/EditProfile";
-import VerifyEmail from "./pages/auth/VerifyEmail";
-import EducatorDashboard from "./pages/educator/EducatorDashboard";
-import Courses from "./pages/educator/Courses";
-import CreateCourse from "./pages/educator/CreateCourse";
-import EditCourse from "./pages/educator/EditCourse";
-import AllCourses from "./pages/student/AllCourses";
-import CreateLecture from "./pages/educator/CreateLecture";
-import EditLecture from "./pages/educator/EditLecture";
-import ViewCourse from "./pages/educator/ViewCourse";
-import ScrollToTop from "./components/common/ScrollToTop";
-import ViewLecture from "./pages/student/ViewLecture";
-import MyEnrolledCourses from "./pages/student/MyEnrolledCourses";
-import CourseDetail from "./pages/student/CourseDetail";
-import Module from "./pages/educator/Module";
-import EducatorProfile from "./pages/educator/Profile";
-import Graph from "./pages/educator/Graph";
-import RecentEnrollment from "./pages/educator/RecentEnrollment";
-import Stats from "./pages/educator/Stats";
-import CoursePerformance from "./pages/educator/CoursePerformance";
-
 import AdminLayout from "./components/admin/AdminLayout";
 
-import AdminDashboard from "./pages/admin/AdminDashboard";
+// Shared Components
+import ScrollToTop from "./components/home/shared/ScrollToTop";
 
-import ManageUsers from "./pages/admin/ManageUsers";
-
-import ManageCourses from "./pages/admin/ManageCourses";
-
-import PlatformStats from "./pages/admin/PlatformStats";
-import AdminCoupons from "./pages/admin/Coupons";
-import CheckoutPage from "./pages/student/CheckoutPage";
-import Certificates from "./pages/student/Certificates";
-import BlogPanel from "./pages/Blog/BlogPanal";
-import CategoryBlog from "./pages/Blog/CategoryBlog";
-import Blog from "./pages/Blog/Blog";
+// Lazy loaded Pages
+const Home = lazy(() => import("./pages/home/Home"));
+const SignUp = lazy(() => import("./pages/auth/SignUp"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const Profile = lazy(() => import("./pages/student/Profile"));
+const StudentDashboard = lazy(() => import("./pages/student/StudentDashboard"));
+const PurchaseHistory = lazy(() => import("./pages/student/PurchaseHistory"));
+const ForgetPassword = lazy(() => import("./pages/auth/ForgetPassword"));
+const EditProfile = lazy(() => import("./pages/student/EditProfile"));
+const VerifyEmail = lazy(() => import("./pages/auth/VerifyEmail"));
+const EducatorDashboard = lazy(() => import("./pages/educator/EducatorDashboard"));
+const Courses = lazy(() => import("./pages/educator/Courses"));
+const CreateCourse = lazy(() => import("./pages/educator/CreateCourse"));
+const EditCourse = lazy(() => import("./pages/educator/EditCourse"));
+const AllCourses = lazy(() => import("./pages/student/AllCourses"));
+const CreateLecture = lazy(() => import("./pages/educator/CreateLecture"));
+const EditLecture = lazy(() => import("./pages/educator/EditLecture"));
+const ViewCourse = lazy(() => import("./pages/educator/ViewCourse"));
+const ViewLecture = lazy(() => import("./pages/student/ViewLecture"));
+const MyEnrolledCourses = lazy(() => import("./pages/student/MyEnrolledCourses"));
+const CourseDetail = lazy(() => import("./pages/student/CourseDetail"));
+const Module = lazy(() => import("./pages/educator/Module"));
+const EducatorProfile = lazy(() => import("./pages/educator/Profile"));
+const Graph = lazy(() => import("./pages/educator/Graph"));
+const RecentEnrollment = lazy(() => import("./pages/educator/RecentEnrollment"));
+const Stats = lazy(() => import("./pages/educator/Stats"));
+const CoursePerformance = lazy(() => import("./pages/educator/CoursePerformance"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
+const ManageCourses = lazy(() => import("./pages/admin/ManageCourses"));
+const PlatformStats = lazy(() => import("./pages/admin/PlatformStats"));
+const AdminCoupons = lazy(() => import("./pages/admin/Coupons"));
+const CheckoutPage = lazy(() => import("./pages/student/CheckoutPage"));
+const Certificates = lazy(() => import("./pages/student/Certificates"));
+const BlogPanel = lazy(() => import("./pages/Blog/BlogPanal"));
+const CategoryBlog = lazy(() => import("./pages/Blog/CategoryBlog"));
+const Blog = lazy(() => import("./pages/Blog/Blog"));
 
 export const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -75,38 +72,89 @@ function App() {
   );
 
   useEffect(() => {
+    // Critical: fetch user data immediately
     dispatch(fetchCurrentUser());
-    dispatch(fetchAllReviews());
+    
+    // Defer non-critical data fetching to prioritize UI render
+    const deferDataFetch = () => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          dispatch(fetchAllReviews());
+        });
+      } else {
+        setTimeout(() => {
+          dispatch(fetchAllReviews());
+        }, 100);
+      }
+    };
+    
+    deferDataFetch();
   }, []);
 
   useEffect(() => {
     if (userData) {
-      dispatch(fetchPublishedCourses());
+      // Defer non-critical data fetching to prioritize UI render
+      const deferDataFetch = () => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            dispatch(fetchPublishedCourses());
+          });
+        } else {
+          setTimeout(() => {
+            dispatch(fetchPublishedCourses());
+          }, 100);
+        }
+      };
+      
+      deferDataFetch();
     }
     if (userData?.role === "educator") {
-      dispatch(fetchCreatorCourses());
+      const deferEducatorData = () => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            dispatch(fetchCreatorCourses());
+          });
+        } else {
+          setTimeout(() => {
+            dispatch(fetchCreatorCourses());
+          }, 100);
+        }
+      };
+      
+      deferEducatorData();
     }
     if (userData?.role === "admin") {
-      dispatch(fetchAllUsers());
-      dispatch(fetchCourses());
-      dispatch(fetchPlatformStats());
+      const deferAdminData = () => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            dispatch(fetchAllUsers());
+            dispatch(fetchCourses());
+            dispatch(fetchPlatformStats());
+          });
+        } else {
+          setTimeout(() => {
+            dispatch(fetchAllUsers());
+            dispatch(fetchCourses());
+            dispatch(fetchPlatformStats());
+          }, 100);
+        }
+      };
+      
+      deferAdminData();
     }
   }, [userData]);
-
-  if (loading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center bg-white dark:bg-slate-900 text-gray-900 dark:text-white text-2xl">
-        Loading...
-      </div>
-    );
-  }
 
   return (
     <>
       <ToastContainer />
       <ScrollToTop />
 
-      <Routes>
+      <Suspense fallback={
+        <div className="w-full h-screen flex items-center justify-center bg-white dark:bg-slate-900 text-gray-900 dark:text-white text-2xl">
+          Loading...
+        </div>
+      }>
+        <Routes>
         {/* Public */}
         <Route path="/" element={<Home />} />
 
@@ -311,6 +359,7 @@ function App() {
           <Route path="stats" element={<PlatformStats />} />
         </Route>
       </Routes>
+      </Suspense>
     </>
   );
 }

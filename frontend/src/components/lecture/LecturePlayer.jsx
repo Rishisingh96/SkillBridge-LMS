@@ -11,7 +11,6 @@ import QuizResult from "./QuizResult";
 import Comment from "../../pages/student/Comment";
 import { useTheme } from "../../context/ThemeContext";
 import { useSelector } from "react-redux";
-import { updateLectureProgress, updateWatchTime } from "../../services/progressService";
 
 
 const LecturePlayer = ({

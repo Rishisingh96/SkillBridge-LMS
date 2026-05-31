@@ -104,6 +104,22 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
 
+  // ── Session Management (Single Device Login) ──
+  currentSessionId: {
+    type: String,
+    default: null,
+  },
+
+  sessionDevice: {
+    type: String,
+    default: null,
+  },
+
+  sessionExpiresAt: {
+    type: Date,
+    default: null,
+  },
+
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);

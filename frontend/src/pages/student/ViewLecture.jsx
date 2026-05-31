@@ -12,8 +12,6 @@ import LecturePlayer from "../../components/lecture/LecturePlayer";
 import ModuleList from "../../components/lecture/ModuleList";
 import { toast } from "react-toastify";
 import { useTheme } from "../../context/ThemeContext";
-import Nav from "../../components/navbar/Navbar";
-import { getCourseProgress, resumeLecture } from "../../services/progressService";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { motion } from "framer-motion";
 

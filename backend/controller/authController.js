@@ -3,6 +3,7 @@ import validator from "validator"
 import bcrypt from "bcryptjs"
 import genToken from "../config/token.js"
 import sendMail from "../config/sendMail.js"
+import crypto from "crypto"
 
 
 //Signup
@@ -93,7 +94,33 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
+    // ✅ Single Session Enforcement - Check if already logged in on another device
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    const currentSessionId = crypto.randomBytes(32).toString('hex');
+    
+    // Check if user has an active session on another device
+    if (user.currentSessionId && user.sessionExpiresAt && user.sessionExpiresAt > Date.now()) {
+      // Session exists and is still valid
+      const timeRemaining = Math.ceil((user.sessionExpiresAt - Date.now()) / 1000 / 60); // in minutes
+      
+      return res.status(403).json({
+        message: `You are already logged in on ${user.sessionDevice || 'another device'}. Please logout from that device first or wait ${timeRemaining} minutes for the session to expire.`,
+        alreadyLoggedIn: true,
+        device: user.sessionDevice,
+        sessionExpiresAt: user.sessionExpiresAt
+      });
+    }
+
+    // Generate new session
     const token = await genToken(user._id);
+    const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
+
+    // Update user session info
+    user.currentSessionId = currentSessionId;
+    user.sessionDevice = userAgent.substring(0, 100); // Limit device string length
+    user.sessionExpiresAt = sessionExpiresAt;
+    user.lastLogin = Date.now();
+    await user.save();
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -109,6 +136,7 @@ return res.status(200).json({
   success: true,
   user: safeUser,
   token,
+  sessionId: currentSessionId,
 });
 
   } catch (error) {
@@ -119,7 +147,16 @@ return res.status(200).json({
 
 // for logOut
 export const logOut = async (req, res) => {
-    try { 
+    try {
+        // Clear session data from user
+        if (req.user) {
+            await User.findByIdAndUpdate(req.user._id, {
+                currentSessionId: null,
+                sessionDevice: null,
+                sessionExpiresAt: null
+            });
+        }
+        
         await res.clearCookie("token");
         return res.status(200).json({ message: "Logout successful" });
     } catch (error) {
@@ -171,11 +208,34 @@ export const varifyOTP = async (req, res) => {
       return res.status(400).json({ message: "OTP expired" });
     }
 
+    // ✅ Single Session Enforcement - Check if already logged in on another device
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    const currentSessionId = require('crypto').randomBytes(32).toString('hex');
+    
+    // Check if user has an active session on another device
+    if (user.currentSessionId && user.sessionExpiresAt && user.sessionExpiresAt > Date.now()) {
+      const timeRemaining = Math.ceil((user.sessionExpiresAt - Date.now()) / 1000 / 60);
+      
+      return res.status(403).json({
+        message: `You are already logged in on ${user.sessionDevice || 'another device'}. Please logout from that device first or wait ${timeRemaining} minutes for the session to expire.`,
+        alreadyLoggedIn: true,
+        device: user.sessionDevice,
+        sessionExpiresAt: user.sessionExpiresAt
+      });
+    }
+
     // ✅ Verify karo
     user.isVerified = true;
     user.isOtpVerifed = true;
     user.resetOtp = undefined;
     user.otpExpires = undefined;
+    
+    // Update session info
+    const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    user.currentSessionId = currentSessionId;
+    user.sessionDevice = userAgent.substring(0, 100);
+    user.sessionExpiresAt = sessionExpiresAt;
+    user.lastLogin = Date.now();
     await user.save();
 
     // ✅ Ab token do — account verified ho gaya
@@ -193,6 +253,7 @@ export const varifyOTP = async (req, res) => {
       message: "Email verified successfully",
       user,
       token,
+      sessionId: currentSessionId,
     });
 
   } catch (error) {
@@ -234,6 +295,7 @@ export const googleAuth = async (req, res) =>{
                     email , 
                     photoUrl,
                     role: role || "student",
+                    isVerified: true, // Google users are auto-verified
                 })
             } else {
                 // Update existing user with Google photo if not present
@@ -243,18 +305,43 @@ export const googleAuth = async (req, res) =>{
                 }
             }
 
+            // ✅ Single Session Enforcement - Check if already logged in on another device
+            const userAgent = req.headers['user-agent'] || 'Unknown Device';
+            const currentSessionId = require('crypto').randomBytes(32).toString('hex');
+            
+            // Check if user has an active session on another device
+            if (user.currentSessionId && user.sessionExpiresAt && user.sessionExpiresAt > Date.now()) {
+                const timeRemaining = Math.ceil((user.sessionExpiresAt - Date.now()) / 1000 / 60);
+                
+                return res.status(403).json({
+                    message: `You are already logged in on ${user.sessionDevice || 'another device'}. Please logout from that device first or wait ${timeRemaining} minutes for the session to expire.`,
+                    alreadyLoggedIn: true,
+                    device: user.sessionDevice,
+                    sessionExpiresAt: user.sessionExpiresAt
+                });
+            }
+
+            // Update session info
+            const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+            user.currentSessionId = currentSessionId;
+            user.sessionDevice = userAgent.substring(0, 100);
+            user.sessionExpiresAt = sessionExpiresAt;
+            user.lastLogin = Date.now();
+            await user.save();
+
             let token = await genToken(user._id)
 
             res.cookie("token", token, {
                 httpOnly:true, 
-                secure:false,  // when we deploye than chage true
+                secure: process.env.NODE_ENV === "production",  // when we deploye than chage true
                 sameSite:"Strict",  
                 maxAge: 7*24*60*60*1000 // chage in milisecont
             })
 
             return res.status(201).json({
                 user: user,
-                token: token
+                token: token,
+                sessionId: currentSessionId,
             })
             
         } catch (error) {

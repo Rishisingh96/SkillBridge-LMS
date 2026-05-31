@@ -29,7 +29,7 @@ const isAuth = async (req, res, next) => {
     // find user
     const user = await User.findById(
       decoded.userId
-    ).select("_id role isBanned");
+    ).select("_id role isBanned currentSessionId sessionExpiresAt");
 
     if (!user) {
       return res.status(404).json({
@@ -44,6 +44,24 @@ const isAuth = async (req, res, next) => {
         success: false,
         message: "Account banned",
       });
+    }
+
+    // ✅ Session Validation - Check if session is still valid
+    if (user.currentSessionId && user.sessionExpiresAt) {
+      if (user.sessionExpiresAt < Date.now()) {
+        // Session expired, clear it
+        await User.findByIdAndUpdate(user._id, {
+          currentSessionId: null,
+          sessionDevice: null,
+          sessionExpiresAt: null
+        });
+        
+        return res.status(401).json({
+          success: false,
+          message: "Session expired. Please login again.",
+          sessionExpired: true,
+        });
+      }
     }
 
     // ✅ attach full object

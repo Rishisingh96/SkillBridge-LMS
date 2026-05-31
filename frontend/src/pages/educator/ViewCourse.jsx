@@ -8,7 +8,7 @@ import { setSelectedCourse } from "../../redux/slices/courseSlice";
 import img from "../../assets/Empty.png";
 import axios from "axios";
 import { serverUrl } from "../../App";
-import Card from "../../components/course/Card";
+import Card from "../../components/home/component/CourseCard";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import ModuleList from "../../components/lecture/ModuleList";

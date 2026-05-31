@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPublishedCourses } from "../../redux/slices/courseSlice";
-import Card from "../../components/course/Card";
+import Card from "../../components/home/component/CourseCard";
 
 // Categories
 const categories = [
