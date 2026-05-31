@@ -40,27 +40,65 @@ export const getDashboardStats = async (req, res) => {
     let totalCompletedLectures = 0;
     let totalDownloads = 0;
 
+    // Fetch all modules for all courses in a single query
+    const allModules = await Module.find({ course: { $in: courseIds } });
+    const moduleIds = allModules.map(m => m._id);
+
+    // Fetch all lectures for all modules in a single query
+    const allLectures = await Lecture.find({ module: { $in: moduleIds } });
+    const lectureIds = allLectures.map(l => l._id);
+
+    // Fetch all completed lecture progress in a single query
+    const completedLectures = await LectureProgress.find({
+      lecture: { $in: lectureIds },
+      completed: true
+    });
+
+    // Create a map of course -> modules for efficient lookup
+    const courseToModulesMap = new Map();
+    allModules.forEach(module => {
+      const courseId = module.course.toString();
+      if (!courseToModulesMap.has(courseId)) {
+        courseToModulesMap.set(courseId, []);
+      }
+      courseToModulesMap.get(courseId).push(module._id);
+    });
+
+    // Create a map of module -> lectures for efficient lookup
+    const moduleToLecturesMap = new Map();
+    allLectures.forEach(lecture => {
+      const moduleId = lecture.module.toString();
+      if (!moduleToLecturesMap.has(moduleId)) {
+        moduleToLecturesMap.set(moduleId, []);
+      }
+      moduleToLecturesMap.get(moduleId).push(lecture);
+    });
+
+    // Create a set of completed lecture IDs for efficient lookup
+    const completedLectureIds = new Set(
+      completedLectures.map(lp => lp.lecture.toString())
+    );
+
+    // Process data in memory
     for (const course of courses) {
-      // Get all modules for this course
-      const modules = await Module.find({ course: course._id });
-      const moduleIds = modules.map(m => m._id);
-
-      // Get all lectures for this course
-      const lectures = await Lecture.find({ module: { $in: moduleIds } });
-      const lectureIds = lectures.map(l => l._id);
-
-      totalLectures += lectureIds.length;
-
-      // Get completed lectures for this course
-      const completedCount = await LectureProgress.countDocuments({
-        lecture: { $in: lectureIds },
-        completed: true
+      const courseModuleIds = courseToModulesMap.get(course._id.toString()) || [];
+      
+      // Get lectures for this course's modules
+      const courseLectures = [];
+      courseModuleIds.forEach(moduleId => {
+        const moduleLectures = moduleToLecturesMap.get(moduleId.toString()) || [];
+        courseLectures.push(...moduleLectures);
       });
 
+      totalLectures += courseLectures.length;
+
+      // Count completed lectures for this course
+      const courseLectureIds = courseLectures.map(l => l._id.toString());
+      const completedCount = courseLectureIds.filter(id => completedLectureIds.has(id)).length;
       totalCompletedLectures += completedCount;
 
       // Calculate total downloads for this course
-      for (const lecture of lectures) {
+      for (const lecture of courseLectures) {
         for (const resource of lecture.resources) {
           totalDownloads += resource.downloads || 0;
         }
