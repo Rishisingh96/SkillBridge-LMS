@@ -94,25 +94,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    // ✅ Single Session Enforcement - Check if already logged in on another device
-    const userAgent = req.headers['user-agent'] || 'Unknown Device';
-    const currentSessionId = crypto.randomBytes(32).toString('hex');
-    
-    // Check if user has an active session on another device
-    if (user.currentSessionId && user.sessionExpiresAt && user.sessionExpiresAt > Date.now()) {
-      // Session exists and is still valid
-      const timeRemaining = Math.ceil((user.sessionExpiresAt - Date.now()) / 1000 / 60); // in minutes
-      
-      return res.status(403).json({
-        message: `You are already logged in on ${user.sessionDevice || 'another device'}. Please logout from that device first or wait ${timeRemaining} minutes for the session to expire.`,
-        alreadyLoggedIn: true,
-        device: user.sessionDevice,
-        sessionExpiresAt: user.sessionExpiresAt
-      });
-    }
-
     // Generate new session
     const token = await genToken(user._id);
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    const currentSessionId = crypto.randomBytes(32).toString('hex');
     const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
 
     // Update user session info
@@ -208,22 +193,6 @@ export const varifyOTP = async (req, res) => {
       return res.status(400).json({ message: "OTP expired" });
     }
 
-    // ✅ Single Session Enforcement - Check if already logged in on another device
-    const userAgent = req.headers['user-agent'] || 'Unknown Device';
-    const currentSessionId = require('crypto').randomBytes(32).toString('hex');
-    
-    // Check if user has an active session on another device
-    if (user.currentSessionId && user.sessionExpiresAt && user.sessionExpiresAt > Date.now()) {
-      const timeRemaining = Math.ceil((user.sessionExpiresAt - Date.now()) / 1000 / 60);
-      
-      return res.status(403).json({
-        message: `You are already logged in on ${user.sessionDevice || 'another device'}. Please logout from that device first or wait ${timeRemaining} minutes for the session to expire.`,
-        alreadyLoggedIn: true,
-        device: user.sessionDevice,
-        sessionExpiresAt: user.sessionExpiresAt
-      });
-    }
-
     // ✅ Verify karo
     user.isVerified = true;
     user.isOtpVerifed = true;
@@ -231,6 +200,8 @@ export const varifyOTP = async (req, res) => {
     user.otpExpires = undefined;
     
     // Update session info
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    const currentSessionId = crypto.randomBytes(32).toString('hex');
     const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
     user.currentSessionId = currentSessionId;
     user.sessionDevice = userAgent.substring(0, 100);
@@ -305,23 +276,9 @@ export const googleAuth = async (req, res) =>{
                 }
             }
 
-            // ✅ Single Session Enforcement - Check if already logged in on another device
-            const userAgent = req.headers['user-agent'] || 'Unknown Device';
-            const currentSessionId = require('crypto').randomBytes(32).toString('hex');
-            
-            // Check if user has an active session on another device
-            if (user.currentSessionId && user.sessionExpiresAt && user.sessionExpiresAt > Date.now()) {
-                const timeRemaining = Math.ceil((user.sessionExpiresAt - Date.now()) / 1000 / 60);
-                
-                return res.status(403).json({
-                    message: `You are already logged in on ${user.sessionDevice || 'another device'}. Please logout from that device first or wait ${timeRemaining} minutes for the session to expire.`,
-                    alreadyLoggedIn: true,
-                    device: user.sessionDevice,
-                    sessionExpiresAt: user.sessionExpiresAt
-                });
-            }
-
             // Update session info
+            const userAgent = req.headers['user-agent'] || 'Unknown Device';
+            const currentSessionId = crypto.randomBytes(32).toString('hex');
             const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
             user.currentSessionId = currentSessionId;
             user.sessionDevice = userAgent.substring(0, 100);
@@ -348,5 +305,34 @@ export const googleAuth = async (req, res) =>{
             return res.status(500).json({message: `Google auth error: ${error.message}`})
         }
 }
+
+// Clear Session (for users stuck with stale sessions)
+export const clearSession = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Clear session data
+        user.currentSessionId = null;
+        user.sessionDevice = null;
+        user.sessionExpiresAt = null;
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Session cleared successfully. You can now login again."
+        });
+    } catch (error) {
+        return res.status(500).json({ message: `Clear session error: ${error.message}` });
+    }
+};
 
 

@@ -3,14 +3,15 @@ import { createCourse, deleteCourse, editCourse, getCourseById, getCreatorById, 
 import upload from "../middleware/multer.js";
 import isAuth from "../middleware/isAuth.js";
 import isRole from "../middleware/isRole.js";
-import { createLecture, editLecture, getCourseLectures, removeLecture, removeLectureVideo } from "../controller/lectureController.js";
+import { createLecture, editLecture, getCourseLectures, removeLecture, removeLectureVideo, markLectureCompleted, markQuizCompleted } from "../controller/lectureController.js";
 import { downloadResource, getLectureResources, removeResource, uploadLectureResource } from "../controller/uploadLectureResource.js";
 import { addQuizQuestion, removeQuizQuestion, getLectureQuiz } from "../controller/quizController.js";
 import { enrollCourse, checkEnrollmentStatus, getUserEnrollments } from "../controller/enrollMentController.js";
-import { getCourseProgress, resumeLecture, updateLectureProgress, updateWatchTime } from "../controller/progressController.js";
+import { getCourseProgress, resumeLecture, updateLectureProgress } from "../controller/progressController.js";
 import { createModule, getCourseModules, removeAllModules, removeModule } from "../controller/moduleController.js";
 import { getDashboardStats, getRecentEnrollments } from "../controller/dashboardController.js";
 import { addComment, addReply, getLectureComments, removeComment, removeReply, toggleCommentLike, togglePinComment, toggleReplyLike } from "../controller/commentController.js";
+import { downloadCertificate, generateCertificate, getCertificate } from "../controller/certificateController.js";
 
 const courseRoute = express.Router();
 
@@ -38,10 +39,8 @@ courseRoute.get("/all-courses", isAuth, isRole("admin"), getAllCourses)
 courseRoute.put("/publish/:courseId", isAuth, isRole("educator"), togglePublishCourse);
 courseRoute.put("/unpublish/:courseId", isAuth, isRole("educator"), togglePublishCourse);
 
-
 //Creator
 courseRoute.post("/creator", isAuth, getCreatorById)
-
 
 //Module create
 // ──────────────────────────────────────────
@@ -58,6 +57,8 @@ courseRoute.get("/courselecture/:moduleId", isAuth, isRole("educator"), getCours
 courseRoute.post("/editlecture/:lectureId", isAuth, isRole("educator"), upload.single("videoUrl"), editLecture)
 courseRoute.delete("/removelecture/:lectureId", isAuth, isRole("educator"), removeLecture)
 courseRoute.delete("/remove-lecture-video/:lectureId", isAuth, isRole("educator"), removeLectureVideo);
+courseRoute.put("/mark-lecture-completed/:lectureId", isAuth, markLectureCompleted);
+courseRoute.put("/mark-quiz-completed/:lectureId", isAuth, markQuizCompleted);
 
 
 // upload resourse , download resourse, edite , remove
@@ -96,15 +97,58 @@ courseRoute.put("/comment/pin/:lectureId/:commentId", isAuth, togglePinComment);
 
 // Progress report 
 // ──────────────────────────────────────────
-courseRoute.post("/update", updateLectureProgress);
-courseRoute.get("/course/:courseId/:userId", getCourseProgress);
-courseRoute.get("/resume/:userId/:courseId", resumeLecture);
-courseRoute.post("/watchtime", updateWatchTime);
+courseRoute.post(
+  "/progress/update",
+  updateLectureProgress
+);
+
+courseRoute.get(
+  "/progress/course/:courseId",
+  getCourseProgress
+);
+
+courseRoute.get(
+  "/progress/resume/:courseId",
+  resumeLecture
+);
+
+
+// Certificate 
+courseRoute.post(
+  "/certificate/generate/:courseId", isAuth,
+  generateCertificate
+);
+
+courseRoute.get(
+  "/certificate/:courseId",isAuth,
+  getCertificate
+);
+
+courseRoute.get(
+  "/certificate/download/:courseId",
+  isAuth,
+  downloadCertificate
+);
+
+// Handle OPTIONS for certificate download (CORS preflight)
+courseRoute.options(
+  "/certificate/download/:courseId",
+  (req, res) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.sendStatus(200);
+  }
+);
 
 // Dashboard stats
 // ──────────────────────────────────────────
 courseRoute.get("/dashboard-stats", isAuth, getDashboardStats);
 courseRoute.get("/recent-enrollments", isAuth, isRole("educator"), getRecentEnrollments);
+
+
+
 
 
 export default courseRoute

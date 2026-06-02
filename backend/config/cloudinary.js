@@ -76,6 +76,8 @@ const uploadOnCloudinary = async (filePath) => {
       resourceType:
         uploadResult.resource_type,
 
+      duration: uploadResult.duration || 0, // Video duration in seconds
+
     };
 
   } catch (error) {

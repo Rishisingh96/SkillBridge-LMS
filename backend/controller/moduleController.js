@@ -2,45 +2,38 @@
 import Course from "../models/courseModel.js";
 import Module from "../models/moduleModel.js";
 import Lecture from "../models/lectureModel.js";
+import { mergeUserProgressWithModules } from "./progressController.js";
 
-// Create Module 
+// Create Module
 export const createModule = async (req, res) => {
-
   try {
-
-    const { courseId } = req.params
+    const { courseId } = req.params;
 
     const { title, description } = req.body;
 
     // Validation
     if (!title) {
-
       return res.status(400).json({
         message: "Module title is required",
       });
-
     }
 
     // Find Course
     const course = await Course.findById(courseId);
 
     if (!course) {
-
       return res.status(404).json({
         message: "Course not found",
       });
-
     }
 
     // Create Module
     const module = await Module.create({
-
       title,
 
       description,
 
       course: courseId,
-
     });
 
     // Push Module into Course
@@ -49,142 +42,139 @@ export const createModule = async (req, res) => {
     await course.save();
 
     return res.status(201).json({
-
       success: true,
 
       message: "Module created successfully",
 
       module,
-
     });
-
   } catch (error) {
-
     return res.status(500).json({
-
       message: `Create module error ${error.message}`,
-
     });
-
   }
-
 };
 
 // Get All Modules
 export const getCourseModules = async (req, res) => {
-
   try {
-
     const { courseId } = req.params;
+    const userId = req.userId;
 
-    const course = await Course.findById(courseId)
-      .populate({
-        path: "modules",
-        populate: {
-          path: "lectures",
-        },
-      });
+    const course = await Course.findById(courseId).populate({
+      path: "modules",
+      populate: {
+        path: "lectures",
+      },
+    });
 
     if (!course) {
-
       return res.status(404).json({
+        success: false,
         message: "Course not found",
       });
-
     }
 
+    let modules = course.modules;
+    
+    // Merge user progress with modules if user is authenticated
+    if (userId && modules) {
+      try {
+        modules = await mergeUserProgressWithModules(modules, userId);
+      } catch (error) {
+        console.error("Error merging progress:", error);
+      }
+    }
+
+    let totalCourseLectures = 0;
+    let totalCourseDuration = 0;
+
+    const modulesWithStats = modules.map((module) => {
+      const totalLectures = module.lectures ? module.lectures.length : 0;
+
+      const totalDuration = module.lectures ? module.lectures.reduce(
+        (sum, lecture) => sum + (lecture.video?.duration || 0),
+        0,
+      ) : 0;
+
+      totalCourseLectures += totalLectures;
+      totalCourseDuration += totalDuration;
+
+      return {
+        ...module,
+        totalLectures,
+        totalDuration,
+      };
+    });
+
     return res.status(200).json({
-
       success: true,
-
-      modules: course.modules,
-
+      totalModules: course.modules.length,
+      totalLectures: totalCourseLectures,
+      totalDuration: totalCourseDuration,
+      modules: modulesWithStats,
     });
-
   } catch (error) {
-
     return res.status(500).json({
-
+      success: false,
       message: `Get modules error ${error.message}`,
-
     });
-
   }
-
 };
 
 //remove module by Module id
 export const removeModule = async (req, res) => {
-
   try {
-
     const { moduleId } = req.params;
 
     // Find Module
     const module = await Module.findById(moduleId);
 
     if (!module) {
-
       return res.status(404).json({
         message: "Module not found",
       });
-
     }
 
     // Delete All Lectures Inside Module
     await Lecture.deleteMany({
-      _id: { $in: module.lectures }
+      _id: { $in: module.lectures },
     });
 
     // Remove Module From Course
-    await Course.findByIdAndUpdate(
-      module.course,
-      {
-        $pull: {
-          modules: moduleId,
-        },
-      }
-    );
+    await Course.findByIdAndUpdate(module.course, {
+      $pull: {
+        modules: moduleId,
+      },
+    });
 
     // Delete Module
     await Module.findByIdAndDelete(moduleId);
 
     return res.status(200).json({
-
       success: true,
 
       message: "Module removed successfully",
-
     });
-
   } catch (error) {
-
     return res.status(500).json({
-
       message: `Remove module error ${error.message}`,
-
     });
-
   }
-
 };
 
 //remove all modules by course id
 export const removeAllModules = async (req, res) => {
-
   try {
-
     const { courseId } = req.params;
 
     // Find Course
     const course = await Course.findById(courseId);
 
     if (!course) {
-
       return res.status(404).json({
         message: "Course not found",
       });
-
     }
 
     // Find All Modules
@@ -194,11 +184,9 @@ export const removeAllModules = async (req, res) => {
 
     // Delete Lectures Inside Every Module
     for (const module of modules) {
-
       await Lecture.deleteMany({
-        _id: { $in: module.lectures }
+        _id: { $in: module.lectures },
       });
-
     }
 
     // Delete All Modules
@@ -212,23 +200,13 @@ export const removeAllModules = async (req, res) => {
     await course.save();
 
     return res.status(200).json({
-
       success: true,
 
-      message:
-        "All modules removed successfully",
-
+      message: "All modules removed successfully",
     });
-
   } catch (error) {
-
     return res.status(500).json({
-
-      message:
-        `Remove all modules error ${error.message}`,
-
+      message: `Remove all modules error ${error.message}`,
     });
-
   }
-
 };

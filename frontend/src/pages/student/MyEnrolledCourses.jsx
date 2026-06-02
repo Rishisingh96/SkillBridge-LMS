@@ -220,7 +220,17 @@ const MyEnrolledCourses = () => {
                     px-3 py-2 rounded-xl
                   "
                   >
-                    Enrolled
+                      <span
+                      className={`font-medium ${
+                        enrollment.status === "active"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {enrollment.status === "active"
+                        ? `${enrollment.daysRemaining} days left`
+                        : "Expired"}
+                    </span>
                   </div>
                 </div>
 

@@ -212,7 +212,7 @@ const getFormattedValidity = () => {
       console.log(result.data)
       setLoading1(false)
       toast.success("Course Removed")
-      navigate("/courses")
+      navigate("/educator/courses")
     } catch (error) {
       console.log(error)
       setLoading1(false)

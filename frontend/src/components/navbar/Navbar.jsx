@@ -42,6 +42,14 @@ import {
   setUserData,
 } from "../../redux/slices/userSlice";
 
+import {
+  clearAllProgress,
+} from "../../redux/slices/progressSlice";
+
+import {
+  clearModuleData,
+} from "../../redux/slices/moduleSlice";
+
 import DarkModeButton from "../ui/DarkModeButton";
 
 const Nav = () => {
@@ -115,6 +123,8 @@ const Nav = () => {
       localStorage.clear();
 
       dispatch(setUserData(null));
+      dispatch(clearAllProgress());
+      dispatch(clearModuleData());
 
       toast.success(
         "Logout Successfully"
@@ -589,12 +599,8 @@ const Nav = () => {
             "
           >
 
-
-
             <DarkModeButton />
-
-
-
+            
             {!userData && (
 
               <button
@@ -749,6 +755,7 @@ const Nav = () => {
                         right-0
                         top-[60px]
                         w-[280px]
+                        max-w-[calc(100vw-32px)]
                         bg-white/95
                         dark:bg-[#0F172A]/95
                         backdrop-blur-2xl

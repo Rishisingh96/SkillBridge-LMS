@@ -16,6 +16,8 @@ import {
   fetchCourses,
   fetchPlatformStats,
 } from "./redux/slices/adminSlice";
+import { clearAllProgress } from "./redux/slices/progressSlice";
+import { clearModuleData } from "./redux/slices/moduleSlice";
 
 // Layouts
 import EducatorLayout from "./components/educator/EducatorLayout";
@@ -74,7 +76,11 @@ function App() {
   useEffect(() => {
     // Critical: fetch user data immediately
     dispatch(fetchCurrentUser());
-    
+
+    // Clear course progress and module data on app load to prevent data leakage between users
+    dispatch(clearAllProgress());
+    dispatch(clearModuleData());
+
     // Defer non-critical data fetching to prioritize UI render
     const deferDataFetch = () => {
       if ('requestIdleCallback' in window) {
@@ -87,7 +93,7 @@ function App() {
         }, 100);
       }
     };
-    
+
     deferDataFetch();
   }, []);
 

@@ -154,17 +154,17 @@ const CourseDetail = () => {
 
     // Split by newlines
     const lines = description.split('\n');
-    
+
     // Detect module pattern: "Module X:" or "Module X" followed by content
     const moduleRegex = /^(Module\s+\d+[:\s]|Module\s+\d+\.)/i;
-    
+
     const formattedContent = [];
     let currentModule = null;
     let currentContent = [];
 
     lines.forEach((line) => {
       const trimmedLine = line.trim();
-      
+
       if (moduleRegex.test(trimmedLine)) {
         // Save previous module if exists
         if (currentModule) {
@@ -174,7 +174,7 @@ const CourseDetail = () => {
             content: currentContent
           });
         }
-        
+
         // Start new module
         currentModule = trimmedLine;
         currentContent = [];
@@ -299,8 +299,8 @@ const CourseDetail = () => {
   return (
     <div
       className={`min-h-screen transition-all duration-500 ${isDark
-          ? "bg-[#050816] text-white"
-          : "bg-[#f5f7fb] text-black"
+        ? "bg-[#050816] text-white"
+        : "bg-[#f5f7fb] text-black"
         }`}
     >
       {/* ===================================================== */}
@@ -309,8 +309,8 @@ const CourseDetail = () => {
 
       <header
         className={`sticky top-0 z-50 backdrop-blur-2xl border-b ${isDark
-            ? "bg-white/5 border-white/10"
-            : "bg-white/70 border-black/10"
+          ? "bg-white/5 border-white/10"
+          : "bg-white/70 border-black/10"
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-[75px] flex items-center justify-between">
@@ -321,8 +321,8 @@ const CourseDetail = () => {
               whileTap={{ scale: 0.9 }}
               onClick={() => navigate("/allcourses")}
               className={`w-11 h-11 rounded-2xl flex items-center justify-center cursor-pointer ${isDark
-                  ? "bg-white/10 hover:bg-white/20"
-                  : "bg-black/5 hover:bg-black/10"
+                ? "bg-white/10 hover:bg-white/20"
+                : "bg-black/5 hover:bg-black/10"
                 }`}
             >
               <FaArrowLeft />
@@ -347,8 +347,8 @@ const CourseDetail = () => {
             <button
               onClick={toggleTheme}
               className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${isDark
-                  ? "bg-white/10 hover:bg-white/20"
-                  : "bg-black/5 hover:bg-black/10"
+                ? "bg-white/10 hover:bg-white/20"
+                : "bg-black/5 hover:bg-black/10"
                 }`}
             >
               {isDark ? <FaSun /> : <FaMoon />}
@@ -384,8 +384,8 @@ const CourseDetail = () => {
             >
               <div
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5 border ${isDark
-                    ? "bg-white/10 border-white/10"
-                    : "bg-white border-black/10"
+                  ? "bg-white/10 border-white/10"
+                  : "bg-white border-black/10"
                   }`}
               >
                 <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -486,9 +486,21 @@ const CourseDetail = () => {
                 )}
 
                 <button
+                  onClick={() => {
+                    const el = document.getElementById("course-description");
+
+                    if (el) {
+                      const y = el.getBoundingClientRect().top + window.pageYOffset - 100;
+
+                      window.scrollTo({
+                        top: y,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
                   className={`px-8 py-4 rounded-2xl font-semibold border ${isDark
-                      ? "bg-white/10 border-white/10 hover:bg-white/20"
-                      : "bg-white border-black/10 hover:bg-black/5"
+                    ? "bg-white/10 border-white/10 hover:bg-white/20"
+                    : "bg-white border-black/10 hover:bg-black/5"
                     }`}
                 >
                   Preview Course
@@ -510,8 +522,8 @@ const CourseDetail = () => {
 
               <div
                 className={`relative overflow-hidden rounded-[32px] border backdrop-blur-2xl ${isDark
-                    ? "bg-white/10 border-white/10"
-                    : "bg-white/70 border-white"
+                  ? "bg-white/10 border-white/10"
+                  : "bg-white/70 border-white"
                   }`}
               >
                 <img
@@ -531,19 +543,20 @@ const CourseDetail = () => {
 
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-10">
         <div className="grid lg:grid-cols-[420px_1fr] gap-6 items-start">
-         
+
           {/* LEFT */}
-            <ModuleList
-              moduleData={moduleData}
-              selectedLecture={selectedLecture}
-              onSelectLecture={setSelectedLecture}
-              mode="preview"
-              isEnrolled={isEnrolled}
-            />
+          <ModuleList
+            moduleData={moduleData}
+            selectedLecture={selectedLecture}
+            onSelectLecture={setSelectedLecture}
+            mode="preview"
+            isEnrolled={isEnrolled}
+            progressPercent={0}
+          />
 
           {/* RIGHT */}
-         
-             <LecturePlayer lecture={selectedLecture} />
+
+          <LecturePlayer lecture={selectedLecture} />
 
         </div>
       </section>
@@ -556,8 +569,8 @@ const CourseDetail = () => {
         <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
           <div
             className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${isDark
-                ? "bg-white/10 border-white/10"
-                : "bg-white/70 border-black/10"
+              ? "bg-white/10 border-white/10"
+              : "bg-white/70 border-black/10"
               }`}
           >
             <h2 className="text-3xl font-black mb-6">
@@ -570,8 +583,8 @@ const CourseDetail = () => {
                   key={star}
                   onClick={() => setRating(star)}
                   className={`cursor-pointer text-3xl transition-all ${star <= rating
-                      ? "text-yellow-400 scale-110"
-                      : "text-gray-400"
+                    ? "text-yellow-400 scale-110"
+                    : "text-gray-400"
                     }`}
                 />
               ))}
@@ -583,8 +596,8 @@ const CourseDetail = () => {
               onChange={(e) => setComment(e.target.value)}
               placeholder="Write your premium learning experience..."
               className={`w-full rounded-3xl border p-5 outline-none resize-none ${isDark
-                  ? "bg-white/5 border-white/10 placeholder:text-gray-500"
-                  : "bg-white border-black/10"
+                ? "bg-white/5 border-white/10 placeholder:text-gray-500"
+                : "bg-white border-black/10"
                 }`}
             />
 
@@ -610,9 +623,10 @@ const CourseDetail = () => {
 
       <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
         <div
+        id="course-description"
           className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${isDark
-              ? "bg-white/10 border-white/10"
-              : "bg-white/70 border-black/10"
+            ? "bg-white/10 border-white/10"
+            : "bg-white/70 border-black/10"
             }`}
         >
           <h2 className="text-3xl font-black mb-6">
@@ -652,8 +666,8 @@ const CourseDetail = () => {
             <button
               onClick={() => setShowFullDescription(!showFullDescription)}
               className={`mt-4 px-6 py-3 rounded-2xl font-semibold transition-all ${isDark
-                  ? "bg-white/10 hover:bg-white/20 text-white"
-                  : "bg-black/5 hover:bg-black/10 text-black"
+                ? "bg-white/10 hover:bg-white/20 text-white"
+                : "bg-black/5 hover:bg-black/10 text-black"
                 }`}
             >
               {showFullDescription ? "Show Less" : "View All"}
@@ -669,8 +683,8 @@ const CourseDetail = () => {
       <section className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
         <div
           className={`rounded-[30px] border p-6 md:p-8 backdrop-blur-2xl ${isDark
-              ? "bg-white/10 border-white/10"
-              : "bg-white/70 border-black/10"
+            ? "bg-white/10 border-white/10"
+            : "bg-white/70 border-black/10"
             }`}
         >
           <h2 className="text-3xl font-black mb-8">
@@ -721,8 +735,8 @@ const CourseDetail = () => {
           <button
             onClick={() => navigate("/allcourses")}
             className={`px-5 py-3 rounded-2xl text-sm font-semibold ${isDark
-                ? "bg-white/10 hover:bg-white/20"
-                : "bg-black/5 hover:bg-black/10"
+              ? "bg-white/10 hover:bg-white/20"
+              : "bg-black/5 hover:bg-black/10"
               }`}
           >
             View All
@@ -739,8 +753,8 @@ const CourseDetail = () => {
               whileHover={{ y: -10 }}
               onClick={() => navigate(`/course/${course._id}`)}
               className={`overflow-hidden rounded-[28px] border cursor-pointer group backdrop-blur-2xl ${isDark
-                  ? "bg-white/10 border-white/10"
-                  : "bg-white/70 border-black/10"
+                ? "bg-white/10 border-white/10"
+                : "bg-white/70 border-black/10"
                 }`}
             >
               <div className="overflow-hidden">
@@ -754,8 +768,8 @@ const CourseDetail = () => {
               <div className="p-5">
                 <span
                   className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold mb-4 ${isDark
-                      ? "bg-white/10 text-gray-300"
-                      : "bg-black/5 text-gray-700"
+                    ? "bg-white/10 text-gray-300"
+                    : "bg-black/5 text-gray-700"
                     }`}
                 >
                   {course.category}

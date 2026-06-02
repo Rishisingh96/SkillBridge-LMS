@@ -11,10 +11,14 @@ import QuizResult from "./QuizResult";
 import Comment from "../../pages/student/Comment";
 import { useTheme } from "../../context/ThemeContext";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { serverUrl } from "../../App";
 
 
 const LecturePlayer = ({
   lecture,
+  onLectureComplete,
+  onQuizComplete,
 }) => {
 
   const videoRef = useRef(null);
@@ -42,57 +46,67 @@ const LecturePlayer = ({
     if (!video || !lecture?._id || !user?._id) return;
 
     let watchTimeInterval;
+    let lastUpdateTime = 0;
+
+    const updateProgress = async (currentPosition) => {
+      try {
+        await axios.post(
+          `${serverUrl}/api/course/progress/update`,
+          { lectureId: lecture._id, currentPosition },
+          { withCredentials: true }
+        );
+      } catch (error) {
+        console.log("Error updating progress:", error);
+      }
+    };
 
     const handleTimeUpdate = () => {
       const watchedPercentage = (video.currentTime / video.duration) * 100;
 
-      // Mark as watched if 10% or more
-      if (watchedPercentage >= 10) {
-        updateLectureProgress({
-          userId: user._id,
-          lectureId: lecture._id,
-          watched: true,
-          watchTime: 0,
-          completed: false,
-        });
+      // Update progress every 5 seconds
+      const now = Date.now();
+      if (now - lastUpdateTime > 5000) {
+        updateProgress(video.currentTime);
+        lastUpdateTime = now;
       }
 
       // Mark as completed if 90% or more
       if (watchedPercentage >= 90) {
-        updateLectureProgress({
-          userId: user._id,
-          lectureId: lecture._id,
-          watched: true,
-          watchTime: 0,
-          completed: true,
-        });
+        updateProgress(video.currentTime);
       }
     };
 
     const handlePlay = () => {
       // Start tracking watch time every 10 seconds
       watchTimeInterval = setInterval(() => {
-        updateWatchTime({
-          userId: user._id,
-          lectureId: lecture._id,
-          watchTime: 10,
-        });
+        updateProgress(video.currentTime);
       }, 10000);
     };
 
     const handlePause = () => {
       clearInterval(watchTimeInterval);
+      updateProgress(video.currentTime);
     };
 
-    const handleEnded = () => {
+    const handleEnded = async () => {
       clearInterval(watchTimeInterval);
-      updateLectureProgress({
-        userId: user._id,
-        lectureId: lecture._id,
-        watched: true,
-        watchTime: 0,
-        completed: true,
-      });
+      updateProgress(video.currentTime);
+
+      // Mark lecture as completed in backend
+      try {
+        await axios.put(
+          `${serverUrl}/api/course/mark-lecture-completed/${lecture._id}`,
+          {},
+          { withCredentials: true }
+        );
+
+        // Notify parent component to auto-switch to next lecture
+        if (onLectureComplete) {
+          onLectureComplete();
+        }
+      } catch (error) {
+        console.log("Error marking lecture as completed:", error);
+      }
     };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
@@ -250,14 +264,11 @@ const LecturePlayer = ({
 
         </h1>
 
-        <p className={`leading-7 mt-4 text-[15px] ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-
-          {
-            lecture?.description ||
-            "No description available for this lecture."
-          }
-
-        </p>
+        {lecture?.description && (
+          <p className={`leading-7 mt-4 text-[15px] ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+            {lecture.description}
+          </p>
+        )}
 
       </div>
       {/* TABS */}
@@ -322,13 +333,17 @@ const LecturePlayer = ({
               About Lecture
             </h2>
 
-            <p className={`leading-7 text-[15px] ${isDark ? "text-gray-300" : "text-gray-600"
-              }`}>
-              {
-                lecture?.description ||
-                "No description available for this lecture."
-              }
-            </p>
+            {lecture?.description ? (
+              <p className={`leading-7 text-[15px] ${isDark ? "text-gray-300" : "text-gray-600"
+                }`}>
+                {lecture.description}
+              </p>
+            ) : (
+              <p className={`leading-7 text-[15px] ${isDark ? "text-gray-400" : "text-gray-500"
+                }`}>
+                No description added for this lecture yet.
+              </p>
+            )}
 
           </div>
         )}
@@ -338,7 +353,7 @@ const LecturePlayer = ({
         )}
 
         {activeTab === "quiz" && (
-          <QuizResult lectureId={lecture} />
+          <QuizResult lectureId={lecture} onQuizComplete={onQuizComplete} />
         )}
 
         {activeTab === "discussion" && (

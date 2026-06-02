@@ -25,6 +25,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 import { clearUserData } from "../../redux/slices/userSlice";
+import { clearAllProgress } from "../../redux/slices/progressSlice";
+import { clearModuleData } from "../../redux/slices/moduleSlice";
 
 import { serverUrl } from "../../App";
 import logo from "../../assets/logo1.png"
@@ -93,7 +95,10 @@ const AdminSidebar = ({
         }
       );
 
+      localStorage.clear();
       dispatch(clearUserData());
+      dispatch(clearAllProgress());
+      dispatch(clearModuleData());
 
       toast.success(result.data.message);
 

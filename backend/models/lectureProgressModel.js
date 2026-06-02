@@ -1,49 +1,99 @@
 import mongoose from "mongoose";
 
-const lectureProgressSchema = new mongoose.Schema({
+const lectureProgressSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
 
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+    lecture: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Lecture",
+      required: true,
+      index: true,
+    },
+
+    // Current video position
+    currentPosition: {
+      type: Number,
+      default: 0,
+    },
+
+    watchTime: {
+      type: Number,
+      default: 0,
+    },
+
+    // Highest position reached
+    maxPosition: {
+      type: Number,
+      default: 0,
+    },
+
+    // Percentage
+    progressPercent: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+
+    completed: {
+      type: Boolean,
+      default: false,
+    },
+
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+
+    // Lecture completion status (user-specific)
+    isLectureCompleted: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Quiz completion status (user-specific)
+    isQuizCompleted: {
+      type: Boolean,
+      default: false,
+    },
+
+    lectureCompletedAt: {
+      type: Date,
+      default: null,
+    },
+
+    quizCompletedAt: {
+      type: Date,
+      default: null,
+    },
+
+    lastAccessedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-
-  lecture: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Lecture",
-    required: true,
-  },
-
-  watched: {
-    type: Boolean,
-    default: false,
-  },
-
-  watchTime: {
-    type: Number,
-    default: 0,
-  },
-
-  completed: {
-    type: Boolean,
-    default: false,
-  },
-
-  completedAt: Date,
-
-}, {
-  timestamps: true,
-});
-
-//  Prevent duplicate progress
-lectureProgressSchema.index(
-  { user: 1, lecture: 1 },
-  { unique: true }
+  {
+    timestamps: true,
+  }
 );
 
-const LectureProgress = mongoose.model(
+lectureProgressSchema.index(
+  {
+    user: 1,
+    lecture: 1,
+  },
+  {
+    unique: true,
+  }
+);
+
+export default mongoose.model(
   "LectureProgress",
   lectureProgressSchema
 );
-
-export default LectureProgress;

@@ -2,6 +2,7 @@
 import Course from "../models/courseModel.js"
 import User from "../models/userModel.js"
 import uploadOnCloudinary from "../config/cloudinary.js"
+import { mergeUserProgressWithModules } from "./progressController.js"
 
 // ── Create Course ──────────────────────────
 export const createCourse = async (req, res) => {
@@ -61,6 +62,7 @@ export const togglePublishCourse = async (req, res) => {
 // ── Get Published Courses ──────────────────
 export const getPublishedCourses = async (req, res) => {
   try {
+    const userId = req.userId;
     const courses = await Course.find({ isPublished: true })
       .populate({
         path: "modules",
@@ -77,6 +79,20 @@ export const getPublishedCourses = async (req, res) => {
 
     if (!courses || courses.length === 0) {
       return res.status(404).json({ message: "No published courses found" });
+    }
+
+    // Merge user progress with modules if user is authenticated
+    if (userId) {
+      for (const course of courses) {
+        if (course.modules && course.modules.length > 0) {
+          try {
+            course.modules = await mergeUserProgressWithModules(course.modules, userId);
+          } catch (error) {
+            console.error("Error merging progress for course:", course._id, error);
+            // Keep original modules if merge fails
+          }
+        }
+      }
     }
 
     return res.status(200).json({
@@ -107,6 +123,20 @@ export const getCreatorCourses = async (req, res) => {
 
     if (!courses) {
       return res.status(404).json({ message: "Courses not found" });
+    }
+
+    // Merge user progress with modules if user is authenticated
+    if (userId) {
+      for (const course of courses) {
+        if (course.modules && course.modules.length > 0) {
+          try {
+            course.modules = await mergeUserProgressWithModules(course.modules, userId);
+          } catch (error) {
+            console.error("Error merging progress for course:", course._id, error);
+            // Keep original modules if merge fails
+          }
+        }
+      }
     }
 
     return res.status(200).json(courses);
@@ -212,6 +242,7 @@ export const editCourse = async (req, res) => {
 export const getCourseById = async (req, res) => {
   try {
     const { courseId } = req.params;
+    const userId = req.userId;
 
     const course = await Course.findById(courseId)
       .populate("creator", "name email photoUrl")
@@ -225,6 +256,16 @@ export const getCourseById = async (req, res) => {
 
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
+    }
+
+    // Merge user progress with modules if user is authenticated
+    if (userId && course.modules && course.modules.length > 0) {
+      try {
+        course.modules = await mergeUserProgressWithModules(course.modules, userId);
+      } catch (error) {
+        console.error("Error merging progress for course:", courseId, error);
+        // Keep original modules if merge fails
+      }
     }
 
     return res.status(200).json(course);

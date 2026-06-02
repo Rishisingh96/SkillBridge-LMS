@@ -173,34 +173,7 @@ const SuccessStories = () => {
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-
-          <div className="success-stat bg-white rounded-2xl p-6 text-center shadow-sm">
-            <Users size={32} className="mx-auto mb-3" />
-            <h3 className="text-3xl font-bold">50K+</h3>
-            <p className="text-gray-500">Students</p>
-          </div>
-
-          <div className="success-stat bg-white rounded-2xl p-6 text-center shadow-sm">
-            <Award size={32} className="mx-auto mb-3" />
-            <h3 className="text-3xl font-bold">15K+</h3>
-            <p className="text-gray-500">Certificates</p>
-          </div>
-
-          <div className="success-stat bg-white rounded-2xl p-6 text-center shadow-sm">
-            <Briefcase size={32} className="mx-auto mb-3" />
-            <h3 className="text-3xl font-bold">500+</h3>
-            <p className="text-gray-500">Hiring Partners</p>
-          </div>
-
-          <div className="success-stat bg-white rounded-2xl p-6 text-center shadow-sm">
-            <TrendingUp size={32} className="mx-auto mb-3" />
-            <h3 className="text-3xl font-bold">98%</h3>
-            <p className="text-gray-500">Success Rate</p>
-          </div>
-
-        </div>
+       
 
         {/* Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

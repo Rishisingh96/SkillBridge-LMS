@@ -1,165 +1,171 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { ImStarFull } from "react-icons/im";
-import { HiMiniPlayCircle } from "react-icons/hi2";
+import React, { useState } from "react";
+import { Star, Play, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import empty from "../../../assets/Empty.png";
 
-const Card = React.memo(({
-  thumbnail,
-  title,
-  category,
-  price,
-  id,
-  reviews,
-}) => {
+
+const CourseCard = React.memo(({ thumbnail, title, category, price, id, reviews, enableMarquee = false }) => {
   const navigate = useNavigate();
+  const [hovered, setHovered] = useState(false);
 
-  // Average Rating
-  const calculateAvgReview = (reviews) => {
-    if (!reviews || reviews.length === 0) return 0;
-
-    const total = reviews.reduce(
-      (sum, review) => sum + review.rating,
-      0
-    );
-
+  // Average rating
+  const avgRating = React.useMemo(() => {
+    if (!reviews?.length) return "4.8";
+    const total = reviews.reduce((sum, r) => sum + (r.rating || 0), 0);
     return (total / reviews.length).toFixed(1);
-  };
+  }, [reviews]);
 
-  const avgRating = calculateAvgReview(reviews);
+  const reviewCount = reviews?.length || 12;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 35 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -8 }}
-      transition={{ duration: 0.35 }}
-      onClick={() => navigate(`/course/${id}`)}
-      className="group relative overflow-hidden rounded-[30px] border border-black/10 dark:border-white/10 
-      bg-white/70 dark:bg-white/5 backdrop-blur-2xl 
-      shadow-[0_10px_40px_rgba(0,0,0,0.06)] 
-      hover:shadow-[0_20px_60px_rgba(124,58,237,0.25)]
-      transition-all duration-500 cursor-pointer"
-    >
-      {/* Gradient Glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500">
-        <div className="absolute -top-20 -right-20 w-52 h-52 bg-purple-500/20 blur-3xl rounded-full" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-pink-500/20 blur-3xl rounded-full" />
-      </div>
+    <>
+      <article
+        onClick={() => navigate(`/course/${id}`)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        aria-label={`View course: ${title}`}
+        style={enableMarquee ? {
+          animation: "marquee-scroll 20s linear infinite",
+          animationPlayState: hovered ? "paused" : "running",
+        } : {}}
+        className={`
+          group relative cursor-pointer h-full flex flex-col rounded-3xl overflow-hidden
+          bg-white dark:bg-[#110f1e]
+          border border-slate-200/80 dark:border-white/8
+          shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)]
+          hover:shadow-[0_20px_48px_-8px_rgba(124,58,237,0.25)]
+          transition-all duration-500 ease-out
+          hover:-translate-y-2 hover:scale-[1.015]
+          focus-visible:outline-2 focus-visible:outline-purple-500 focus-visible:outline-offset-2
+        `}
+      >
 
-      {/* Thumbnail */}
-      <div className="relative overflow-hidden">
-        
-        {/* Image */}
-        <img
-          src={thumbnail || empty}
-          alt={title}
-          loading="lazy"
-          className="w-full h-[230px] sm:h-[240px] object-cover 
-          transition-transform duration-700 group-hover:scale-110"
+        {/* ── Ambient glow ring (hover only) ── */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-3xl border-2 border-transparent
+            group-hover:border-purple-500/30 dark:group-hover:border-purple-400/25
+            transition-all duration-500 z-20"
         />
 
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80" />
+        {/* ── Thumbnail ── */}
+        <div className="relative w-full aspect-[16/10] overflow-hidden shrink-0">
+          <img
+            src={thumbnail || empty}
+            alt={title}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
 
-        {/* Play Button */}
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          className="absolute top-4 right-4 w-12 h-12 rounded-2xl 
-          bg-white/15 backdrop-blur-xl border border-white/20
-          flex items-center justify-center shadow-xl"
-        >
-          <HiMiniPlayCircle className="text-white text-2xl" />
-        </motion.div>
+          {/* Gradient overlay on hover */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          />
 
-        {/* Category Badge */}
-        <div
-          className="absolute bottom-4 left-4 
-          px-4 py-2 rounded-full 
-          bg-white/15 backdrop-blur-xl border border-white/20
-          text-white text-xs sm:text-sm font-semibold tracking-wide"
-        >
-          {category}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 p-5 sm:p-6">
-        
-        {/* Title */}
-        <h2
-          className="text-xl sm:text-2xl font-bold 
-          text-gray-900 dark:text-white 
-          leading-snug line-clamp-2
-          group-hover:text-purple-600 dark:group-hover:text-purple-400
-          transition-colors duration-300"
-        >
-          {title}
-        </h2>
-
-        {/* Subtitle */}
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-          Learn modern industry-ready skills with immersive
-          premium learning experience.
-        </p>
-
-        {/* Divider */}
-        <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent my-5" />
-
-        {/* Bottom Section */}
-        <div className="flex items-center justify-between">
-          
-          {/* Price */}
-          <div>
-            <p className="text-xs uppercase tracking-wider text-gray-400">
-              Course Price
-            </p>
-
-            <h3
-              className="text-2xl font-black 
-              bg-gradient-to-r from-purple-500 to-pink-500 
-              bg-clip-text text-transparent"
-            >
-              ₹{price}
-            </h3>
+          {/* Category badge */}
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide
+            bg-black/60 dark:bg-white/80 backdrop-blur-md
+            text-white dark:text-slate-900 border border-white/10 dark:border-black/5">
+            {category || "Technology"}
           </div>
 
-          {/* Ratings */}
-          <div
-            className="flex items-center gap-2 px-4 py-2 rounded-2xl
-            bg-yellow-400/10 border border-yellow-400/20
-            backdrop-blur-xl"
-          >
-            <ImStarFull className="text-yellow-400 text-lg" />
+          {/* Play button */}
+          <div className="absolute top-3 right-3 w-9 h-9 rounded-xl
+            bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-white/40 dark:border-white/10
+            flex items-center justify-center shadow-sm
+            group-hover:bg-purple-600 group-hover:border-purple-500
+            transition-all duration-300">
+            <Play className="w-4 h-4 text-slate-700 dark:text-slate-200 group-hover:text-white transition-colors fill-current" aria-hidden />
+          </div>
+        </div>
 
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-gray-900 dark:text-white">
-                {avgRating}
-              </span>
+        {/* ── Body ── */}
+        <div className="flex flex-col flex-1 p-4 pb-0 gap-3">
 
-              <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                {reviews?.length || 0} Reviews
+          {/* Title with marquee - scrolls by default, pauses on hover */}
+          <div className="overflow-hidden w-full">
+            <div
+              style={{
+                display: "flex",
+                whiteSpace: "nowrap",
+                animation: "marquee-ltr 5s linear infinite",
+                willChange: "transform",
+                animationPlayState: hovered ? "paused" : "running",
+              }}
+            >
+              {/* Copy 1 */}
+              <span className="text-base sm:text-[17px] font-bold leading-snug text-purple-600 dark:text-purple-400 pr-12 shrink-0">
+                {title}
               </span>
+              {/* Copy 2 — creates seamless loop */}
+              <span className="text-base sm:text-[17px] font-bold leading-snug text-purple-600 dark:text-purple-400 pr-12 shrink-0">
+                {title}
+              </span>
+            </div>
+          </div>
+
+          {/* Sub-description */}
+          <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 leading-relaxed line-clamp-2">
+            Learn real industry skills with immersive modules designed by experts.
+          </p>
+        </div>
+
+        {/* ── Footer ── */}
+        <div className="px-4 py-4 mt-auto border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-3">
+
+          {/* Price */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600 mb-0.5">
+              Price
+            </p>
+            <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-purple-600 to-pink-500 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+              {price === 0 ? "Free" : `₹${price}`}
+            </span>
+          </div>
+
+          {/* Rating + CTA */}
+          <div className="flex items-center gap-2.5">
+            {/* Rating pill */}
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-1">
+                <Star className="w-3 h-3 fill-amber-400 text-amber-400" aria-hidden />
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{avgRating}</span>
+              </div>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500">{reviewCount} reviews</span>
+            </div>
+
+            {/* Arrow CTA button */}
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0
+              bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-white/5
+              text-slate-500 dark:text-slate-400
+              group-hover:bg-gradient-to-br group-hover:from-purple-500 group-hover:to-pink-500
+              group-hover:border-transparent group-hover:text-white
+              transition-all duration-300">
+              <ArrowUpRight
+                className="w-4 h-4 transition-transform duration-300 group-hover:rotate-45"
+                aria-hidden
+              />
             </div>
           </div>
         </div>
 
-        {/* Hover Button */}
-        <motion.button
-          whileTap={{ scale: 0.96 }}
-          className="mt-6 w-full py-3 rounded-2xl 
-          bg-gradient-to-r from-purple-500 to-pink-500 
-          text-white font-semibold tracking-wide
-          shadow-lg shadow-purple-500/30
-          hover:shadow-purple-500/50
-          transition-all duration-300"
-        >
-          Explore Course
-        </motion.button>
-      </div>
-    </motion.div>
+      </article>
+
+      {/* Marquee keyframes */}
+      <style>{`
+        @keyframes marquee-ltr {
+          0%   { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-scroll {
+          0%   { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
+    </>
   );
 });
 
-export default Card;
+CourseCard.displayName = "CourseCard";
+export default CourseCard;

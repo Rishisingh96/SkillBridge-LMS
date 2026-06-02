@@ -181,6 +181,12 @@ const lectureSchema = new mongoose.Schema(
       trim: true,
     },
 
+    module: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Module",
+    required: true,
+  },
+
     description: {
       type: String,
       default: "",
@@ -200,7 +206,7 @@ const lectureSchema = new mongoose.Schema(
     quizAttempts: [quizAttemptSchema],
 
     comments: [commentSchema],
-    
+
   },
   {
     timestamps: true,

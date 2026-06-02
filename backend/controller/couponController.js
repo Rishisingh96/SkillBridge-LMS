@@ -269,9 +269,18 @@ export const getAllCoupons =
             createdAt: -1,
           });
 
+      // Auto-set isActive to false for expired coupons
+      const couponsWithStatus = coupons.map(coupon => {
+        const couponObj = coupon.toObject();
+        if (new Date() > coupon.expiryDate) {
+          couponObj.isActive = false;
+        }
+        return couponObj;
+      });
+
       res.status(200).json({
         success: true,
-        coupons,
+        coupons: couponsWithStatus,
       });
     } catch (error) {
       return res.status(500).json({
@@ -297,9 +306,18 @@ export const getMyCoupons =
           createdAt: -1,
         });
 
+      // Auto-set isActive to false for expired coupons
+      const couponsWithStatus = coupons.map(coupon => {
+        const couponObj = coupon.toObject();
+        if (new Date() > coupon.expiryDate) {
+          couponObj.isActive = false;
+        }
+        return couponObj;
+      });
+
       res.status(200).json({
         success: true,
-        coupons,
+        coupons: couponsWithStatus,
       });
     } catch (error) {
       return res.status(500).json({

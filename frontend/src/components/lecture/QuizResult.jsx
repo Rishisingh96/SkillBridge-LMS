@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   FaChevronDown,
@@ -6,6 +6,7 @@ import {
   FaArrowRight,
   FaArrowLeft,
   FaRedo,
+  FaLockOpen,
 } from "react-icons/fa";
 
 import { MdQuiz } from "react-icons/md";
@@ -16,8 +17,11 @@ import {
 } from "framer-motion";
 
 import { useTheme } from "../../context/ThemeContext";
+import axios from "axios";
+import { serverUrl } from "../../App";
+import { toast } from "react-toastify";
 
-const QuizResult = ({ lectureId }) => {
+const QuizResult = ({ lectureId, onQuizComplete }) => {
 
   const quizQuestions =
     lectureId?.quizQuestions || [];
@@ -35,6 +39,14 @@ const QuizResult = ({ lectureId }) => {
 
   const [currentIndex, setCurrentIndex] =
     useState(0);
+
+  // Reset quiz state when lecture changes
+  useEffect(() => {
+    setSelectedAnswers({});
+    setShowResult(false);
+    setCurrentIndex(0);
+    setIsOpen(false);
+  }, [lectureId?._id]);
 
   const totalQuestions =
     quizQuestions.length;
@@ -85,6 +97,34 @@ const QuizResult = ({ lectureId }) => {
     setCurrentIndex(0);
 
     setShowResult(false);
+  };
+
+  // =========================================================
+  // UNLOCK NEXT VIDEO
+  // =========================================================
+
+  const handleUnlockNextVideo = async () => {
+    if (!lectureId?._id) return;
+
+    try {
+      const response = await axios.put(
+        `${serverUrl}/api/course/mark-quiz-completed/${lectureId._id}`,
+        {},
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        toast.success("Quiz completed! Next video unlocked.");
+        
+        // Call parent callback to refresh modules
+        if (onQuizComplete) {
+          onQuizComplete();
+        }
+      }
+    } catch (error) {
+      console.error("Error marking quiz as completed:", error);
+      toast.error(error.response?.data?.message || "Failed to unlock next video");
+    }
   };
 
   return (
@@ -365,6 +405,34 @@ const QuizResult = ({ lectureId }) => {
                         <FaRedo />
 
                         Retry Quiz
+
+                      </button>
+
+                      {/* UNLOCK NEXT VIDEO */}
+                      <button
+                        onClick={handleUnlockNextVideo}
+                        className={`
+                          mt-4
+                          inline-flex
+                          items-center
+                          gap-2
+                          px-6
+                          py-3
+                          rounded-2xl
+                          bg-gradient-to-r
+                          from-green-500
+                          to-emerald-600
+                          text-white
+                          font-semibold
+                          hover:scale-105
+                          transition-all
+                          shadow-xl
+                        `}
+                      >
+
+                        <FaLockOpen />
+
+                        Unlock Next Video
 
                       </button>
 

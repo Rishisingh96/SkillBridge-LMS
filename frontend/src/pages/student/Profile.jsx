@@ -34,17 +34,20 @@ const InfoCard = ({ icon, label, value }) => {
         dark:border-gray-700
         bg-white
         dark:bg-gray-800
-        p-5
+        p-3
+        md:p-5
         transition-all
         hover:border-violet-500
         hover:shadow-md
       "
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3 md:gap-4">
         <div
           className="
-            w-12
-            h-12
+            w-10
+            h-10
+            md:w-12
+            md:h-12
             rounded-xl
             bg-gradient-to-br
             from-violet-500
@@ -53,19 +56,21 @@ const InfoCard = ({ icon, label, value }) => {
             items-center
             justify-center
             text-white
-            text-lg
+            text-base
+            md:text-lg
             shadow-md
+            flex-shrink-0
           "
         >
           {icon}
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">
             {label}
           </p>
 
-          <h3 className="text-gray-900 dark:text-white font-semibold break-words leading-7">
+          <h3 className="text-sm md:text-base text-gray-900 dark:text-white font-semibold break-words leading-5 md:leading-7">
             {value || "Not Added"}
           </h3>
         </div>
@@ -193,15 +198,17 @@ const Profile = () => {
         {/* TOP BAR */}
         {/* ========================================================= */}
 
-        <div className="max-w-6xl mx-auto mb-6 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto mb-4 md:mb-6 flex items-center justify-between gap-3">
 
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate(-1)}
             className="
-              w-12
-              h-12
+              w-10
+              h-10
+              md:w-12
+              md:h-12
               rounded-xl
               bg-white
               dark:bg-gray-800
@@ -215,9 +222,10 @@ const Profile = () => {
               dark:hover:bg-gray-700
               transition-all
               shadow-sm
+              flex-shrink-0
             "
           >
-            <FaArrowLeft className="text-gray-600 dark:text-gray-300" />
+            <FaArrowLeft className="text-gray-600 dark:text-gray-300 text-sm md:text-base" />
           </motion.button>
 
           <motion.button
@@ -225,8 +233,10 @@ const Profile = () => {
             whileTap={{ scale: 0.96 }}
             onClick={() => navigate("/editprofile")}
             className="
-              px-5
-              h-12
+              px-3
+              md:px-5
+              h-10
+              md:h-12
               rounded-xl
               bg-gradient-to-r
               from-violet-600
@@ -235,15 +245,20 @@ const Profile = () => {
               font-semibold
               flex
               items-center
-              gap-3
+              gap-2
+              md:gap-3
               shadow-md
               hover:shadow-lg
               transition-all
+              text-xs
+              md:text-sm
+              flex-shrink-0
             "
           >
-            <FiEdit />
+            <FiEdit className="text-sm md:text-base" />
 
-            Edit Profile
+            <span className="hidden sm:inline">Edit Profile</span>
+            <span className="sm:hidden">Edit</span>
           </motion.button>
 
         </div>
@@ -277,7 +292,8 @@ const Profile = () => {
           <div
             className="
               relative
-              h-[240px]
+              h-[180px]
+              md:h-[240px]
               bg-gradient-to-br
               from-violet-600
               via-indigo-600
@@ -289,7 +305,7 @@ const Profile = () => {
 
             {/* PROFILE IMAGE */}
 
-            <div className="absolute left-1/2 -bottom-16 -translate-x-1/2">
+            <div className="absolute left-1/2 -bottom-12 md:-bottom-16 -translate-x-1/2">
 
               {userData?.photoUrl ? (
 
@@ -299,8 +315,10 @@ const Profile = () => {
                   src={userData.photoUrl}
                   alt="profile"
                   className="
-                    w-36
-                    h-36
+                    w-28
+                    h-28
+                    md:w-36
+                    md:h-36
                     rounded-2xl
                     object-cover
                     border-4
@@ -314,8 +332,10 @@ const Profile = () => {
 
                 <div
                   className="
-                    w-36
-                    h-36
+                    w-28
+                    h-28
+                    md:w-36
+                    md:h-36
                     rounded-2xl
                     bg-gradient-to-br
                     from-violet-600
@@ -326,7 +346,8 @@ const Profile = () => {
                     flex
                     items-center
                     justify-center
-                    text-5xl
+                    text-4xl
+                    md:text-5xl
                     font-black
                     text-white
                     shadow-2xl
@@ -345,7 +366,7 @@ const Profile = () => {
           {/* CONTENT */}
           {/* ========================================================= */}
 
-          <div className="px-5 md:px-10 pt-24 pb-10">
+          <div className="px-4 md:px-5 lg:px-10 pt-16 md:pt-20 lg:pt-24 pb-6 md:pb-10">
 
             {/* ========================================================= */}
             {/* USER INFO */}
@@ -353,16 +374,18 @@ const Profile = () => {
 
             <div className="text-center">
 
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {userData?.name || "User"}
               </h1>
 
-              <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
+              <div className="flex items-center justify-center gap-2 md:gap-3 mt-3 md:mt-4 flex-wrap">
 
                 <span
                   className="
-                    px-4
-                    py-2
+                    px-3
+                    py-1.5
+                    md:px-4
+                    md:py-2
                     rounded-full
                     bg-violet-100
                     dark:bg-violet-500/20
@@ -371,7 +394,8 @@ const Profile = () => {
                     dark:border-violet-500/30
                     text-violet-700
                     dark:text-violet-300
-                    text-sm
+                    text-xs
+                    md:text-sm
                     capitalize
                     font-medium
                   "
@@ -381,8 +405,10 @@ const Profile = () => {
 
                 <span
                   className="
-                    px-4
-                    py-2
+                    px-3
+                    py-1.5
+                    md:px-4
+                    md:py-2
                     rounded-full
                     bg-gray-100
                     dark:bg-gray-700
@@ -391,7 +417,8 @@ const Profile = () => {
                     dark:border-gray-600
                     text-gray-700
                     dark:text-gray-300
-                    text-sm
+                    text-xs
+                    md:text-sm
                   "
                 >
                   Joined{" "}
@@ -404,7 +431,7 @@ const Profile = () => {
 
               {/* BIO */}
 
-              <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-400 leading-8 mt-6 text-[15px] md:text-base">
+              <p className="max-w-3xl mx-auto text-gray-600 dark:text-gray-400 leading-6 md:leading-8 mt-4 md:mt-6 text-[13px] md:text-[15px] lg:text-base">
                 {userData?.bio ||
                   "No bio added yet."}
               </p>
@@ -415,7 +442,7 @@ const Profile = () => {
             {/* INFO GRID */}
             {/* ========================================================= */}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 mt-8 md:mt-12">
 
               <InfoCard
                 icon={<FaEnvelope />}
@@ -454,7 +481,7 @@ const Profile = () => {
             {/* ROLE SECTION */}
             {/* ========================================================= */}
 
-            <div className="mt-10">
+            <div className="mt-6 md:mt-10">
 
               {userData?.role === "student" && (
 
@@ -470,21 +497,25 @@ const Profile = () => {
                     to-cyan-50
                     dark:from-violet-500/10
                     dark:to-cyan-500/10
-                    p-6
+                    p-4
+                    md:p-6
                     flex
                     items-center
                     justify-between
-                    gap-5
+                    gap-3
+                    md:gap-5
                     flex-wrap
                   "
                 >
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-4">
 
                     <div
                       className="
-                        w-14
-                        h-14
+                        w-12
+                        h-12
+                        md:w-14
+                        md:h-14
                         rounded-xl
                         bg-gradient-to-br
                         from-violet-500
@@ -493,26 +524,28 @@ const Profile = () => {
                         items-center
                         justify-center
                         text-white
-                        text-xl
+                        text-lg
+                        md:text-xl
                         shadow-md
+                        flex-shrink-0
                       "
                     >
-                      <FiBookOpen />
+                      <FiBookOpen className="text-lg md:text-xl" />
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      <h3 className="text-base md:text-xl font-bold text-gray-900 dark:text-white">
                         Enrolled Courses
                       </h3>
 
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                      <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm mt-1">
                         Your active learning progress
                       </p>
                     </div>
 
                   </div>
 
-                  <div className="text-4xl font-black text-violet-600 dark:text-violet-300">
+                  <div className="text-2xl md:text-4xl font-black text-violet-600 dark:text-violet-300">
                     {userData?.enrolledCourses
                       ?.length || 0}
                   </div>

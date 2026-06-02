@@ -22,7 +22,7 @@ import adminSlice from "./adminSlice"
 import couponSlice from "./couponSlice"
 import progressSlice from "./progressSlice"
 import enrollmentSlice from "./enrollmentSlice"
-
+import certificateSlice from "./certificateSlice";
 
 // Combine Reducers
 const rootReducer = combineReducers({
@@ -37,6 +37,7 @@ const rootReducer = combineReducers({
   coupon: couponSlice,
   progress: progressSlice,
   enrollment: enrollmentSlice,
+  certificate: certificateSlice,
 });
 
 // Persist Config

@@ -105,6 +105,15 @@ const couponSchema = new mongoose.Schema(
 // ⚡ indexes
 couponSchema.index({ expiryDate: 1 });
 
+// 🔍 Virtual field to check if coupon is expired
+couponSchema.virtual("isExpired").get(function () {
+  return new Date() > this.expiryDate;
+});
+
+// Ensure virtuals are included in JSON
+couponSchema.set("toJSON", { virtuals: true });
+couponSchema.set("toObject", { virtuals: true });
+
 const Coupon = mongoose.model(
   "Coupon",
   couponSchema

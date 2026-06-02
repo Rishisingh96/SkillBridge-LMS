@@ -29,7 +29,7 @@ const Home = () => {
         <WhyChooseUs />
         <CourseCategories />
         <FeaturedCourses />
-        <LearningPaths />
+        {/* <LearningPaths /> */}
         <LiveClasses />
         <Instructors />
         <DashboardPreview />
@@ -38,7 +38,7 @@ const Home = () => {
         <Reviews />
         <AboutSection />
         <FAQ />
-        <CTABanner />
+        {/* <CTABanner /> */}
         <Footer />
       </Suspense>
     </>

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   FaPlayCircle,
   FaCheck,
+  FaDownload,
 } from "react-icons/fa";
 
 import {
@@ -15,6 +16,9 @@ import {
 } from "framer-motion";
 
 import { useTheme } from "../../context/ThemeContext";
+import axios from "axios";
+import { serverUrl } from "../../App";
+import { toast } from "react-toastify";
 
 const ModuleList = ({
   moduleData,
@@ -22,26 +26,112 @@ const ModuleList = ({
   onSelectLecture,
   isEnrolled,
   lectureProgress = {},
+  progressPercent = 0,
+  courseId,
+  totalCourseDuration = 0,
 }) => {
 
   const [openModule, setOpenModule] =
     useState(0);
 
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const { isDark } = useTheme();
+
+  const handleDownloadCertificate = async () => {
+    if (!courseId) return;
+
+    setIsGenerating(true);
+
+    try {
+
+      await axios.post(
+        `${serverUrl}/api/course/certificate/generate/${courseId}`,
+        {},
+        { withCredentials: true }
+      );
+
+      const response = await axios.get(
+        `${serverUrl}/api/course/certificate/download/${courseId}`,
+        {
+          responseType: "blob",
+          withCredentials: true,
+        }
+      );
+
+      const url = window.URL.createObjectURL(
+        new Blob([response.data])
+      );
+
+      const link =
+        document.createElement("a");
+
+      link.href = url;
+
+      link.download =
+        "certificate.pdf";
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success(
+        "Certificate downloaded successfully!"
+      );
+
+    } catch (error) {
+
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to download certificate"
+      );
+
+    } finally {
+
+      setIsGenerating(false);
+
+    }
+  };
 
   const totalLectures =
     moduleData?.reduce(
       (total, module) =>
-        total + module.lectures.length,
+        total + (module.lectures?.length || 0),
       0
     ) || 0;
 
-  // Format seconds to "Xm Ys"
+  // Calculate completed lectures from lectureProgress and isLectureCompleted
+  const completedLectures = moduleData?.reduce(
+    (total, module) =>
+      total + (module.lectures?.filter(
+        lecture => lecture && lecture._id && (lectureProgress[lecture._id]?.completed || lecture.isLectureCompleted === true)
+      ).length || 0),
+    0
+  ) || 0;
+
+  // Calculate progress percentage locally
+  const calculatedProgressPercent = totalLectures > 0
+    ? Math.round((completedLectures / totalLectures) * 100)
+    : 0;
+
+  // Format seconds to "Xh Ym" or "Xm Ys"
   const formatDuration = (seconds) => {
     if (!seconds) return "0m";
-    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    return `${minutes}m ${secs}s`;
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
   };
 
   // Calculate module duration and completion
@@ -52,7 +142,7 @@ const ModuleList = ({
     ) || 0;
 
     const completedCount = module.lectures?.filter(
-      lecture => lectureProgress[lecture._id]?.completed
+      lecture => lecture && lecture._id && (lectureProgress[lecture._id]?.completed || lecture.isLectureCompleted === true)
     ).length || 0;
 
     return {
@@ -71,10 +161,9 @@ const ModuleList = ({
         backdrop-blur-2xl
         p-5
         sm:p-6
-        ${
-          isDark
-            ? "border-white/10 bg-white/5 shadow-[0_10px_50px_rgba(0,0,0,0.35)]"
-            : "border-gray-200/70 bg-white/70 shadow-[0_10px_50px_rgba(0,0,0,0.08)]"
+        ${isDark
+          ? "border-white/10 bg-white/5 shadow-[0_10px_50px_rgba(0,0,0,0.35)]"
+          : "border-gray-200/70 bg-white/70 shadow-[0_10px_50px_rgba(0,0,0,0.08)]"
         }
       `}
     >
@@ -88,10 +177,9 @@ const ModuleList = ({
             className={`
               text-2xl
               font-black
-              ${
-                isDark
-                  ? "text-white"
-                  : "text-gray-900"
+              ${isDark
+                ? "text-white"
+                : "text-gray-900"
               }
             `}
           >
@@ -102,10 +190,9 @@ const ModuleList = ({
             className={`
               text-sm
               mt-1
-              ${
-                isDark
-                  ? "text-gray-400"
-                  : "text-gray-500"
+              ${isDark
+                ? "text-gray-400"
+                : "text-gray-500"
               }
             `}
           >
@@ -152,10 +239,9 @@ const ModuleList = ({
                   border
                   backdrop-blur-xl
                   overflow-hidden
-                  ${
-                    isDark
-                      ? "border-white/10 bg-[#0F172A]/80"
-                      : "border-gray-200/70 bg-white/80"
+                  ${isDark
+                    ? "border-white/10 bg-[#0F172A]/80"
+                    : "border-gray-200/70 bg-white/80"
                   }
                 `}
               >
@@ -185,10 +271,9 @@ const ModuleList = ({
                       className={`
                         text-lg
                         font-bold
-                        ${
-                          isDark
-                            ? "text-white"
-                            : "text-gray-900"
+                        ${isDark
+                          ? "text-white"
+                          : "text-gray-900"
                         }
                       `}
                     >
@@ -199,10 +284,9 @@ const ModuleList = ({
                       className={`
                         text-sm
                         mt-1
-                        ${
-                          isDark
-                            ? "text-gray-400"
-                            : "text-gray-500"
+                        ${isDark
+                          ? "text-gray-400"
+                          : "text-gray-500"
                         }
                       `}
                     >
@@ -213,10 +297,9 @@ const ModuleList = ({
                       className={`
                         text-xs
                         mt-2
-                        ${
-                          isDark
-                            ? "text-gray-500"
-                            : "text-gray-400"
+                        ${isDark
+                          ? "text-gray-500"
+                          : "text-gray-400"
                         }
                       `}
                     >
@@ -240,10 +323,9 @@ const ModuleList = ({
                       justify-center
                       text-lg
                       font-bold
-                      ${
-                        isDark
-                          ? "bg-white/10"
-                          : "bg-gray-100"
+                      ${isDark
+                        ? "bg-white/10"
+                        : "bg-gray-100"
                       }
                     `}
                   >
@@ -287,12 +369,24 @@ const ModuleList = ({
                             selectedLecture?._id ===
                             lecture?._id;
 
+                          // Check if previous lecture is fully completed (both lecture AND quiz)
+                          const previousLecture = lectureIndex > 0
+                            ? module.lectures[lectureIndex - 1]
+                            : null;
+
+                          const isPreviousFullyCompleted = previousLecture
+                            ? (previousLecture.isLectureCompleted === true &&
+                              (previousLecture.quizQuestions?.length === 0 || previousLecture.isQuizCompleted === true))
+                            : true; // First lecture is always unlocked if enrolled
+
                           const isLocked =
-                            !isEnrolled &&
-                            !lecture.isPreviewFree;
+                            (!isEnrolled && !lecture.isPreviewFree) ||
+                            (isEnrolled && lectureIndex > 0 && !isPreviousFullyCompleted);
 
                           const isCompleted =
-                            lectureProgress[lecture._id]?.completed;
+                            lectureProgress[lecture._id]?.completed || (lecture?.isLectureCompleted === true);
+
+                          const isQuizCompleted = lecture?.isQuizCompleted === true;
 
                           return (
 
@@ -328,19 +422,16 @@ const ModuleList = ({
                                 border
                                 transition-all
                                 duration-300
-                                ${
-                                  isActive
-                                    ? "bg-gradient-to-r from-violet-600 to-indigo-500 text-white border-transparent shadow-xl"
-                                    : `${
-                                        isDark
-                                          ? "bg-white/5 border-white/10 hover:border-violet-500"
-                                          : "bg-white border-gray-200 hover:border-violet-400"
-                                      }`
+                                ${isActive
+                                  ? "bg-gradient-to-r from-violet-600 to-indigo-500 text-white border-transparent shadow-xl"
+                                  : `${isDark
+                                    ? "bg-white/5 border-white/10 hover:border-violet-500"
+                                    : "bg-white border-gray-200 hover:border-violet-400"
+                                  }`
                                 }
-                                ${
-                                  isLocked
-                                    ? "opacity-60 cursor-not-allowed"
-                                    : ""
+                                ${isLocked
+                                  ? "opacity-60 cursor-not-allowed"
+                                  : ""
                                 }
                               `}
                             >
@@ -358,14 +449,12 @@ const ModuleList = ({
                                     items-center
                                     justify-center
                                     shrink-0
-                                    ${
-                                      isActive
-                                        ? "bg-white/20"
-                                        : `${
-                                            isDark
-                                              ? "bg-white/10"
-                                              : "bg-gray-100"
-                                          }`
+                                    ${isActive
+                                      ? "bg-white/20"
+                                      : `${isDark
+                                        ? "bg-white/10"
+                                        : "bg-gray-100"
+                                      }`
                                     }
                                   `}
                                 >
@@ -375,10 +464,9 @@ const ModuleList = ({
                                     <FaCheck
                                       className={`
                                         text-xl
-                                        ${
-                                          isActive
-                                            ? "text-white"
-                                            : "text-green-500"
+                                        ${isActive
+                                          ? "text-white"
+                                          : "text-green-500"
                                         }
                                       `}
                                     />
@@ -392,10 +480,9 @@ const ModuleList = ({
                                     <FaPlayCircle
                                       className={`
                                         text-xl
-                                        ${
-                                          isActive
-                                            ? "text-white"
-                                            : "text-violet-600"
+                                        ${isActive
+                                          ? "text-white"
+                                          : "text-violet-600"
                                         }
                                       `}
                                     />
@@ -413,14 +500,12 @@ const ModuleList = ({
                                       sm:text-base
                                       font-semibold
                                       truncate
-                                      ${
-                                        isActive
+                                      ${isActive
+                                        ? "text-white"
+                                        : `${isDark
                                           ? "text-white"
-                                          : `${
-                                              isDark
-                                                ? "text-white"
-                                                : "text-gray-900"
-                                            }`
+                                          : "text-gray-900"
+                                        }`
                                       }
                                     `}
                                   >
@@ -433,14 +518,12 @@ const ModuleList = ({
                                     className={`
                                       text-xs
                                       mt-1
-                                      ${
-                                        isActive
-                                          ? "text-gray-200"
-                                          : `${
-                                              isDark
-                                                ? "text-gray-400"
-                                                : "text-gray-500"
-                                            }`
+                                      ${isActive
+                                        ? "text-gray-200"
+                                        : `${isDark
+                                          ? "text-gray-400"
+                                          : "text-gray-500"
+                                        }`
                                       }
                                     `}
                                   >
@@ -461,23 +544,26 @@ const ModuleList = ({
                                   text-xs
                                   font-semibold
                                   shrink-0
-                                  ${
-                                    isLocked
-                                      ? "bg-gray-200 text-gray-600"
-                                      : isCompleted
+                                  ${isLocked
+                                    ? "bg-gray-200 text-gray-600"
+                                    : isCompleted && isQuizCompleted
                                       ? "bg-green-100 text-green-700"
-                                      : isActive
-                                      ? "bg-white text-black"
-                                      : "bg-violet-100 text-violet-700"
+                                      : isCompleted
+                                        ? "bg-blue-100 text-blue-700"
+                                        : isActive
+                                          ? "bg-white text-black"
+                                          : "bg-violet-100 text-violet-700"
                                   }
                                 `}
                               >
 
                                 {isLocked
                                   ? "Locked"
-                                  : isCompleted
-                                  ? "Completed"
-                                  : "Watch"}
+                                  : isCompleted && isQuizCompleted
+                                    ? "Done"
+                                    : isCompleted
+                                      ? "Video Done"
+                                      : "Watch"}
 
                               </div>
 
@@ -496,6 +582,167 @@ const ModuleList = ({
           }
         )}
 
+      </div>
+
+
+      {/* COURSE PROGRESS */}
+      <div
+        className={`
+          rounded-[2rem]
+          border
+          backdrop-blur-2xl
+          p-5
+          mt-6
+          ${isDark
+            ? "border-white/10 bg-white/5 shadow-[0_10px_50px_rgba(0,0,0,0.35)]"
+            : "border-gray-200/70 bg-white/70 shadow-[0_10px_50px_rgba(0,0,0,0.08)]"
+          }
+        `}
+      >
+        <p
+          className={`
+            text-sm
+            mb-2
+            ${isDark
+              ? "text-gray-400"
+              : "text-gray-500"
+            }
+          `}
+        >
+          Course Progress
+        </p>
+
+        <h2
+          className={`
+            text-3xl
+            font-bold
+            ${isDark
+              ? "text-white"
+              : "text-gray-900"
+            }
+          `}
+        >
+          {calculatedProgressPercent}%
+        </h2>
+
+        <div
+          className={`
+            w-full
+            rounded-full
+            h-2
+            mt-3
+            ${isDark
+              ? "bg-gray-700"
+              : "bg-gray-200"
+            }
+          `}
+        >
+          <div
+            className={`
+              h-2
+              rounded-full
+              transition-all
+              duration-300
+              bg-gradient-to-r
+              from-violet-600
+              to-indigo-500
+            `}
+            style={{ width: `${calculatedProgressPercent}%` }}
+          />
+        </div>
+
+        <p
+          className={`
+            text-sm
+            mt-3
+            ${isDark
+              ? "text-gray-400"
+              : "text-gray-500"
+            }
+          `}
+        >
+          {completedLectures} / {totalLectures} lectures completed
+        </p>
+      </div>
+
+      {/* CERTIFICATE DOWNLOAD BUTTON - Shows when 70% complete */}
+      {calculatedProgressPercent >= 70 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mt-6"
+        >
+          <button
+            onClick={handleDownloadCertificate}
+            disabled={isGenerating}
+            className="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isGenerating ? (
+              <span className="text-xl">⏳</span>
+            ) : (
+              <FaDownload className="text-xl" />
+            )}
+            <span>{isGenerating ? "Generating..." : "Download Certificate"}</span>
+          </button>
+          <p className={`text-xs text-center mt-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+            Congratulations! You've completed {calculatedProgressPercent}% of the course
+          </p>
+        </motion.div>
+      )}
+
+      {/* TOTAL COURSE DURATION */}
+      <div
+        className={`
+          rounded-[2rem]
+          border
+          backdrop-blur-2xl
+          p-5
+          mt-6
+          ${isDark
+            ? "border-white/10 bg-white/5 shadow-[0_10px_50px_rgba(0,0,0,0.35)]"
+            : "border-gray-200/70 bg-white/70 shadow-[0_10px_50px_rgba(0,0,0,0.08)]"
+          }
+        `}
+      >
+        <p
+          className={`
+            text-sm
+            mb-2
+            ${isDark
+              ? "text-gray-400"
+              : "text-gray-500"
+            }
+          `}
+        >
+          Total Course Duration
+        </p>
+
+        <h2
+          className={`
+            text-3xl
+            font-bold
+            ${isDark
+              ? "text-white"
+              : "text-gray-900"
+            }
+          `}
+        >
+          {formatDuration(totalCourseDuration)}
+        </h2>
+
+        <p
+          className={`
+            text-sm
+            mt-3
+            ${isDark
+              ? "text-gray-400"
+              : "text-gray-500"
+            }
+          `}
+        >
+          {completedLectures} / {totalLectures} lectures completed
+        </p>
       </div>
 
     </div>

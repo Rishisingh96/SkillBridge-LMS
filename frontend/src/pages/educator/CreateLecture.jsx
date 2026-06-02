@@ -23,6 +23,7 @@ const CreateLecture = () => {
   const { lectureData, loading, error } = useSelector((state) => state.lecture);
 
   const [lectureTitle, setLectureTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   // Fetch Lectures on component mount
@@ -46,16 +47,21 @@ const CreateLecture = () => {
       return toast.error("Lecture title is required");
     }
 
+    if (!description.trim()) {
+      return toast.error("Description is required");
+    }
+
     try {
       await dispatch(
         createLecture({
           moduleId,
-          lectureData: { lectureTitle },
+          lectureData: { lectureTitle, description },
         })
       ).unwrap();
 
       toast.success("Lecture created successfully");
       setLectureTitle("");
+      setDescription("");
       setShowCreateForm(false);
     } catch (error) {
       toast.error(error || "Failed to create lecture");
@@ -128,6 +134,21 @@ const CreateLecture = () => {
                     onChange={(e) => setLectureTitle(e.target.value)}
                     placeholder="e.g. Introduction to React Components"
                     className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 text-gray-900'}`}
+                    required
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Description *
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter a detailed description of this lecture..."
+                    rows="4"
+                    className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all resize-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 text-gray-900'}`}
                     required
                   />
                 </div>

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 // ======================================================
 // GET COURSE PROGRESS
@@ -9,10 +9,10 @@ const BASE_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 export const fetchCourseProgress = createAsyncThunk(
   "progress/fetchCourseProgress",
-  async ({ courseId, userId }, { rejectWithValue }) => {
+  async (courseId, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/api/progress/course/${courseId}/${userId}`,
+        `${API_URL}/api/course/progress/course/${courseId}`,
         { withCredentials: true }
       );
 
@@ -30,63 +30,27 @@ export const fetchCourseProgress = createAsyncThunk(
 );
 
 // ======================================================
-// UPDATE WATCH TIME
+// UPDATE PROGRESS
 // ======================================================
 
-export const updateWatchTime = createAsyncThunk(
-  "progress/updateWatchTime",
-  async ({ userId, lectureId, watchTime }, { rejectWithValue }) => {
+export const updateProgress = createAsyncThunk(
+  "progress/updateProgress",
+  async ({ lectureId, currentPosition }, { rejectWithValue }) => {
     try {
-
       const res = await axios.post(
-        `${BASE_URL}/api/progress/watchtime`,
+        `${API_URL}/api/course/progress/update`,
         {
-          userId,
           lectureId,
-          watchTime,
+          currentPosition,
         },
         { withCredentials: true }
       );
 
-      return res.data.progress;
+      return res.data;
 
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update watch time"
-      );
-    }
-  }
-);
-
-// ======================================================
-// COMPLETE LECTURE
-// ======================================================
-
-export const completeLecture = createAsyncThunk(
-  "progress/completeLecture",
-  async (
-    { userId, lectureId, watched, watchTime, completed },
-    { rejectWithValue }
-  ) => {
-    try {
-
-      const res = await axios.post(
-        `${BASE_URL}/api/progress/update`,
-        {
-          userId,
-          lectureId,
-          watched,
-          watchTime,
-          completed,
-        },
-        { withCredentials: true }
-      );
-
-      return res.data.progress;
-
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to complete lecture"
+        error.response?.data?.message || "Failed to update progress"
       );
     }
   }
@@ -98,17 +62,16 @@ export const completeLecture = createAsyncThunk(
 
 export const fetchResumeLecture = createAsyncThunk(
   "progress/fetchResumeLecture",
-  async ({ userId, courseId }, { rejectWithValue }) => {
+  async (courseId, { rejectWithValue }) => {
     try {
-
       const res = await axios.get(
-        `${BASE_URL}/api/progress/resume/${userId}/${courseId}`,
+        `${API_URL}/api/course/progress/resume/${courseId}`,
         { withCredentials: true }
       );
 
       return {
         courseId,
-        lecture: res.data.lecture,
+        lecture: res.data,
       };
 
     } catch (error) {
@@ -124,19 +87,11 @@ export const fetchResumeLecture = createAsyncThunk(
 // ======================================================
 
 const initialState = {
-
   loading: false,
   error: null,
-
-  // Course wise progress
   courseProgress: {},
-
-  // Resume lecture
-  resumeLectures: {},
-
-  // Current watch progress
-  currentProgress: null,
-
+  resumeLecture: null,
+  certificateGenerated: {},
 };
 
 // ======================================================
@@ -148,70 +103,74 @@ const progressSlice = createSlice({
   initialState,
 
   reducers: {
-
     clearProgressError: (state) => {
       state.error = null;
     },
-
+    setCertificateGenerated: (state, action) => {
+      state.certificateGenerated[action.payload.courseId] = true;
+    },
+    clearAllProgress: (state) => {
+      state.courseProgress = {};
+      state.resumeLecture = null;
+      state.certificateGenerated = {};
+    },
   },
 
   extraReducers: (builder) => {
-
     // ==================================================
     // FETCH COURSE PROGRESS
     // ==================================================
-
     builder
       .addCase(fetchCourseProgress.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-
       .addCase(fetchCourseProgress.fulfilled, (state, action) => {
         state.loading = false;
-
-        state.courseProgress[action.payload.courseId] =
-          action.payload.data;
+        state.courseProgress[action.payload.courseId] = action.payload.data;
       })
-
       .addCase(fetchCourseProgress.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
 
     // ==================================================
-    // UPDATE WATCH TIME
+    // UPDATE PROGRESS
     // ==================================================
-
     builder
-      .addCase(updateWatchTime.fulfilled, (state, action) => {
-        state.currentProgress = action.payload;
-      });
-
-    // ==================================================
-    // COMPLETE LECTURE
-    // ==================================================
-
-    builder
-      .addCase(completeLecture.fulfilled, (state, action) => {
-        state.currentProgress = action.payload;
+      .addCase(updateProgress.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(updateProgress.fulfilled, (state, action) => {
+        // Progress updated successfully
+      })
+      .addCase(updateProgress.rejected, (state, action) => {
+        state.error = action.payload;
       });
 
     // ==================================================
     // RESUME LECTURE
     // ==================================================
-
     builder
+      .addCase(fetchResumeLecture.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchResumeLecture.fulfilled, (state, action) => {
-
-        state.resumeLectures[action.payload.courseId] =
-          action.payload.lecture;
-
+        state.loading = false;
+        state.resumeLecture = action.payload.lecture;
+      })
+      .addCase(fetchResumeLecture.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 export const {
   clearProgressError,
+  setCertificateGenerated,
+  clearAllProgress,
 } = progressSlice.actions;
 
 export default progressSlice.reducer;

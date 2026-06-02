@@ -9,13 +9,15 @@ export const fetchModules = createAsyncThunk(
     try {
       const response = await axios.get(
         `${serverUrl}/api/course/course-modules/${courseId}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
-      return response.data.modules;
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch modules");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch modules",
+      );
     }
-  }
+  },
 );
 
 export const createModule = createAsyncThunk(
@@ -25,13 +27,15 @@ export const createModule = createAsyncThunk(
       const response = await axios.post(
         `${serverUrl}/api/course/create-module/${courseId}`,
         moduleData,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       return response.data.module;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to create module");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create module",
+      );
     }
-  }
+  },
 );
 
 export const updateModule = createAsyncThunk(
@@ -41,34 +45,39 @@ export const updateModule = createAsyncThunk(
       const response = await axios.put(
         `${serverUrl}/api/course/update-module/${moduleId}`,
         moduleData,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       return response.data.module;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update module");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update module",
+      );
     }
-  }
+  },
 );
 
 export const deleteModule = createAsyncThunk(
   "module/deleteModule",
   async (moduleId, { rejectWithValue }) => {
     try {
-      await axios.delete(
-        `${serverUrl}/api/course/delete-module/${moduleId}`,
-        { withCredentials: true }
-      );
+      await axios.delete(`${serverUrl}/api/course/remove-module/${moduleId}`, {
+        withCredentials: true,
+      });
       return moduleId;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to delete module");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete module",
+      );
     }
-  }
+  },
 );
 
-const moduleSlice = createSlice({  //Slice = State + Reducers + Actions
+const moduleSlice = createSlice({
+  //Slice = State + Reducers + Actions
   name: "module",
 
-  initialState: {    // Ye Redux state hai.
+  initialState: {
+    // Ye Redux state hai.
     moduleData: [],
     loading: false,
     error: null,
@@ -76,11 +85,16 @@ const moduleSlice = createSlice({  //Slice = State + Reducers + Actions
 
   reducers: {
     setModuleData: (state, action) => {
-      state.moduleData = action.payload;  //me store karta.
-    // state.moduleData =>Redux Store ke moduleData ko API wale fresh data se replace karo
+      state.moduleData = action.payload; //me store karta.
+      // state.moduleData =>Redux Store ke moduleData ko API wale fresh data se replace karo
     },
     clearError: (state) => {
       state.error = null;
+    },
+    clearModuleData: (state) => {
+      state.moduleData = [];
+      state.totalCourseLectures = 0;
+      state.totalCourseDuration = 0;
     },
   },
 
@@ -93,7 +107,13 @@ const moduleSlice = createSlice({  //Slice = State + Reducers + Actions
       })
       .addCase(fetchModules.fulfilled, (state, action) => {
         state.loading = false;
-        state.moduleData = action.payload;
+        // state.moduleData = action.payload;
+
+        state.moduleData = action.payload.modules;
+
+        state.totalCourseLectures = action.payload.totalCourseLectures;
+
+        state.totalCourseDuration = action.payload.totalCourseDuration;
       })
       .addCase(fetchModules.rejected, (state, action) => {
         state.loading = false;
@@ -120,7 +140,7 @@ const moduleSlice = createSlice({  //Slice = State + Reducers + Actions
       .addCase(updateModule.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.moduleData.findIndex(
-          (module) => module._id === action.payload._id
+          (module) => module._id === action.payload._id,
         );
         if (index !== -1) {
           state.moduleData[index] = action.payload;
@@ -138,7 +158,7 @@ const moduleSlice = createSlice({  //Slice = State + Reducers + Actions
       .addCase(deleteModule.fulfilled, (state, action) => {
         state.loading = false;
         state.moduleData = state.moduleData.filter(
-          (module) => module._id !== action.payload
+          (module) => module._id !== action.payload,
         );
       })
       .addCase(deleteModule.rejected, (state, action) => {
@@ -148,5 +168,5 @@ const moduleSlice = createSlice({  //Slice = State + Reducers + Actions
   },
 });
 
-export const { setModuleData, clearError } = moduleSlice.actions;
+export const { setModuleData, clearError, clearModuleData } = moduleSlice.actions;
 export default moduleSlice.reducer;

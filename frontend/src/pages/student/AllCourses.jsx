@@ -4,7 +4,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { FiSearch } from "react-icons/fi";
 import { HiSparkles } from "react-icons/hi2";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPublishedCourses } from "../../redux/slices/courseSlice";
 import Card from "../../components/home/component/CourseCard";
@@ -25,16 +25,22 @@ const categories = [
 const AllCourses = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const { courseData, loading } = useSelector((state) => state.course);
 
   const [category, setCategory] = useState([]);
   const [search, setSearch] = useState("");
 
-  // Fetch Courses
+  // Fetch Courses and set selected category from navigation state
   useEffect(() => {
     dispatch(fetchPublishedCourses());
-  }, [dispatch]);
+    
+    // Check if a category was passed from navigation state
+    if (location.state?.selectedCategory) {
+      setCategory([location.state.selectedCategory]);
+    }
+  }, [dispatch, location.state]);
 
   // Toggle Category
   const toggleCategory = (value) => {

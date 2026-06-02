@@ -5,6 +5,8 @@ import Lecture from "../models/lectureModel.js";
 import User from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
 import Module from "../models/moduleModel.js";
+import LectureProgress from "../models/lectureProgressModel.js";
+import { mergeUserProgressWithLectures } from "./progressController.js";
  
 
 // create Lecture 
@@ -14,13 +16,21 @@ export const createLecture = async (req, res) => {
 
     const { moduleId } = req.params;
 
-    const { lectureTitle } = req.body;
+    const { lectureTitle, description } = req.body;
 
     // Validation
     if (!lectureTitle) {
 
       return res.status(400).json({
         message: "Lecture title is required",
+      });
+
+    }
+
+    if (!description) {
+
+      return res.status(400).json({
+        message: "Description is required",
       });
 
     }
@@ -39,6 +49,8 @@ export const createLecture = async (req, res) => {
     // Create Lecture
     const lecture = await Lecture.create({
       lectureTitle,
+      description,
+      module:moduleId,
     });
 
     // Push Lecture Into Module
@@ -74,11 +86,23 @@ export const createLecture = async (req, res) => {
 export const getCourseLectures = async (req, res) => {
   try {
     const { moduleId } = req.params;
+    const userId = req.userId;
     const module = await Module.findById(moduleId);
     if (!module) {
       return res.status(404).json({ message: "Module is not found" });
     }
     await module.populate("lectures");
+    
+    // Merge user progress with lectures if user is authenticated
+    if (userId && module.lectures && module.lectures.length > 0) {
+      try {
+        module.lectures = await mergeUserProgressWithLectures(module.lectures, userId);
+      } catch (error) {
+        console.error("Error merging progress for module:", moduleId, error);
+        // Keep original lectures if merge fails
+      }
+    }
+    
     return res.status(200).json(module);
   } catch (error) {
     return res
@@ -153,6 +177,9 @@ export const editLecture = async (req, res) => {
 
           resourceType:
             uploadedVideo.resourceType || "video",
+
+          duration:
+            uploadedVideo.duration || 0, // Duration in seconds
 
         };
 
@@ -374,4 +401,95 @@ export const removeLecture = async (
 
 };
 
+// Mark lecture as completed
+export const markLectureCompleted = async (req, res) => {
+  try {
+    const { lectureId } = req.params;
+    const userId = req.userId;
+
+    const lecture = await Lecture.findById(lectureId);
+
+    if (!lecture) {
+      return res.status(404).json({
+        success: false,
+        message: "Lecture not found",
+      });
+    }
+
+    // Find or create progress record
+    let progress = await LectureProgress.findOne({
+      user: userId,
+      lecture: lectureId,
+    });
+
+    if (!progress) {
+      progress = new LectureProgress({
+        user: userId,
+        lecture: lectureId,
+      });
+    }
+
+    // Mark lecture as completed
+    progress.isLectureCompleted = true;
+    progress.lectureCompletedAt = new Date();
+    await progress.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Lecture marked as completed",
+      progress,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Mark lecture completed error: ${error.message}`,
+    });
+  }
+};
+
+// Mark quiz as completed
+export const markQuizCompleted = async (req, res) => {
+  try {
+    const { lectureId } = req.params;
+    const userId = req.userId;
+
+    const lecture = await Lecture.findById(lectureId);
+
+    if (!lecture) {
+      return res.status(404).json({
+        success: false,
+        message: "Lecture not found",
+      });
+    }
+
+    // Find or create progress record
+    let progress = await LectureProgress.findOne({
+      user: userId,
+      lecture: lectureId,
+    });
+
+    if (!progress) {
+      progress = new LectureProgress({
+        user: userId,
+        lecture: lectureId,
+      });
+    }
+
+    // Mark quiz as completed
+    progress.isQuizCompleted = true;
+    progress.quizCompletedAt = new Date();
+    await progress.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Quiz marked as completed",
+      progress,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Mark quiz completed error: ${error.message}`,
+    });
+  }
+};
 

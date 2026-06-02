@@ -31,6 +31,7 @@ const EditLecture = () => {
 
   // States
   const [lectureTitle, setLectureTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [videoUrl, setVideoUrl] = useState(null);
   const [isPreviewFree, setIsPreviewFree] = useState(false);
 
@@ -43,13 +44,10 @@ const EditLecture = () => {
   useEffect(() => {
     if (selectedLecture) {
       setLectureTitle(selectedLecture.lectureTitle || "");
-
+      setDescription(selectedLecture.description || "");
       setIsPreviewFree(selectedLecture.isPreviewFree || false);
-
       setExistingVideo(selectedLecture.video?.fileUrl || "");
-
       setResources(selectedLecture.resources || []);
-
       setQuizData(selectedLecture.quizQuestions || []);
     }
   }, [selectedLecture]);
@@ -88,6 +86,7 @@ const EditLecture = () => {
       const formData = new FormData();
 
       formData.append("lectureTitle", lectureTitle);
+      formData.append("description", description);
       formData.append("isPreviewFree", isPreviewFree);
 
       if (videoUrl) {
@@ -220,6 +219,23 @@ const EditLecture = () => {
               onChange={(e) => setLectureTitle(e.target.value)}
               placeholder="Enter Lecture Title"
               className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 text-gray-900'}`}
+            />
+
+          </div>
+
+          {/* Description */}
+          <div>
+
+            <label className={`block text-sm font-semibold mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Description
+            </label>
+
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter lecture description..."
+              rows="4"
+              className={`w-full border rounded-xl p-4 outline-none focus:ring-2 focus:ring-black transition-all resize-none ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500' : 'border-gray-300 text-gray-900'}`}
             />
 
           </div>

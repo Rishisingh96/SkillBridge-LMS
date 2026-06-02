@@ -10,6 +10,7 @@ import img from "../../assets/Empty.png";
 import { serverUrl } from "../../App";
 import LecturePlayer from "../../components/lecture/LecturePlayer";
 import ModuleList from "../../components/lecture/ModuleList";
+import ResumeLearningButton from "../../components/progress/ResumeLearningButton";
 import { toast } from "react-toastify";
 import { useTheme } from "../../context/ThemeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
@@ -40,7 +41,7 @@ const ViewLecture = () => {
   const [courseProgress, setCourseProgress] = useState({
     totalLectures: 0,
     completedLectures: 0,
-    progressPercent: 70, // Temporarily set to 70% for testing
+    progressPercent: 0,
     totalWatchTime: 0,
     totalCourseDuration: 0,
     lectureProgress: {},
@@ -107,6 +108,108 @@ const ViewLecture = () => {
     }
   }, [moduleData]);
 
+  // Auto-switch to next lecture when current lecture completes
+  const handleLectureComplete = async () => {
+    if (!moduleData || !selectedLecture) return;
+
+    // Refetch modules to get updated isLectureCompleted and isQuizCompleted status
+    await fetchModules();
+
+    // Refetch course progress to update progress stats
+    await fetchCourseProgress();
+
+    // Find current lecture position
+    let currentModuleIndex = -1;
+    let currentLectureIndex = -1;
+
+    for (let i = 0; i < moduleData.length; i++) {
+      const lectureIndex = moduleData[i].lectures?.findIndex(
+        (l) => l._id === selectedLecture._id
+      );
+      if (lectureIndex !== -1) {
+        currentModuleIndex = i;
+        currentLectureIndex = lectureIndex;
+        break;
+      }
+    }
+
+    // Check if current lecture is fully completed (both lecture AND quiz)
+    const currentLecture = moduleData[currentModuleIndex]?.lectures?.[currentLectureIndex];
+    const isFullyCompleted = currentLecture && currentLecture.isLectureCompleted === true && 
+                           (currentLecture.quizQuestions?.length === 0 || currentLecture.isQuizCompleted === true);
+
+    // Only jump to next lecture if current lecture is fully completed
+    if (!isFullyCompleted) {
+      console.log("Current lecture not fully completed (lecture + quiz), not jumping to next");
+      return;
+    }
+
+    // Try to get next lecture in same module
+    if (currentModuleIndex !== -1 && currentLectureIndex !== -1) {
+      const nextLectureInModule = moduleData[currentModuleIndex].lectures?.[currentLectureIndex + 1];
+      if (nextLectureInModule) {
+        setSelectedLecture(nextLectureInModule);
+        return;
+      }
+
+      // Try to get first lecture of next module
+      const nextModule = moduleData[currentModuleIndex + 1];
+      if (nextModule && nextModule.lectures?.[0]) {
+        setSelectedLecture(nextModule.lectures[0]);
+      }
+    }
+  };
+
+  // Handle quiz completion - refresh modules and try to jump to next lecture
+  const handleQuizComplete = async () => {
+    // Refetch modules to get updated isQuizCompleted status
+    await fetchModules();
+
+    // Refetch course progress to update progress stats
+    await fetchCourseProgress();
+
+    // Find current lecture position
+    let currentModuleIndex = -1;
+    let currentLectureIndex = -1;
+
+    for (let i = 0; i < moduleData.length; i++) {
+      const lectureIndex = moduleData[i].lectures?.findIndex(
+        (l) => l._id === selectedLecture._id
+      );
+      if (lectureIndex !== -1) {
+        currentModuleIndex = i;
+        currentLectureIndex = lectureIndex;
+        break;
+      }
+    }
+
+    // Check if current lecture is fully completed (both lecture AND quiz)
+    const currentLecture = moduleData[currentModuleIndex]?.lectures?.[currentLectureIndex];
+    const isFullyCompleted = currentLecture && currentLecture.isLectureCompleted === true && 
+                           (currentLecture.quizQuestions?.length === 0 || currentLecture.isQuizCompleted === true);
+
+    // Only jump to next lecture if current lecture is fully completed
+    if (!isFullyCompleted) {
+      console.log("Current lecture not fully completed (lecture + quiz), not jumping to next");
+      return;
+    }
+
+    // Try to get next lecture in same module
+    if (currentModuleIndex !== -1 && currentLectureIndex !== -1) {
+      const nextLectureInModule = moduleData[currentModuleIndex].lectures?.[currentLectureIndex + 1];
+      if (nextLectureInModule) {
+        setSelectedLecture(nextLectureInModule);
+        return;
+      }
+
+      // Try to get first lecture of next module
+      const nextModule = moduleData[currentModuleIndex + 1];
+      if (nextModule && nextModule.lectures?.[0]) {
+        setSelectedLecture(nextModule.lectures[0]);
+      }
+    }
+  };
+
   // Fetch Creator Data
   useEffect(() => {
     const handleCreator = async () => {
@@ -127,33 +230,30 @@ const ViewLecture = () => {
   }, [selectedCourse]);
 
   // Fetch Course Progress
-  useEffect(() => {
-    const fetchProgress = async () => {
-      if (user?._id && courseId && isEnrolled) {
-        try {
-          const progress = await getCourseProgress(courseId, user._id);
-          setCourseProgress(progress);
-        } catch (error) {
-          console.log("Error fetching progress:", error);
-        }
+  const fetchCourseProgress = async () => {
+    if (user?._id && courseId && isEnrolled) {
+      try {
+        const response = await axios.get(
+          `${serverUrl}/api/course/progress/course/${courseId}`,
+          { withCredentials: true }
+        );
+        setCourseProgress(response.data);
+      } catch (error) {
+        console.log("Error fetching progress:", error);
       }
-    };
-    fetchProgress();
+    }
+  };
+
+  useEffect(() => {
+    fetchCourseProgress();
   }, [user, courseId, isEnrolled]);
 
   // Refetch progress every 30 seconds while watching
   useEffect(() => {
     if (!isEnrolled) return;
 
-    const interval = setInterval(async () => {
-      if (user?._id && courseId) {
-        try {
-          const progress = await getCourseProgress(courseId, user._id);
-          setCourseProgress(progress);
-        } catch (error) {
-          console.log("Error fetching progress:", error);
-        }
-      }
+    const interval = setInterval(() => {
+      fetchCourseProgress();
     }, 30000); // Every 30 seconds
 
     return () => clearInterval(interval);
@@ -233,61 +333,22 @@ const ViewLecture = () => {
       <div className={`min-h-screen p-4 md:p-7 pt-[90px] ${isDark ? 'bg-gray-950' : 'bg-[#f4f4f5]'}`}>
       <div className="max-w-7xl mx-auto">
 
-        {/* PROGRESS HEADER */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl p-5 md:p-6 text-white shadow-2xl mb-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            {/* LEFT - Course Name & Watched Time */}
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold leading-tight">
-                {selectedCourse?.title}
-              </h1>
-              <div className="flex items-center gap-4 mt-2 flex-wrap">
-                <p className="text-sm text-white/80">
-                  {formatTime(courseProgress.totalWatchTime)} WATCHED
-                </p>
-                <span className="text-white/50">|</span>
-                <p className="text-sm text-white/80">
-                  Total: {formatTime(courseProgress.totalCourseDuration)}
-                </p>
-              </div>
-            </div>
-
-            {/* RIGHT - Progress */}
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-white/80">Course Progress</p>
-                <p className="text-2xl font-bold">{courseProgress.progressPercent}%</p>
-              </div>
-              <div className="w-16 h-16 rounded-full border-4 border-white/30 flex items-center justify-center">
-                <div 
-                  className="w-full h-full rounded-full border-4 border-white transition-all duration-300"
-                  style={{
-                    borderLeftColor: 'transparent',
-                    borderBottomColor: 'transparent',
-                    transform: `rotate(${(courseProgress.progressPercent / 100) * 360}deg)`,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full bg-white/20 rounded-full h-2 mt-4">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-300"
-              style={{ width: `${courseProgress.progressPercent}%` }}
-            />
-          </div>
-        </div>
+      
 
         {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-[68%_32%] gap-6">
 
           {/* LEFT — Video Player */}
-          <LecturePlayer lecture={selectedLecture} />
+          <LecturePlayer lecture={selectedLecture} onLectureComplete={handleLectureComplete} onQuizComplete={handleQuizComplete} />
 
           {/* RIGHT — Sidebar */}
           <div className="space-y-5">
+
+            {/* RESUME LEARNING BUTTON */}
+            {/* <ResumeLearningButton
+              courseId={courseId}
+              onSelectLecture={setSelectedLecture}
+            /> */}
 
             {/* MODULE LIST */}
             <ModuleList
@@ -297,6 +358,9 @@ const ViewLecture = () => {
               mode="watch"
               isEnrolled={isEnrolled}
               lectureProgress={courseProgress.lectureProgress}
+              progressPercent={courseProgress.progressPercent}
+              courseId={courseId}
+              totalCourseDuration={courseProgress.totalCourseDuration}
             />
 
             {/* INSTRUCTOR */}
@@ -328,37 +392,6 @@ const ViewLecture = () => {
                 </div>
               </div>
             </div>
-
-            {/* COURSE PROGRESS */}
-            <div className="bg-gradient-to-r from-black to-gray-900 rounded-[24px] p-5 text-white shadow-xl">
-              <p className="text-sm text-gray-300 mb-2">Course Progress</p>
-
-              <h2 className="text-3xl font-bold">
-                {courseProgress.progressPercent}%
-              </h2>
-
-              <div className="w-full bg-gray-700 rounded-full h-2 mt-3">
-                <div
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${courseProgress.progressPercent}%` }}
-                />
-              </div>
-
-              <p className="text-sm text-gray-400 mt-3">
-                {courseProgress.completedLectures} / {courseProgress.totalLectures} lectures completed
-              </p>
-
-              {/* CERTIFICATE BUTTON - Shows when 100% complete */}
-              {courseProgress.progressPercent === 100 && (
-                <button
-                  className="w-full mt-4 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <span>🎓</span>
-                  <span>Download Certificate</span>
-                </button>
-              )}
-            </div>
-
           </div>
         </div>
       </div>
