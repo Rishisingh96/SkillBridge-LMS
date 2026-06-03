@@ -14,7 +14,7 @@ const Profile = () => {
   return (
     <>
       <div className={`p-6 ${isDark ? 'bg-gray-950' : 'bg-gray-50'} min-h-screen`}>
-      <ProfileCard userData={userData} />
+      <ProfileCard userData={userData} totalEarnings={userData?.totalEarnings} />
 
       {/* Create Course Button */}
       <motion.button

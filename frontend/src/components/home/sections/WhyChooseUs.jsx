@@ -60,8 +60,8 @@ const FeatureCard = memo(({ feature, index }) => {
     <div
       className={`
         feature-card group relative overflow-hidden
-        rounded-2xl border border-white/60
-        bg-white/80 backdrop-blur-sm
+        rounded-2xl border border-white/60 dark:border-gray-700/60
+        bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
         p-7 lg:p-8
         shadow-sm hover:shadow-2xl ${feature.glow}
         transition-all duration-500 ease-out
@@ -85,7 +85,7 @@ const FeatureCard = memo(({ feature, index }) => {
           className={`
             w-14 h-14 rounded-2xl flex items-center justify-center
             bg-gradient-to-br ${feature.gradient.replace("transparent", "white/80")}
-            border border-white/60
+            border border-white/60 dark:border-gray-700/60
             group-hover:scale-110 transition-transform duration-300
           `}
         >
@@ -104,12 +104,12 @@ const FeatureCard = memo(({ feature, index }) => {
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-bold text-gray-900 mb-2 tracking-tight leading-snug">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 tracking-tight leading-snug">
         {feature.title}
       </h3>
 
       {/* Description */}
-      <p className="text-sm text-gray-500 leading-relaxed">
+      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
         {feature.description}
       </p>
 
@@ -177,15 +177,15 @@ const WhyChooseUs = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative py-20 sm:py-24 lg:py-28 overflow-hidden bg-slate-50"
+      className="relative py-20 sm:py-24 lg:py-28 overflow-hidden bg-slate-50 dark:bg-gray-900"
       aria-labelledby="why-choose-heading"
     >
       {/* ── Background decoration ── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
         {/* Top-left mesh */}
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-violet-100/60 blur-[100px]" />
+        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-violet-100/60 dark:bg-violet-900/30 blur-[100px]" />
         {/* Bottom-right mesh */}
-        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-sky-100/60 blur-[100px]" />
+        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-sky-100/60 dark:bg-sky-900/30 blur-[100px]" />
         {/* Center subtle dot grid */}
         <div
           className="absolute inset-0 opacity-[0.4]"
@@ -204,16 +204,16 @@ const WhyChooseUs = () => {
           className="text-center mb-14 lg:mb-16 opacity-0"
         >
           {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm mb-5">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-sm mb-5">
             <span className="w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-violet-600">
+            <span className="text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">
               Why SkillBridge
             </span>
           </div>
 
           <h2
             id="why-choose-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-900 leading-tight"
+            className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-900 dark:text-white leading-tight"
           >
             Everything You Need{" "}
             <span className="relative inline-block">
@@ -243,7 +243,7 @@ const WhyChooseUs = () => {
             </span>
           </h2>
 
-          <p className="mt-5 text-base sm:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
             A complete learning ecosystem — expert-crafted courses, real certificates,
             and a community that grows with you.
           </p>
@@ -272,7 +272,7 @@ const WhyChooseUs = () => {
               </div>
             ))}
           </div>
-          <p className="text-gray-500 text-sm">and growing every day</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">and growing every day</p>
         </div>
       </div>
     </section>

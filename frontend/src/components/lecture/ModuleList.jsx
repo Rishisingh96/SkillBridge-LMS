@@ -185,6 +185,16 @@ const ModuleList = ({
           >
             Course Content
           </h2>
+           <p
+            className={`
+              ${isDark
+                ? "text-white"
+                : "text-gray-900"
+              }
+            `}
+          >
+            Complete the quiz after watching the video to unlock the next lesson.
+          </p>
 
           <p
             className={`

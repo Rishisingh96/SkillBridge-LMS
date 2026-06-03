@@ -155,20 +155,20 @@ const SuccessStories = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-slate-50">
+    <section className="py-24 bg-slate-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4">
 
         {/* Header */}
         <div className="success-header text-center mb-14">
-          <span className="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">
+          <span className="px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium">
             🚀 Success Stories
           </span>
 
-          <h2 className="text-4xl font-bold mt-5">
+          <h2 className="text-4xl font-bold mt-5 text-gray-900 dark:text-white">
             Our Students Are Growing Fast
           </h2>
 
-          <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
             Thousands of learners have transformed their careers with our courses and mentorship.
           </p>
         </div>

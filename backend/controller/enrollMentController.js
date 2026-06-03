@@ -3,6 +3,8 @@
 import Course from "../models/courseModel.js";
 import Enrollment from "../models/enrollmentModel.js";
 import User from "../models/userModel.js";
+import { notifyCourseEnrollmentToCreatorAndAdmin } from "../helpers/notificationHelpers.js";
+import { sendEnrollmentConfirmationEmail } from "../config/sendMail.js";
 
 // ======================================================
 // 🔥 FREE COURSE ENROLLMENT
@@ -27,10 +29,7 @@ export const enrollCourse = async (req, res) => {
       });
     }
 
-    // ======================================================
     // BLOCK PAID COURSE
-    // ======================================================
-
     if (course.price > 0) {
       return res.status(400).json({
         success: false,
@@ -38,10 +37,8 @@ export const enrollCourse = async (req, res) => {
       });
     }
 
-    // ======================================================
-    // AUTO EXPIRE OLD ENROLLMENTS
-    // ======================================================
 
+    // AUTO EXPIRE OLD ENROLLMENTS
     await Enrollment.updateMany(
       {
         user: userId,
@@ -56,10 +53,7 @@ export const enrollCourse = async (req, res) => {
       }
     );
 
-    // ======================================================
     // CHECK ACTIVE ENROLLMENT
-    // ======================================================
-
     const existingEnrollment = await Enrollment.findOne({
       user: userId,
       course: courseId,
@@ -74,10 +68,7 @@ export const enrollCourse = async (req, res) => {
       });
     }
 
-    // ======================================================
     // CALCULATE VALIDITY
-    // ======================================================
-
     const startDate = new Date();
     const endDate = new Date(startDate);
 
@@ -117,6 +108,31 @@ export const enrollCourse = async (req, res) => {
         enrolledCourses: courseId,
       },
     });
+
+    // After line 119 (after User.findByIdAndUpdate)
+    await notifyCourseEnrollmentToCreatorAndAdmin({
+      studentName: user.name,
+      studentPhone: user.phone,
+      courseId: course._id,
+      courseTitle: course.title,
+      educatorId: course.creator,
+    });
+
+    // Send enrollment confirmation email to student
+    try {
+      console.log("Sending enrollment email to:", user.email);
+      await sendEnrollmentConfirmationEmail(
+        user.email,
+        user.name,
+        course.title,
+        startDate.toLocaleDateString(),
+        endDate.toLocaleDateString()
+      );
+      console.log("Enrollment email sent successfully");
+    } catch (emailError) {
+      console.error("Failed to send enrollment email:", emailError);
+      // Don't fail the enrollment if email fails
+    }
 
     return res.status(201).json({
       success: true,
@@ -196,7 +212,7 @@ export const getUserEnrollments = async (req, res) => {
         0,
         Math.ceil(
           (new Date(enrollment.endDate) - now) /
-            (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
         )
       );
 
@@ -309,7 +325,7 @@ export const checkEnrollmentStatus = async (req, res) => {
       0,
       Math.ceil(
         (new Date(enrollment.endDate) - now) /
-          (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
       )
     );
 

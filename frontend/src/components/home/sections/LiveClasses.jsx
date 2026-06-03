@@ -89,21 +89,21 @@ const LiveClasses = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white dark:bg-gray-900">
 
       <div className="max-w-7xl mx-auto px-4">
 
         <div className="live-header text-center mb-16">
 
-          <span className="px-4 py-2 rounded-full bg-red-100 text-red-600 font-semibold">
+          <span className="px-4 py-2 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-semibold">
             🔴 Live Learning
           </span>
 
-          <h2 className="mt-6 text-4xl md:text-5xl font-bold">
+          <h2 className="mt-6 text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
             Upcoming Live Classes
           </h2>
 
-          <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
+          <p className="mt-4 text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Learn directly from experts through
             interactive live sessions, workshops
             and masterclasses.

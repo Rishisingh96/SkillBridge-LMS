@@ -26,6 +26,7 @@ const ReviewCard = ({
       relative
       min-w-[350px]
       max-w-[350px]
+      h-[420px]
       p-6
       rounded-3xl
       bg-white
@@ -36,6 +37,8 @@ const ReviewCard = ({
       transition-all
       duration-300
       hover:-translate-y-2
+      flex
+      flex-col
       "
     >
       <div className="absolute top-4 right-4 text-slate-300">
@@ -79,7 +82,7 @@ const ReviewCard = ({
         {courseTitle}
       </div>
 
-      <p className="text-slate-600 leading-7">
+      <p className="text-slate-600 leading-7 flex-grow">
         "{displayComment}
         {isLong && !expanded ? "..." : ""}"
       </p>

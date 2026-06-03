@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 
 import NotificationBell from "../ui/NotificationBell";
 
-const AdminNavbar = ({
+const EducatorNavbar = ({
   setSidebarOpen,
 }) => {
 
@@ -24,8 +24,8 @@ const AdminNavbar = ({
       className="
       sticky top-0 z-30
       h-[85px]
-      bg-white/90 backdrop-blur-xl
-      border-b border-gray-200
+      bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl
+      border-b border-gray-200 dark:border-gray-800
       px-4 md:px-7
       flex items-center justify-between
       shadow-sm
@@ -48,14 +48,14 @@ const AdminNavbar = ({
           lg:hidden
           w-11 h-11
           rounded-xl
-          bg-gray-100
-          hover:bg-gray-200
+          bg-gray-100 dark:bg-gray-800
+          hover:bg-gray-200 dark:hover:bg-gray-700
           flex items-center justify-center
           transition-all duration-300
         "
         >
 
-          <Menu size={22} />
+          <Menu size={22} className="text-gray-700 dark:text-gray-300" />
 
         </button>
 
@@ -63,15 +63,15 @@ const AdminNavbar = ({
 
         <div>
 
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
 
-            Admin Dashboard
+            Educator Dashboard
 
           </h1>
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
 
-            Manage your platform efficiently
+            Manage your courses efficiently
 
           </p>
 
@@ -91,7 +91,7 @@ const AdminNavbar = ({
           className="
           hidden md:flex
           items-center gap-3
-          bg-gray-100
+          bg-gray-100 dark:bg-gray-800
           px-4
           h-[48px]
           rounded-2xl
@@ -101,7 +101,7 @@ const AdminNavbar = ({
 
           <Search
             size={18}
-            className="text-gray-500"
+            className="text-gray-500 dark:text-gray-400"
           />
 
           <input
@@ -112,6 +112,7 @@ const AdminNavbar = ({
             outline-none
             text-sm
             w-full
+            text-gray-900 dark:text-white
           "
           />
 
@@ -126,11 +127,11 @@ const AdminNavbar = ({
           whileHover={{ scale: 1.02 }}
           className="
           flex items-center gap-3
-          bg-gray-100
+          bg-gray-100 dark:bg-gray-800
           px-3 py-2
           rounded-2xl
           cursor-pointer
-          hover:bg-gray-200
+          hover:bg-gray-200 dark:hover:bg-gray-700
           transition-all duration-300
         "
         >
@@ -144,7 +145,7 @@ const AdminNavbar = ({
             w-11 h-11
             rounded-full
             object-cover
-            border-2 border-purple-500
+            border-2 border-indigo-500
           "
           />
 
@@ -152,15 +153,15 @@ const AdminNavbar = ({
 
           <div className="hidden sm:block">
 
-            <h2 className="font-semibold text-gray-800">
+            <h2 className="font-semibold text-gray-800 dark:text-white">
 
               {userData?.name}
 
             </h2>
 
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
 
-              Administrator
+              Educator
 
             </p>
 
@@ -174,4 +175,4 @@ const AdminNavbar = ({
   );
 };
 
-export default AdminNavbar;
+export default EducatorNavbar;

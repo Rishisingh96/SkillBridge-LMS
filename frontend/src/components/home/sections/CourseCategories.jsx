@@ -104,7 +104,7 @@ const CategoryCard = ({ title, value, courses, icon, bg, borderGlow, tagColor, t
   return (
     <div
       onClick={onClick}
-      className={`group relative cursor-pointer h-full rounded-[32px] border border-gray-200/80 bg-white p-7 transition-all duration-500 ease-out hover:-translate-y-2 flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-xl ${borderGlow}`}
+      className={`group relative cursor-pointer h-full rounded-[32px] border border-gray-200/80 dark:border-gray-700/60 bg-white dark:bg-gray-800/80 p-7 transition-all duration-500 ease-out hover:-translate-y-2 flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-xl ${borderGlow}`}
     >
       {/* Premium Tag Indicator if applicable */}
       {isPremium && (
@@ -126,17 +126,17 @@ const CategoryCard = ({ title, value, courses, icon, bg, borderGlow, tagColor, t
 
         {/* Content Section */}
         <div className="mt-6">
-          <h3 className="text-xl font-bold text-gray-900 tracking-tight transition-colors group-hover:text-black">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight transition-colors group-hover:text-black dark:group-hover:text-white">
             {title}
           </h3>
-          <p className="mt-1.5 text-sm font-medium text-gray-500">
+          <p className="mt-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">
             {courses}+ Courses Available
           </p>
         </div>
       </div>
 
       {/* Modern Luxury LMS Interactive Arrow Link */}
-      <div className="mt-8 flex items-center justify-between pt-4 border-t border-gray-50 group-hover:border-gray-100">
+      <div className="mt-8 flex items-center justify-between pt-4 border-t border-gray-50 dark:border-gray-700/50 group-hover:border-gray-100 dark:group-hover:border-gray-600">
         <span className={`text-sm font-bold tracking-wide transition-all duration-300 ${textColor} group-hover:opacity-90`}>
           Explore Category
         </span>
@@ -201,18 +201,18 @@ const CourseCategories = () => {
   }, []);
 
   return (
-    <section className="py-24 md:py-32 bg-slate-50/60 selection:bg-blue-500 selection:text-white">
+    <section className="py-24 md:py-32 bg-slate-50/60 dark:bg-gray-900/60 selection:bg-blue-500 selection:text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Block */}
         <div className="categories-header text-center mb-16 md:mb-20">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50/80 text-blue-700 font-semibold text-xs md:text-sm tracking-wide mb-4 border border-blue-100/50 uppercase">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50/80 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-xs md:text-sm tracking-wide mb-4 border border-blue-100/50 dark:border-blue-700/50 uppercase">
             ⚡ Upgrade Your Future
           </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-950 tracking-tight leading-none">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-950 dark:text-white tracking-tight leading-none">
             Browse Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Categories</span>
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 mt-4 md:mt-6 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mt-4 md:mt-6 max-w-2xl mx-auto leading-relaxed">
             Explore premium courses across the most in-demand industry skills and accelerate your career growth with expert-led training.
           </p>
         </div>

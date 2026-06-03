@@ -128,13 +128,13 @@ const AboutSection = () => {
   }, []);
 
   return (
-    <section className="relative py-28 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
+    <section className="relative py-28 bg-gradient-to-b from-white dark:from-gray-900 to-slate-50 dark:to-gray-800 overflow-hidden">
 
       {/* Glow */}
 
-      <div className="absolute top-20 left-0 w-72 h-72 bg-blue-500/10 blur-[120px] rounded-full" />
+      <div className="absolute top-20 left-0 w-72 h-72 bg-blue-500/10 dark:bg-blue-500/20 blur-[120px] rounded-full" />
 
-      <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-500/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-500/10 dark:bg-purple-500/20 blur-[120px] rounded-full" />
 
       <div className="max-w-7xl mx-auto px-4">
 
@@ -166,18 +166,18 @@ const AboutSection = () => {
               absolute
               top-8
               -left-5
-              bg-white
+              bg-white dark:bg-gray-800
               rounded-2xl
               p-4
               shadow-xl
-              border
+              border border-gray-200 dark:border-gray-700
               "
             >
-              <h3 className="text-2xl font-bold">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                 50K+
               </h3>
 
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Active Students
               </p>
             </div>
@@ -190,18 +190,18 @@ const AboutSection = () => {
               absolute
               bottom-44
               -right-5
-              bg-white
+              bg-white dark:bg-gray-800
               rounded-2xl
               p-4
               shadow-xl
-              border
+              border border-gray-200 dark:border-gray-700
               "
             >
-              <h3 className="text-2xl font-bold">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                 4.9★
               </h3>
 
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Average Rating
               </p>
             </div>
@@ -214,11 +214,11 @@ const AboutSection = () => {
               absolute
               -bottom-8
               right-10
-              bg-white
+              bg-white dark:bg-gray-800
               rounded-3xl
               p-3
               shadow-2xl
-              border
+              border border-gray-200 dark:border-gray-700
               w-[280px]
               "
             >
@@ -236,24 +236,24 @@ const AboutSection = () => {
 
           <div className="about-content">
 
-            <div className="inline-flex px-4 py-2 rounded-full bg-blue-100 text-blue-600 font-medium mb-6">
+            <div className="inline-flex px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium mb-6">
               🚀 About SkillBridge
             </div>
 
-            <h2 className="text-5xl font-bold leading-tight">
+            <h2 className="text-5xl font-bold leading-tight text-gray-900 dark:text-white">
               Building Careers Through
-              <span className="text-blue-600">
+              <span className="text-blue-600 dark:text-blue-400">
                 {" "}Modern Learning
               </span>
             </h2>
 
-            <p className="mt-7 text-gray-600 leading-8 text-lg">
+            <p className="mt-7 text-gray-600 dark:text-gray-300 leading-8 text-lg">
               SkillBridge was created with a simple mission:
               make quality education accessible, practical,
               and career-focused.
             </p>
 
-            <p className="mt-4 text-gray-600 leading-8">
+            <p className="mt-4 text-gray-600 dark:text-gray-300 leading-8">
               We combine structured learning paths,
               live mentorship, projects, certifications,
               AI-powered learning, and real-world practice
@@ -264,30 +264,30 @@ const AboutSection = () => {
 
             <div className="grid sm:grid-cols-2 gap-4 mt-10">
 
-              <div className="about-feature bg-white border rounded-2xl p-5">
+              <div className="about-feature bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5">
                 <BookOpen className="text-blue-600 mb-3" />
-                <h4 className="font-bold">
+                <h4 className="font-bold text-gray-900 dark:text-white">
                   500+ Courses
                 </h4>
               </div>
 
-              <div className="about-feature bg-white border rounded-2xl p-5">
+              <div className="about-feature bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5">
                 <Users className="text-green-600 mb-3" />
-                <h4 className="font-bold">
+                <h4 className="font-bold text-gray-900 dark:text-white">
                   50K+ Learners
                 </h4>
               </div>
 
-              <div className="about-feature bg-white border rounded-2xl p-5">
+              <div className="about-feature bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5">
                 <GraduationCap className="text-purple-600 mb-3" />
-                <h4 className="font-bold">
+                <h4 className="font-bold text-gray-900 dark:text-white">
                   Expert Mentors
                 </h4>
               </div>
 
-              <div className="about-feature bg-white border rounded-2xl p-5">
+              <div className="about-feature bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5">
                 <Award className="text-yellow-500 mb-3" />
-                <h4 className="font-bold">
+                <h4 className="font-bold text-gray-900 dark:text-white">
                   Verified Certificates
                 </h4>
               </div>
@@ -304,10 +304,9 @@ const AboutSection = () => {
                 px-8
                 py-4
                 rounded-2xl
-                bg-blue-600
+                bg-blue-600 hover:bg-blue-700
                 text-white
                 font-semibold
-                hover:bg-blue-700
                 transition
                 "
               >
@@ -320,9 +319,9 @@ const AboutSection = () => {
                 px-8
                 py-4
                 rounded-2xl
-                border
-                font-semibold
-                hover:bg-slate-100
+                border border-gray-300 dark:border-gray-600
+                font-semibold text-gray-900 dark:text-white
+                hover:bg-slate-100 dark:hover:bg-gray-700
                 transition
                 "
               >

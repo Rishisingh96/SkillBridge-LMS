@@ -93,7 +93,7 @@ const FAQ = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-slate-50">
+    <section className="py-24 bg-slate-50 dark:bg-gray-900">
 
       <div className="max-w-4xl mx-auto px-4">
 
@@ -101,15 +101,15 @@ const FAQ = () => {
 
         <div className="faq-header text-center mb-16">
 
-          <div className="inline-flex px-4 py-2 rounded-full bg-blue-100 text-blue-600 font-medium mb-5">
+          <div className="inline-flex px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium mb-5">
             ❓ Frequently Asked Questions
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
             Got Questions?
           </h2>
 
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-4 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Everything you need to know before starting
             your learning journey with SkillBridge.
           </p>
@@ -125,9 +125,9 @@ const FAQ = () => {
               key={index}
               className="
               faq-item
-              bg-white
+              bg-white dark:bg-gray-800
               rounded-2xl
-              border
+              border border-gray-200 dark:border-gray-700
               shadow-sm
               overflow-hidden
               "
@@ -145,7 +145,7 @@ const FAQ = () => {
                 py-5
                 "
               >
-                <h3 className="font-semibold text-lg">
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
                   {faq.question}
                 </h3>
 
@@ -173,7 +173,7 @@ const FAQ = () => {
                   }
                 `}
               >
-                <p className="px-6 pb-6 text-gray-600 leading-7">
+                <p className="px-6 pb-6 text-gray-600 dark:text-gray-300 leading-7">
                   {faq.answer}
                 </p>
               </div>

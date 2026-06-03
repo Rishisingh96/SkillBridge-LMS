@@ -1,4 +1,5 @@
 import Notification from "../models/notificationModel.js";
+import { emitNotification } from "./socketNotificationService.js";
 
 /**
  * Create Single Notification
@@ -34,6 +35,13 @@ export const createNotification = async ({
   expiresAt = null,
 }) => {
   try {
+    // Auto-set expiresAt to 15 days from now if not provided
+    const expiryDate = expiresAt || (() => {
+      const date = new Date();
+      date.setDate(date.getDate() + 15);
+      return date;
+    })();
+
     const notification = await Notification.create({
       recipient,
       recipientRole,
@@ -57,7 +65,7 @@ export const createNotification = async ({
 
       channels,
 
-      expiresAt,
+      expiresAt: expiryDate,
     });
 
     // 🔴 Real-time socket emit
@@ -194,3 +202,23 @@ export const deleteAllNotifications =
       recipient: userId,
     });
   };
+
+/**
+ * Delete Old Notifications (older than 15 days)
+ */
+export const deleteOldNotifications = async () => {
+  try {
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+
+    const result = await Notification.deleteMany({
+      createdAt: { $lt: fifteenDaysAgo },
+    });
+
+    console.log(`Deleted ${result.deletedCount} old notifications (older than 15 days)`);
+    return result.deletedCount;
+  } catch (error) {
+    console.error("Error deleting old notifications:", error);
+    throw error;
+  }
+};

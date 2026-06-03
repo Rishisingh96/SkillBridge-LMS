@@ -19,6 +19,9 @@ import {
 import { clearAllProgress } from "./redux/slices/progressSlice";
 import { clearModuleData } from "./redux/slices/moduleSlice";
 
+// Socket Context
+import { SocketProvider } from "./context/SocketContext";
+
 // Layouts
 import EducatorLayout from "./components/educator/EducatorLayout";
 import StudentLayout from "./components/student/StudentLayout";
@@ -26,6 +29,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 
 // Shared Components
 import ScrollToTop from "./components/home/shared/ScrollToTop";
+import StudentNotification from "./components/ui/StudentNotification";
 
 // Lazy loaded Pages
 const Home = lazy(() => import("./pages/home/Home"));
@@ -151,7 +155,7 @@ function App() {
   }, [userData]);
 
   return (
-    <>
+    <SocketProvider>
       <ToastContainer />
       <ScrollToTop />
 
@@ -231,6 +235,7 @@ function App() {
         />
 
         <Route path="/checkout/:courseId" element={<CheckoutPage />} />
+        <Route path="/student/notifications" element={<StudentNotification />} />
 
         {/* Student Dashboard */}
 
@@ -327,10 +332,8 @@ function App() {
 
         {/* Admin redirect */}
 
-        {/* ======================================== */}
+       
         {/* ADMIN ROUTES */}
-        {/* ======================================== */}
-
         <Route path="/admin"
           element={
             !userData ? (
@@ -366,7 +369,7 @@ function App() {
         </Route>
       </Routes>
       </Suspense>
-    </>
+    </SocketProvider>
   );
 }
 

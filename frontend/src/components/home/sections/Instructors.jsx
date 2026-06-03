@@ -99,7 +99,7 @@ const Instructors = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-slate-50">
+    <section className="py-24 bg-slate-50 dark:bg-gray-900">
 
       <div className="max-w-7xl mx-auto px-4">
 
@@ -114,8 +114,8 @@ const Instructors = () => {
             px-4
             py-2
             rounded-full
-            bg-blue-100
-            text-blue-600
+            bg-blue-100 dark:bg-blue-900/30
+            text-blue-600 dark:text-blue-400
             font-semibold
             "
           >
@@ -128,7 +128,7 @@ const Instructors = () => {
             text-4xl
             md:text-5xl
             font-bold
-            text-slate-900
+            text-slate-900 dark:text-white
             "
           >
             Learn From Industry Experts
@@ -139,7 +139,7 @@ const Instructors = () => {
             mt-5
             max-w-2xl
             mx-auto
-            text-slate-600
+            text-slate-600 dark:text-slate-300
             "
           >
             Get mentored by professionals working

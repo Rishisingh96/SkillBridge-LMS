@@ -42,7 +42,7 @@ const StatCard = ({ icon, value, suffix, label, accent, border }) => (
       >
         0{suffix}
       </h3>
-      <p className="text-gray-400 text-sm mt-1">{label}</p>
+      <p className="text-gray-400 dark:text-gray-300 text-sm mt-1">{label}</p>
     </div>
   </div>
 );
@@ -174,7 +174,7 @@ const HeroSection = React.memo(() => {
 
           {/* Badge — centered top */}
           <div className="flex justify-center mb-8">
-            <div className="hero-badge inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 backdrop-blur-xl text-cyan-300 text-sm font-semibold tracking-wide shadow-[0_0_20px_rgba(34,211,238,0.15)]">
+            <div className="hero-badge inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-cyan-400/30 dark:border-cyan-400/50 bg-cyan-500/10 dark:bg-cyan-500/20 backdrop-blur-xl text-cyan-300 dark:text-cyan-200 text-sm font-semibold tracking-wide shadow-[0_0_20px_rgba(34,211,238,0.15)]">
               <HiSparkles className="text-cyan-400" />
               AI Powered Learning Platform
             </div>
@@ -190,7 +190,7 @@ const HeroSection = React.memo(() => {
             <div className="relative flex justify-center lg:justify-start order-2 lg:order-1">
 
               {/* Glow */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-blue-600/20 blur-[100px] rounded-full pointer-events-none" />
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-blue-600/20 dark:bg-blue-500/30 blur-[100px] rounded-full pointer-events-none" />
 
               <img
                 src={heroStudent}
@@ -247,7 +247,7 @@ const HeroSection = React.memo(() => {
                 </h1>
               </div>
 
-              <p className="hero-subtitle text-gray-300 text-base md:text-lg xl:text-xl max-w-[520px] leading-relaxed">
+              <p className="hero-subtitle text-gray-300 dark:text-gray-200 text-base md:text-lg xl:text-xl max-w-[520px] leading-relaxed">
                 Learn from industry experts with
                 <span className="text-cyan-400 font-semibold"> 250+ premium courses </span>
                 and hands-on projects designed to build real-world skills faster.
@@ -263,7 +263,7 @@ const HeroSection = React.memo(() => {
                 ].map(({ icon, label }) => (
                   <span
                     key={label}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm text-gray-300 text-xs font-medium"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/15 dark:border-white/20 bg-white/5 dark:bg-white/10 backdrop-blur-sm text-gray-300 dark:text-gray-200 text-xs font-medium"
                   >
                     <span className="text-cyan-400">{icon}</span>
                     {label}
@@ -282,7 +282,7 @@ const HeroSection = React.memo(() => {
                   <FaArrowRight className="group-hover:translate-x-1.5 transition-transform duration-200" />
                 </button>
 
-                <button className="hero-btn group relative px-7 py-3.5 rounded-2xl bg-white/95 text-black font-bold text-sm md:text-base flex items-center gap-3 shadow-xl hover:scale-105 hover:bg-white active:scale-[0.98] transition-all duration-300">
+                <button className="hero-btn group relative px-7 py-3.5 rounded-2xl bg-white/95 dark:bg-gray-800 text-black dark:text-white font-bold text-sm md:text-base flex items-center gap-3 shadow-xl hover:scale-105 hover:bg-white dark:hover:bg-gray-700 active:scale-[0.98] transition-all duration-300">
                   Search With AI
                   <img src={ai} alt="AI" className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                 </button>
@@ -293,7 +293,7 @@ const HeroSection = React.memo(() => {
 
           {/* ── STATS BAR ──────────────────────────────────────────── */}
           <div className="mt-10 lg:mt-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 overflow-hidden rounded-[28px] border border-white/10 bg-black/50 backdrop-blur-2xl shadow-[0_0_60px_rgba(59,130,246,0.1)]">
+            <div className="grid grid-cols-2 md:grid-cols-4 overflow-hidden rounded-[28px] border border-white/10 dark:border-white/20 bg-black/50 dark:bg-gray-900/80 backdrop-blur-2xl shadow-[0_0_60px_rgba(59,130,246,0.1)]">
 
               <StatCard
                 icon={<FaUsers size={28} />}

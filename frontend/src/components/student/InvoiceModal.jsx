@@ -83,7 +83,7 @@ const InvoiceModal = ({
         p-4
       "
     >
-
+{/* 
       <div
         className="
           bg-white
@@ -93,7 +93,20 @@ const InvoiceModal = ({
           overflow-hidden
           shadow-2xl
         "
-      >
+      > */}
+
+      <div
+  className="
+    bg-white
+    rounded-[30px]
+    w-full
+    lg:w-3/4
+    max-w-5xl
+    max-h-[90vh]
+    overflow-y-auto
+    shadow-2xl
+  "
+>
 
         <div
           ref={invoiceRef}

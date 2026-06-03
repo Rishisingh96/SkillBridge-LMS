@@ -51,6 +51,7 @@ import {
 } from "../../redux/slices/moduleSlice";
 
 import DarkModeButton from "../ui/DarkModeButton";
+import NotificationBell from "../ui/NotificationBell";
 
 const Nav = () => {
 
@@ -600,6 +601,8 @@ const Nav = () => {
           >
 
             <DarkModeButton />
+
+            {userData && <NotificationBell />}
             
             {!userData && (
 

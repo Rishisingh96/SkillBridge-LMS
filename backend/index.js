@@ -20,6 +20,9 @@ import notification from "./routes/notificationRoutes.js"
 import { initializeSocketServer } from "./sockets/index.js";
 import { initializeSocket } from "./service/socketNotificationService.js";
 
+// Notification Cleanup
+import { deleteOldNotifications } from "./service/notificationService.js";
+
 // Models
 import "./models/moduleModel.js";
 import "./models/lectureModel.js";
@@ -35,7 +38,6 @@ const port = process.env.PORT;
 // ======================================
 // MIDDLEWARES
 // ======================================
-
 app.use(express.json());
 
 app.use(cookieParser());
@@ -90,15 +92,30 @@ const io = initializeSocketServer(server);
 
 initializeSocket(io);
 
-// ======================================
 // START SERVER
-// ======================================
-
 server.listen(port, async () => {
   try {
     await connectDb();
-
     console.log(`🚀 Server running on port ${port}`);
+
+    // Run notification cleanup once daily (every 24 hours)
+    // Delete notifications older than 15 days
+    setInterval(async () => {
+      try {
+        await deleteOldNotifications();
+      } catch (error) {
+        console.error("Failed to delete old notifications:", error);
+      }
+    }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
+
+    // Run cleanup once on server startup
+    setTimeout(async () => {
+      try {
+        await deleteOldNotifications();
+      } catch (error) {
+        console.error("Failed to delete old notifications on startup:", error);
+      }
+    }, 5000); // Run after 5 seconds to ensure DB is connected
   } catch (error) {
     console.error("Database Connection Failed:", error);
   }

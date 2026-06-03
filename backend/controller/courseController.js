@@ -3,6 +3,7 @@ import Course from "../models/courseModel.js"
 import User from "../models/userModel.js"
 import uploadOnCloudinary from "../config/cloudinary.js"
 import { mergeUserProgressWithModules } from "./progressController.js"
+import { createNotification } from "../service/notificationService.js"
 
 // ── Create Course ──────────────────────────
 export const createCourse = async (req, res) => {
@@ -22,6 +23,30 @@ export const createCourse = async (req, res) => {
       validity: safeValidity,
       creator: req.userId,
     });
+
+    // ✅ Send notification to all students when course is created
+    try {
+      const allStudents = await User.find({ role: "student" }).select("_id");
+      
+      for (const student of allStudents) {
+        await createNotification({
+          recipient: student._id,
+          recipientRole: "student",
+          sender: req.userId,
+          title: "🎓 New Course Available!",
+          message: `${title} - A new course has been added to ${category}. Check it out now!`,
+          type: "announcement",
+          category: "course",
+          actionUrl: `/course/${course._id}`,
+          resourceType: "course",
+          resourceId: course._id,
+          priority: "medium",
+        });
+      }
+    } catch (notificationError) {
+      console.error("Failed to send course notification:", notificationError);
+      // Don't fail the course creation if notification fails
+    }
 
     return res.status(201).json({
       success: true,
@@ -44,8 +69,34 @@ export const togglePublishCourse = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    course.isPublished = !course.isPublished;
+    const isPublishing = !course.isPublished;
+    course.isPublished = isPublishing;
     await course.save();
+
+    // ✅ Send notification when course is published
+    if (isPublishing) {
+      try {
+        const allStudents = await User.find({ role: "student" }).select("_id");
+        
+        for (const student of allStudents) {
+          await createNotification({
+            recipient: student._id,
+            recipientRole: "student",
+            sender: req.userId,
+            title: "🚀 New Course Launched!",
+            message: `${course.title} is now available! Start learning today.`,
+            type: "announcement",
+            category: "course",
+            actionUrl: `/course/${course._id}`,
+            resourceType: "course",
+            resourceId: course._id,
+            priority: "high",
+          });
+        }
+      } catch (notificationError) {
+        console.error("Failed to send publish notification:", notificationError);
+      }
+    }
 
     return res.status(200).json({
       success: true,

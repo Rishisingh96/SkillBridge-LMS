@@ -80,20 +80,20 @@ const VideoTestimonials = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4">
 
         {/* Header */}
         <div className="testimonial-header text-center mb-14">
-          <span className="px-4 py-2 rounded-full bg-red-100 text-red-600 font-medium">
+          <span className="px-4 py-2 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-medium">
             🎥 Student Stories
           </span>
 
-          <h2 className="text-4xl font-bold mt-5">
+          <h2 className="text-4xl font-bold mt-5 text-gray-900 dark:text-white">
             Hear From Our Learners
           </h2>
 
-          <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
             Real students sharing their learning journey, career growth and success stories.
           </p>
         </div>

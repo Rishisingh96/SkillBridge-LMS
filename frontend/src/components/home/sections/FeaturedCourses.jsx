@@ -54,8 +54,8 @@ const FeaturedCourses = () => {
       className="relative py-24 md:py-36 overflow-hidden bg-[#f9f7ff] dark:bg-[#0a0812] w-full"
     >
       {/* Background Blobs */}
-      <div className="pointer-events-none absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-purple-200/40 blur-[100px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-pink-200/30 blur-[100px]" />
+      <div className="pointer-events-none absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-purple-200/40 dark:bg-purple-900/30 blur-[100px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-pink-200/30 dark:bg-pink-900/30 blur-[100px]" />
 
       {/* HEADER CONTAINER */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,12 +64,12 @@ const FeaturedCourses = () => {
           className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-16 md:mb-20"
         >
           <div className="space-y-4 max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-purple-100 text-purple-700 border border-purple-200/60">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200/60 dark:border-purple-700/50">
               <Sparkles className="w-3 h-3" />
               Curated Learning
             </span>
 
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-slate-900">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-slate-900 dark:text-white">
               Featured{" "}
               <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-purple-600 via-violet-500 to-pink-500 bg-clip-text text-transparent">
@@ -80,7 +80,7 @@ const FeaturedCourses = () => {
               </span>
             </h2>
 
-            <p className="text-base sm:text-lg text-slate-500 leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-300 leading-relaxed">
               Discover our most popular courses designed by industry experts to
               help you build production-ready skills — fast.
             </p>
@@ -88,7 +88,7 @@ const FeaturedCourses = () => {
 
           <button
             onClick={() => navigate("/allcourses")}
-            className="group inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 shadow-sm hover:shadow-lg transition-all"
+            className="group inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl text-sm font-semibold bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-slate-200 shadow-sm hover:shadow-lg transition-all"
           >
             View All Courses
             <ArrowRight
@@ -107,9 +107,9 @@ const FeaturedCourses = () => {
       ) : featuredCourses.length > 0 ? (
         <div className="relative w-full overflow-hidden">
           {/* Fade Effects */}
-          <div className="absolute left-0 top-0 z-20 h-full w-12 bg-gradient-to-r from-[#f9f7ff] to-transparent pointer-events-none" />
+          <div className="absolute left-0 top-0 z-20 h-full w-12 bg-gradient-to-r from-[#f9f7ff] dark:from-[#0a0812] to-transparent pointer-events-none" />
 
-          <div className="absolute right-0 top-0 z-20 h-full w-12 bg-gradient-to-l from-[#f9f7ff] to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 z-20 h-full w-12 bg-gradient-to-l from-[#f9f7ff] dark:from-[#0a0812] to-transparent pointer-events-none" />
 
           <div className="marquee-wrapper">
             <div className="marquee-track">

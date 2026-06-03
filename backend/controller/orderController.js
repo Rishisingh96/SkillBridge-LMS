@@ -5,6 +5,8 @@ import User from "../models/userModel.js";
 import Enrollment from "../models/enrollmentModel.js";
 import Coupon from "../models/couponModel.js";
 import crypto from "crypto";
+import { sendEnrollmentConfirmationEmail } from "../config/sendMail.js";
+import { notifyCourseEnrollmentToCreatorAndAdmin } from "../helpers/notificationHelpers.js";
 
 dotenv.config();
 
@@ -183,7 +185,16 @@ export const VerifyPayment = async (req, res) => {
     });
 
     // ======================================
-    // 7. UPDATE COUPON USAGE IF APPLIED
+    // 7. UPDATE EDUCATOR TOTAL EARNINGS
+    // ======================================
+
+    const amountPaid = course.price - (discountAmount || 0);
+    await User.findByIdAndUpdate(course.creator, {
+      $inc: { totalEarnings: amountPaid },
+    });
+
+    // ======================================
+    // 8. UPDATE COUPON USAGE IF APPLIED
     // ======================================
 
     if (couponId) {
@@ -191,6 +202,31 @@ export const VerifyPayment = async (req, res) => {
         $inc: { usedCount: 1 },
         $addToSet: { usedBy: userId },
       });
+    }
+
+    // Send notification to educator and admin
+    await notifyCourseEnrollmentToCreatorAndAdmin({
+      studentName: user.name,
+      studentPhone: user.phone,
+      courseId: course._id,
+      courseTitle: course.title,
+      educatorId: course.creator,
+    });
+
+    // Send enrollment confirmation email to student
+    try {
+      console.log("Sending enrollment email to:", user.email);
+      await sendEnrollmentConfirmationEmail(
+        user.email,
+        user.name,
+        course.title,
+        startDate.toLocaleDateString(),
+        endDate.toLocaleDateString()
+      );
+      console.log("Enrollment email sent successfully");
+    } catch (emailError) {
+      console.error("Failed to send enrollment email:", emailError);
+      // Don't fail the enrollment if email fails
     }
 
     return res.status(200).json({

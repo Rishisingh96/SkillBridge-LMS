@@ -2,8 +2,9 @@ import User from "../models/userModel.js"
 import validator from "validator"
 import bcrypt from "bcryptjs"
 import genToken from "../config/token.js"
-import sendMail from "../config/sendMail.js"
+import sendMail, { sendWelcomeEmail } from "../config/sendMail.js"
 import crypto from "crypto"
+import { notifyNewUserRegistration } from "../helpers/notificationHelpers.js";
 
 
 //Signup
@@ -209,6 +210,17 @@ export const varifyOTP = async (req, res) => {
     user.lastLogin = Date.now();
     await user.save();
 
+    // Add this after user.save() in varifyOTP
+    await notifyNewUserRegistration({
+      userName: user.name,
+      userPhone: user.phone,
+      userEmail: user.email,
+      userRole: user.role,
+    });
+
+    // ✅ Send welcome email after successful verification
+    await sendWelcomeEmail(user.email, user.name);
+
     // ✅ Ab token do — account verified ho gaya
     const token = await genToken(user._id);
 
@@ -268,6 +280,19 @@ export const googleAuth = async (req, res) =>{
                     role: role || "student",
                     isVerified: true, // Google users are auto-verified
                 })
+                
+                // ✅ Send welcome email for Google signup
+                await sendWelcomeEmail(user.email, user.name);
+
+                // After line 276 (after sendWelcomeEmail for new users)
+if (!user.isVerified) { // Only for new users
+  await notifyNewUserRegistration({
+    userName: user.name,
+    userPhone: user.phone,
+    userEmail: user.email,
+    userRole: user.role,
+  });
+}
             } else {
                 // Update existing user with Google photo if not present
                 if(!user.photoUrl && photoUrl){

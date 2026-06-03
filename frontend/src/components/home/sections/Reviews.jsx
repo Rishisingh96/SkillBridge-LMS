@@ -67,22 +67,22 @@ const Reviews = () => {
   }, []);
 
   return (
-    <section className="py-24 bg-slate-50 overflow-hidden">
+    <section className="py-24 bg-slate-50 dark:bg-gray-900 overflow-hidden">
 
       <div className="max-w-7xl mx-auto px-4">
 
         <div className="reviews-header text-center mb-16">
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-600 mb-5">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-5">
             <Sparkles size={16} />
             Student Reviews
           </div>
 
-          <h2 className="text-4xl font-bold">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
             Loved By Thousands Of Learners
           </h2>
 
-          <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto">
             Real experiences from students who transformed
             their careers through our platform.
           </p>
@@ -98,16 +98,16 @@ const Reviews = () => {
         <div className="relative flex overflow-hidden mb-8">
           <div className="flex gap-6">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="w-80 h-48 bg-white rounded-2xl border border-slate-200 p-6 flex-shrink-0">
+              <div key={i} className="w-80 h-48 bg-white dark:bg-gray-800 rounded-2xl border border-slate-200 dark:border-gray-700 p-6 flex-shrink-0">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-slate-200 rounded-full animate-pulse" />
+                  <div className="w-12 h-12 bg-slate-200 dark:bg-gray-700 rounded-full animate-pulse" />
                   <div className="flex-1">
-                    <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4 mb-2" />
-                    <div className="h-3 bg-slate-200 rounded animate-pulse w-1/2" />
+                    <div className="h-4 bg-slate-200 dark:bg-gray-700 rounded animate-pulse w-3/4 mb-2" />
+                    <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded animate-pulse w-1/2" />
                   </div>
                 </div>
-                <div className="h-3 bg-slate-200 rounded animate-pulse mb-2" />
-                <div className="h-3 bg-slate-200 rounded animate-pulse w-5/6" />
+                <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
+                <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded animate-pulse w-5/6" />
               </div>
             ))}
           </div>

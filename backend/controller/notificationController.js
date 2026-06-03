@@ -14,9 +14,13 @@ export const getMyNotifications = async (
 
     const skip = (page - 1) * limit;
 
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+
     const notifications =
       await Notification.find({
         recipient: req.userId,
+        createdAt: { $gte: fifteenDaysAgo },
       })
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -25,6 +29,7 @@ export const getMyNotifications = async (
     const total =
       await Notification.countDocuments({
         recipient: req.userId,
+        createdAt: { $gte: fifteenDaysAgo },
       });
 
     return res.status(200).json({
