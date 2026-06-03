@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { useTheme } from "../../context/ThemeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { motion } from "framer-motion";
+import Nav from "../../components/navbar/Navbar";
 
 const ViewLecture = () => {
   const { courseId } = useParams();
@@ -275,6 +276,19 @@ const ViewLecture = () => {
 
   return (
     <>
+
+     {/* <header
+        className={`sticky top-0 z-50 backdrop-blur-2xl border-b ${isDark
+            ? "bg-white/5 border-white/10"
+            : "bg-white/70 border-black/10"
+          }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 md:px-8 h-[75px] flex items-center justify-between">
+         <Nav />
+        </div>
+      </header> */}
+
+
        <header
         className={`sticky top-0 z-50 backdrop-blur-2xl border-b ${isDark
             ? "bg-white/5 border-white/10"
@@ -330,6 +344,9 @@ const ViewLecture = () => {
           </div>
         </div>
       </header>
+      
+
+
       <div className={`min-h-screen p-4 md:p-7 pt-[90px] ${isDark ? 'bg-gray-950' : 'bg-[#f4f4f5]'}`}>
       <div className="max-w-7xl mx-auto">
 
