@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { FaAward } from "react-icons/fa";
@@ -10,8 +11,28 @@ import Nav from "../../components/navbar/Navbar";
 
 const Certificates = () => {
   const { userData } = useSelector((state) => state.user);
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/certificate",
+          { withCredentials: true }
+        );
+        setCertificates(response.data.certificates);
+      } catch (error) {
+        console.error("Error fetching certificates:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCertificates();
+  }, []);
 
   return (
     <>
@@ -44,7 +65,11 @@ const Certificates = () => {
       </div>
 
       {/* EMPTY STATE */}
-      {userData?.certificates?.length === 0 ? (
+      {loading ? (
+        <div className="max-w-7xl mx-auto text-center py-20">
+          <p className="text-gray-500">Loading certificates...</p>
+        </div>
+      ) : certificates.length === 0 ? (
         <div
           className="
           max-w-3xl mx-auto bg-white border border-gray-200
@@ -81,7 +106,7 @@ const Certificates = () => {
           </button>
         </div>
       ) : (
-        
+
         /* CERTIFICATES GRID */
         <div
           className="
@@ -90,9 +115,9 @@ const Certificates = () => {
           gap-6
         "
         >
-          {userData?.certificates?.map((certificate, index) => (
+          {certificates.map((certificate) => (
             <div
-              key={index}
+              key={certificate._id}
               className="
               bg-white rounded-[28px]
               border border-gray-200
@@ -108,19 +133,24 @@ const Certificates = () => {
                     <FaAward className="text-[24px] text-yellow-600" />
                   </div>
                   <span className="text-xs font-semibold text-gray-500">
-                    {certificate?.date || "2024"}
+                    {new Date(certificate.issuedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
                   </span>
                 </div>
 
                 <h2 className="text-[20px] font-bold text-gray-900 mt-4">
-                  {certificate?.courseTitle || "Course Name"}
+                  {certificate.course?.title || "Course Name"}
                 </h2>
 
                 <p className="text-gray-500 text-sm mt-2">
-                  {certificate?.description || "Certificate of Completion"}
+                  Certificate ID: {certificate.certificateId}
                 </p>
 
                 <button
+                  onClick={() => window.open(`http://localhost:5000/api/certificate/download/${certificate.course._id}`, '_blank')}
                   className="
                   mt-5 w-full
                   bg-black text-white

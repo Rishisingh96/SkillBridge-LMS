@@ -15,6 +15,7 @@ import adminRouter from "./routes/adminRoute.js";
 import couponRouter from "./routes/coupon.routes.js";
 import enrollmentRouter from "./routes/enrollmentRoute.js";
 import notification from "./routes/notificationRoutes.js"
+import certificateRouter from "./routes/certificateRoute.js"
 
 // Socket
 import { initializeSocketServer } from "./sockets/index.js";
@@ -62,6 +63,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/coupon", couponRouter);
 app.use("/api/enrollment", enrollmentRouter);
 app.use("/api/notification", notification)
+app.use("/api/certificate", certificateRouter)
 
 
 // ======================================
@@ -98,6 +100,13 @@ server.listen(port, async () => {
     await connectDb();
     console.log(`🚀 Server running on port ${port}`);
 
+    // Run cleanup once on server startup (after DB is connected)
+    try {
+      await deleteOldNotifications();
+    } catch (error) {
+      console.error("Failed to delete old notifications on startup:", error);
+    }
+
     // Run notification cleanup once daily (every 24 hours)
     // Delete notifications older than 15 days
     setInterval(async () => {
@@ -107,15 +116,6 @@ server.listen(port, async () => {
         console.error("Failed to delete old notifications:", error);
       }
     }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
-
-    // Run cleanup once on server startup
-    setTimeout(async () => {
-      try {
-        await deleteOldNotifications();
-      } catch (error) {
-        console.error("Failed to delete old notifications on startup:", error);
-      }
-    }, 5000); // Run after 5 seconds to ensure DB is connected
   } catch (error) {
     console.error("Database Connection Failed:", error);
   }

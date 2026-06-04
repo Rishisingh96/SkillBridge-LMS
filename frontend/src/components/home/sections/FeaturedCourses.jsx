@@ -107,9 +107,7 @@ const FeaturedCourses = () => {
       ) : featuredCourses.length > 0 ? (
         <div className="relative w-full overflow-hidden">
           {/* Fade Effects */}
-          <div className="absolute left-0 top-0 z-20 h-full w-12 bg-gradient-to-r from-[#f9f7ff] dark:from-[#0a0812] to-transparent pointer-events-none" />
-
-          <div className="absolute right-0 top-0 z-20 h-full w-12 bg-gradient-to-l from-[#f9f7ff] dark:from-[#0a0812] to-transparent pointer-events-none" />
+          {/* <div className="absolute left-0 top-0 z-20 h-full w-12 bg-gradient-to-r from-[#f9f7ff] dark:from-[#0a0812] to-transparent pointer-events-none" /> */}
 
           <div className="marquee-wrapper">
             <div className="marquee-track">

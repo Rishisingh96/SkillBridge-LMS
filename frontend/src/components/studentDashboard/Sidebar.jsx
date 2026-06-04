@@ -9,6 +9,14 @@ import {
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { serverUrl } from "../../App";
+import { setUserData } from "../../redux/slices/userSlice";
+import { clearAllProgress } from "../../redux/slices/progressSlice";
+import { clearModuleData } from "../../redux/slices/moduleSlice";
 
 const menuItems = [
   {
@@ -39,6 +47,41 @@ const menuItems = [
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+
+    try {
+
+      await axios.get(
+        serverUrl + "/api/auth/logout",
+        {
+          withCredentials: true,
+        }
+      );
+
+      localStorage.clear();
+
+      dispatch(setUserData(null));
+      dispatch(clearAllProgress());
+      dispatch(clearModuleData());
+
+      toast.success(
+        "Logout Successfully"
+      );
+
+      navigate("/login");
+
+    } catch (error) {
+
+      toast.error(
+        error.response?.data?.message ||
+        "Logout Failed"
+      );
+
+    }
+  };
   return (
     <>
       {/* Mobile overlay */}
@@ -84,7 +127,9 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         </div>
 
-        <button className="flex items-center gap-2 px-4 py-3 rounded-xl border hover:bg-red-50 text-red-500">
+        <button 
+        onClick={handleLogout}
+        className="flex items-center gap-2 px-4 py-3 rounded-xl border hover:bg-red-50 text-red-500">
           <LogOut size={18} />
           Logout
         </button>

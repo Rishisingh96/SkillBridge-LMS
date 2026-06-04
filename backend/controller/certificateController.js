@@ -178,6 +178,31 @@ export const getCertificate = async (
   }
 };
 
+// GET ALL CERTIFICATES FOR USER
+export const getAllCertificates = async (
+  req,
+  res
+) => {
+  try {
+    const certificates =
+      await Certificate.find({
+        user: req.userId,
+      })
+        .populate("course", "title thumbnail")
+        .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      certificates,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // download Certificate
 export const downloadCertificate = async (
   req,

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div align="center">
 
   <img src="https://cdn-icons-png.flaticon.com/512/2997/2997322.png" alt="SkillBridge LMS Logo" width="120" height="120">
@@ -17,11 +18,19 @@
   **Empowering Education Through Technology** 🚀
 
 </div>
+=======
+# 🎓 SkillBridge LMS
+
+A comprehensive, modern Learning Management System (LMS) built with React, Node.js, Express, MongoDB, Socket.IO, Cloudinary, and Razorpay.
+
+SkillBridge LMS provides a complete online learning ecosystem for Students, Educators, and Administrators. The platform supports course creation, video streaming, quizzes, progress tracking, certificates, payments, notifications, analytics, and real-time interactions.
+>>>>>>> ac4d467814e22a7adb7e08e8e2853c7e30f30bad
 
 ---
 
 ## 📖 Table of Contents
 
+<<<<<<< HEAD
 - [🌟 Overview](#-overview)
 - [✨ Key Features](#-key-features)
 - [🏗️ Architecture](#️-architecture)
@@ -46,14 +55,55 @@
 - [📝 License](#-license)
 - [👨‍💻 Authors](#-authors)
 - [🙏 Acknowledgments](#-acknowledgments)
+=======
+* [🌟 Overview](#-overview)
+* [✨ Key Features](#-key-features)
+* [🏗️ Architecture](#️-architecture)
+* [🛠️ Tech Stack](#️-tech-stack)
+* [📁 Project Structure](#-project-structure)
+* [🚀 Quick Start](#-quick-start)
+* [⚙️ Configuration](#️-configuration)
+* [📚 API Documentation](#-api-documentation)
+* [👥 User Roles](#-user-roles)
+* [🔐 Security](#-security)
+* [🎨 Frontend Features](#-frontend-features)
+* [⚡ Backend Features](#-backend-features)
+* [🔌 Real-Time Features](#-real-time-features)
+* [💳 Payment Integration](#-payment-integration)
+* [📜 Certificate System](#-certificate-system)
+* [🎥 Video Streaming](#-video-streaming)
+* [🔔 Notification System](#-notification-system)
+* [📊 Analytics & Dashboard](#-analytics--dashboard)
+* [🧪 Testing](#-testing)
+* [🚀 Deployment](#-deployment)
+* [🤝 Contributing](#-contributing)
+* [📝 License](#-license)
+* [👨‍💻 Author](#-author)
+>>>>>>> ac4d467814e22a7adb7e08e8e2853c7e30f30bad
 
 ---
 
 ## 🌟 Overview
 
+<<<<<<< HEAD
 **SkillBridge LMS** is a comprehensive, modern Learning Management System built with cutting-edge web technologies. It provides a complete platform for online education, supporting multiple user roles (Students, Educators, and Administrators) with powerful features for course creation, enrollment tracking, progress monitoring, and real-time collaboration.
 
 ### 🎯 Vision
+=======
+SkillBridge LMS is a full-featured Learning Management System designed to deliver an engaging and scalable online education experience. It enables educators to create and manage courses while helping students learn through structured modules, video lectures, quizzes, resources, and certificates.
+
+The platform is built with a modern MERN-based architecture and includes advanced features such as HLS video streaming, real-time notifications, payment processing, analytics dashboards, role-based access control, and cloud media management.
+
+### Core Objectives
+
+* Deliver high-quality online learning experiences
+* Simplify course creation and management
+* Track learner progress efficiently
+* Provide secure and scalable infrastructure
+* Enable real-time communication and notifications
+
+🎯 Vision
+>>>>>>> ac4d467814e22a7adb7e08e8e2853c7e30f30bad
 
 To democratize education by providing an accessible, feature-rich platform that connects educators with learners worldwide, enabling seamless knowledge transfer and skill development.
 
