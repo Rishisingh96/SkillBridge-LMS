@@ -142,6 +142,7 @@ To democratize education by providing an accessible, feature-rich platform that 
 - 🏅 **Course Publishing**: Publish/unpublish courses with ease
 - 💬 **Engagement**: Reply to student comments and questions
 - 📋 **Course Organization**: Organize content into logical modules
+- 📋 **Blog Create**: Create a Blog Acording Topic and subject like Java , python etc
 
 ### 👨‍💼 For Administrators
 - 👥 **User Management**: Manage all platform users (ban/unban, role changes)
@@ -152,6 +153,7 @@ To democratize education by providing an accessible, feature-rich platform that 
 - 🔒 **Security**: Control platform security settings
 - 📈 **Growth Metrics**: Track user growth and platform adoption
 - 🎯 **Platform Health**: Monitor system performance and uptime
+- 📋 **Blog Create**: Create a Blog Acording Topic and subject like Java , python etc
 
 ### 🚀 Technical Features
 - ⚡ **Real-Time Updates**: Socket.IO powered real-time notifications
@@ -783,6 +785,7 @@ headers: {
 - Performance analytics
 - Course statistics
 - Coupon management
+- Blog Management
 
 ### 👨‍💼 Administrator
 
@@ -806,6 +809,7 @@ headers: {
 - Platform statistics
 - Revenue tracking
 - System health
+- Blog Management
 
 ---
 
