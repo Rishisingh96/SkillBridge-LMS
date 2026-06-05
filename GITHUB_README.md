@@ -1240,6 +1240,90 @@ doc.fontSize(12).text(`Certificate ID: ${certificateId}`, {
 
 ---
 
+## 📝 Blog System
+
+### Overview
+
+The Blog System follows a hierarchical structure similar to the Course/Lecture system, enabling organized content management:
+
+- **BlogCategory** (like Course Category) - e.g., Programming, Design, Marketing
+- **BlogCourse** (like Course) - e.g., JavaScript, Python, Java
+- **BlogModel** (like Module) - e.g., "Basic Java", "Advanced Python"
+- **BlogTopic** (like Lecture) - Individual blog posts within a model
+
+### Blog Categories
+
+The platform includes predefined blog categories:
+
+- **Programming Language**: JavaScript, Python, Java
+- **Web Development**: React JS, Angular, Vue JS, Node JS, Django, Spring Boot
+- **Android Development**: Mobile app development
+- **Digital Marketing**: SEO, Social Media, Content Marketing
+- **AI/ML**: Artificial Intelligence and Machine Learning
+
+### Blog Features
+
+#### For Readers (Students/Public)
+- **Category Browsing**: Browse blog posts by category
+- **Topic Search**: Search for specific blog topics
+- **Read Articles**: Full article reading experience
+- **Like Articles**: Like blog posts
+- **Comment System**: Add comments and replies
+- **View Tracking**: Automatic view count tracking
+
+#### For Content Creators (Educators)
+- **Category Management**: Create and manage blog categories
+- **Course Creation**: Create blog courses under categories
+- **Model Organization**: Organize content into models
+- **Topic Creation**: Write and publish blog topics
+- **Content Editing**: Edit existing blog content
+- **Publishing Control**: Publish/unpublish content at any level
+- **Thumbnail Upload**: Add images to blog posts
+- **Tag Management**: Add tags to blog topics
+- **Comment Moderation**: Manage comments on blog posts
+
+### Blog API Structure
+
+The Blog API provides comprehensive endpoints for managing the hierarchical blog structure:
+
+- **Category Endpoints**: Create, read, update, delete, and publish categories
+- **Course Endpoints**: Manage blog courses within categories
+- **Model Endpoints**: Organize content into models within courses
+- **Topic Endpoints**: Create, edit, and manage individual blog posts
+- **Comment Endpoints**: Full commenting system with replies and likes
+- **Like Endpoints**: Like/unlike blog topics and comments
+
+### Frontend Components
+
+The Blog System includes dedicated frontend components:
+
+- **Blog Pages**: Main blog listing and category pages
+- **Blog Details**: Individual blog post reading view
+- **Blog Panel**: Admin/Educator management interface
+- **Category Blog**: Category-specific blog listings
+- **Blog Content**: Content creation and editing interface
+- **Blog Subjects**: Subject/topic management
+- **Blog Topics**: Topic management interface
+
+### State Management
+
+Blog state is managed through Redux Toolkit:
+
+- **blogSlice**: Manages blog categories, courses, models, and topics state
+- **Async Actions**: Handles API calls for blog operations
+- **State Persistence**: Maintains blog data across sessions
+
+### Database Models
+
+The Blog System uses MongoDB models:
+
+- **BlogCategory**: Category schema with courses reference
+- **BlogCourse**: Course schema with models reference
+- **BlogModel**: Model schema with topics reference
+- **BlogTopic**: Topic schema with content, comments, likes, and views
+
+---
+
 ## 🧪 Testing
 
 ### Frontend Testing

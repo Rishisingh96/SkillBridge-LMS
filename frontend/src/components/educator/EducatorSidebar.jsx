@@ -54,6 +54,16 @@ const navItems = [
     icon: <FiPlusCircle size={18} />,
   },
   {
+    label: "Create Blog",
+    path: "/educator/create-blog",
+    icon: <FiBook size={18} />,
+  },
+  {
+    label: "My Blogs",
+    path: "/educator/my-blogs",
+    icon: <FiBook size={18} />,
+  },
+  {
     label: "Coupons",
     path: "/educator/coupons",
     icon: <FiTag size={18} />,

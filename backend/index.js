@@ -16,6 +16,7 @@ import couponRouter from "./routes/coupon.routes.js";
 import enrollmentRouter from "./routes/enrollmentRoute.js";
 import notification from "./routes/notificationRoutes.js"
 import certificateRouter from "./routes/certificateRoute.js"
+import blogRouter from "./routes/blogRoute.js"
 
 // Socket
 import { initializeSocketServer } from "./sockets/index.js";
@@ -27,6 +28,10 @@ import { deleteOldNotifications } from "./service/notificationService.js";
 // Models
 import "./models/moduleModel.js";
 import "./models/lectureModel.js";
+import "./models/blogCategoryModel.js";
+import "./models/blogCourseModel.js";
+import "./models/blogModelModel.js";
+import "./models/blogTopicModel.js";
 
 // Middleware
 import errorHandler from "./middleware/errorHandler.js";
@@ -64,6 +69,7 @@ app.use("/api/coupon", couponRouter);
 app.use("/api/enrollment", enrollmentRouter);
 app.use("/api/notification", notification)
 app.use("/api/certificate", certificateRouter)
+app.use("/api/blog", blogRouter)
 
 
 // ======================================

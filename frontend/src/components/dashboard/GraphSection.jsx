@@ -207,7 +207,7 @@ const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
               viewport={{ once: true }}
               className="h-[340px] w-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={undefined}>
                 <BarChart
                   data={CourseProgressData}
                   margin={{
@@ -287,7 +287,7 @@ const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
               viewport={{ once: true }}
               className="h-[340px] w-full"
             >
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={undefined}>
                 <BarChart
                   data={EnrollData}
                   margin={{

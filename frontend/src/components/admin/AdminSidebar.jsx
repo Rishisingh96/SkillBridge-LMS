@@ -68,6 +68,18 @@ const AdminSidebar = ({
     },
 
     {
+      title: "Create Blog",
+      path: "/admin/create-blog",
+      icon: <BookOpen size={21} />,
+    },
+
+    {
+      title: "My Blogs",
+      path: "/admin/my-blogs",
+      icon: <BookOpen size={21} />,
+    },
+
+    {
       title: "Manage Coupons",
       path: "/admin/coupons",
       icon: <Ticket size={21} />,

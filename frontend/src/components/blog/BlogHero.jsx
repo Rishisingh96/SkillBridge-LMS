@@ -2,6 +2,8 @@ import React from "react";
 
 const BlogHero = ({
   selectedCategory,
+  selectedCourse,
+  selectedModel,
 }) => {
 
   return (
@@ -22,14 +24,29 @@ const BlogHero = ({
         {selectedCategory}
       </h1>
 
-      <p
-        className="
-          text-gray-500
-          dark:text-gray-400
-        "
-      >
-        Explore tutorials, guides, and resources for {selectedCategory}
-      </p>
+      {(selectedCourse || selectedModel) && (
+        <p
+          className="
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          {selectedCourse && <span>{selectedCourse}</span>}
+          {selectedCourse && selectedModel && <span> • </span>}
+          {selectedModel && <span>{selectedModel}</span>}
+        </p>
+      )}
+
+      {!selectedCourse && !selectedModel && (
+        <p
+          className="
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Explore tutorials, guides, and resources for {selectedCategory}
+        </p>
+      )}
 
     </div>
   );

@@ -58,14 +58,23 @@ const Graph = lazy(() => import("./pages/educator/Graph"));
 const RecentEnrollment = lazy(() => import("./pages/educator/RecentEnrollment"));
 const Stats = lazy(() => import("./pages/educator/Stats"));
 const CoursePerformance = lazy(() => import("./pages/educator/CoursePerformance"));
+const CreateBlog = lazy(() => import("./pages/educator/CreateBlog"));
+const MyBlogs = lazy(() => import("./pages/educator/MyBlogs"));
+const EditBlogCategory = lazy(() => import("./pages/educator/EditBlogCategory"));
+const BlogSubjects = lazy(() => import("./pages/educator/BlogSubjects"));
+const BlogTopics = lazy(() => import("./pages/educator/BlogTopics"));
+const BlogContent = lazy(() => import("./pages/educator/BlogContent"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
 const ManageCourses = lazy(() => import("./pages/admin/ManageCourses"));
 const PlatformStats = lazy(() => import("./pages/admin/PlatformStats"));
 const AdminCoupons = lazy(() => import("./pages/admin/Coupons"));
+const AdminCreateBlog = lazy(() => import("./pages/admin/CreateBlog"));
+const AdminMyBlogs = lazy(() => import("./pages/admin/MyBlogs"));
 const CheckoutPage = lazy(() => import("./pages/student/CheckoutPage"));
 const Certificates = lazy(() => import("./pages/student/Certificates"));
 const BlogPanel = lazy(() => import("./pages/Blog/BlogPanal"));
+const SubjectDetail = lazy(() => import("./pages/Blog/SubjectDetail"));
 const CategoryBlog = lazy(() => import("./pages/Blog/CategoryBlog"));
 const Blog = lazy(() => import("./pages/Blog/Blog"));
 
@@ -270,6 +279,11 @@ function App() {
         />
 
         <Route
+          path="/blogs/subject/:courseId"
+          element={userData ? <SubjectDetail /> : <Navigate to="/login" />}
+        />
+
+        <Route
           path="/blogs/:category"
           element={userData ? <CategoryBlog /> : <Navigate to="/login" />}
         />
@@ -317,6 +331,13 @@ function App() {
           <Route path="courses" element={<Courses />} />
           <Route path="coupons" element={<AdminCoupons />} />
           <Route path="create-course" element={<CreateCourse />} />
+          <Route path="create-blog" element={<CreateBlog />} />
+          <Route path="my-blogs" element={<MyBlogs />} />
+          <Route path="edit-blog-category/:categoryId" element={<EditBlogCategory />} />
+          <Route path="blog-subjects/:categoryId" element={<BlogSubjects />} />
+          <Route path="blog-topics/:courseId" element={<BlogTopics />} />
+          <Route path="blog-content/:modelId" element={<BlogContent />} />
+          <Route path="blogs" element={<BlogPanel />} />
           <Route path="edit-course/:courseId" element={<EditCourse />} />
           <Route path="create-module/:courseId" element={<Module />} />
           <Route
@@ -362,6 +383,10 @@ function App() {
 
           {/* COUPONS */}
           <Route path="coupons" element={<AdminCoupons />} />
+
+          {/* BLOG */}
+          <Route path="create-blog" element={<AdminCreateBlog />} />
+          <Route path="my-blogs" element={<AdminMyBlogs />} />
 
           {/* STATS */}
 

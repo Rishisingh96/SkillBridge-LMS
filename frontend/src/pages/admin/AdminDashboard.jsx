@@ -192,7 +192,7 @@ const AdminDashboard = () => {
 
           </div>
 
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={350} minWidth={0} minHeight={undefined}>
             <BarChart data={chartData}>
 
               <CartesianGrid strokeDasharray="3 3" />

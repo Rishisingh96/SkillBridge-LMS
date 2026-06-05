@@ -6,10 +6,12 @@ import {
 
 const BlogSectionCard = ({
   section,
+  onCourseSelect,
 }) => {
 
   return (
     <div
+      onClick={() => onCourseSelect && onCourseSelect(section)}
       className="
         rounded-[30px]
         bg-white
@@ -18,70 +20,46 @@ const BlogSectionCard = ({
         border-gray-200
         dark:border-white/10
         p-6
+        hover:border-violet-500
+        dark:hover:border-violet-500
+        transition-all
+        cursor-pointer
       "
     >
 
-      <h2
-        className="
-          text-2xl
-          font-bold
-          dark:text-white
-          mb-6
-        "
-      >
-        {section.title}
-      </h2>
+      <div className="flex items-start justify-between mb-4">
+        <h2
+          className="
+            text-2xl
+            font-bold
+            dark:text-white
+          "
+        >
+          {section.name || section.title}
+        </h2>
+        <ChevronRight className="text-violet-600" />
+      </div>
 
-      <div className="space-y-4">
+      {section.description && (
+        <p
+          className="
+            text-gray-600
+            dark:text-gray-400
+            mb-4
+          "
+        >
+          {section.description}
+        </p>
+      )}
 
-        {section.items.map(
-          (item, i) => (
-
-            <div
-              key={i}
-              className="
-                flex
-                items-center
-                justify-between
-                px-5
-                py-4
-                rounded-2xl
-                bg-gray-100
-                dark:bg-white/5
-                hover:bg-gradient-to-r
-                hover:from-violet-600
-                hover:to-indigo-500
-                hover:text-white
-                transition-all
-                cursor-pointer
-              "
-            >
-
-              <div>
-
-                <h3 className="font-semibold">
-                  {item.name}
-                </h3>
-
-                <p
-                  className="
-                    text-sm
-                    opacity-70
-                    mt-1
-                  "
-                >
-                  Read tutorials about{" "}
-                  {item.name}
-                </p>
-
-              </div>
-
-              <ChevronRight />
-
-            </div>
-          )
+      <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+        <span>📚 {section.blogModels?.length || 0} Modules</span>
+        {section.blogModels && section.blogModels.length > 0 && (
+          <span>•</span>
         )}
-
+        <span>
+          {section.blogModels?.reduce((acc, model) => acc + (model.blogTopics?.length || 0), 0) || 0} Topics
+        </span>
       </div>
 
     </div>
