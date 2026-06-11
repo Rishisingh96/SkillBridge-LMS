@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { LuImagePlus } from "react-icons/lu";
 import { useNavigate, useParams } from "react-router-dom";
-import empty from "../../assets/empty.png";
+import empty from "../../assets/Empty.png";
 import axios from "axios";
 import { serverUrl } from "../../App";
 import { toast } from "react-toastify";

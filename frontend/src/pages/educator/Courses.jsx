@@ -3,7 +3,7 @@ import { FaEdit, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import empty from "../../assets/empty.png";
+import empty from "../../assets/Empty.png";
 import { fetchCreatorCourses } from "../../redux/slices/courseSlice";
 import { useTheme } from "../../context/ThemeContext";
 
