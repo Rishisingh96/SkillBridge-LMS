@@ -133,4 +133,5 @@ const SuccessStoryCard = ({
   );
 };
 
+SuccessStoryCard.displayName = "SuccessStoryCard";
 export default SuccessStoryCard;

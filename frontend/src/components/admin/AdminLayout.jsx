@@ -54,4 +54,5 @@ const AdminLayout = () => {
   );
 };
 
+AdminLayout.displayName = "AdminLayout";
 export default AdminLayout;

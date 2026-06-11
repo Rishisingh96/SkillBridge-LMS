@@ -10,11 +10,14 @@ const MyBlogs = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { creatorCategories, loading } = useSelector(state => state.blog);
+  const { userData } = useSelector(state => state.user);
   const { isDark } = useTheme();
 
   useEffect(() => {
-    dispatch(fetchCreatorBlogCategories());
-  }, [dispatch]);
+    if (userData) {
+      dispatch(fetchCreatorBlogCategories());
+    }
+  }, [dispatch, userData]);
 
   return (
     <>

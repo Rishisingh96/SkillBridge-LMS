@@ -3,6 +3,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
+import SEO from "./components/seo/SEO";
+import { websiteSchema, organizationSchema } from "./components/seo/SchemaData";
 
 // Redux
 import { fetchCurrentUser } from "./redux/slices/userSlice";
@@ -165,6 +167,12 @@ function App() {
 
   return (
     <SocketProvider>
+      <SEO
+        title="SkillBridge LMS - Master New Skills Online"
+        description="Learn from industry experts with SkillBridge LMS. Access high-quality courses, track your progress, and earn certificates. Start your learning journey today."
+        keywords="online learning, LMS, courses, education, skill development, e-learning, online courses"
+        schema={websiteSchema(import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com')}
+      />
       <ToastContainer />
       <ScrollToTop />
 

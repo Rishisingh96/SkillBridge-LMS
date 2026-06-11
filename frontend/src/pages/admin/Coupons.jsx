@@ -2,11 +2,10 @@ import { FaArrowLeft, FaEdit, FaTrash, FaToggleOn, FaToggleOff, FaPlus } from "r
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { serverUrl } from "../../App";
 import { useTheme } from "../../context/ThemeContext";
 import { fetchPublishedCourses, fetchCreatorCourses } from "../../redux/slices/courseSlice";
+import { fetchAllCoupons, fetchMyCoupons, createCoupon, updateCoupon, deleteCoupon, toggleCouponStatus } from "../../redux/slices/couponSlice";
 
 const Coupons = () => {
   const navigate = useNavigate();
@@ -14,15 +13,15 @@ const Coupons = () => {
   const { userData } = useSelector(state => state.user);
   const { isDark } = useTheme();
   const { courseData, creatorCourseData, loading: coursesLoading } = useSelector(state => state.course);
-  
+  const { couponData, myCoupons, loading: couponsLoading } = useSelector(state => state.coupon);
+
   const isAdmin = userData?.role === 'admin';
   const isEducator = userData?.role === 'educator';
-  
+
   // Use appropriate course data based on role
   const courses = isAdmin ? courseData : creatorCourseData;
-  
-  const [coupons, setCoupons] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const coupons = isAdmin ? couponData : myCoupons;
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
@@ -41,7 +40,12 @@ const Coupons = () => {
   });
 
   useEffect(() => {
-    fetchCoupons();
+    // Fetch coupons based on role
+    if (isAdmin) {
+      dispatch(fetchAllCoupons());
+    } else if (isEducator) {
+      dispatch(fetchMyCoupons());
+    }
     // Fetch courses based on role
     if (isAdmin) {
       dispatch(fetchPublishedCourses());
@@ -50,86 +54,47 @@ const Coupons = () => {
     }
   }, [dispatch, isAdmin, isEducator]);
 
-  const fetchCoupons = async () => {
-    try {
-      // Use different endpoint based on role
-      const endpoint = isAdmin ? '/api/coupon/all' : '/api/coupon/my-coupons';
-      const { data } = await axios.get(`${serverUrl}${endpoint}`, {
-        withCredentials: true
-      });
-      if (data.success) {
-        setCoupons(data.coupons);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to fetch coupons");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`${serverUrl}/api/coupon/create`, formData, {
-        withCredentials: true
-      });
-      if (data.success) {
-        toast.success("Coupon created successfully");
-        setShowCreateModal(false);
-        resetForm();
-        fetchCoupons();
-      }
+      await dispatch(createCoupon(formData)).unwrap();
+      toast.success("Coupon created successfully");
+      setShowCreateModal(false);
+      resetForm();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create coupon");
+      toast.error(error || "Failed to create coupon");
     }
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.put(
-        `${serverUrl}/api/coupon/update/${selectedCoupon._id}`,
-        formData,
-        { withCredentials: true }
-      );
-      if (data.success) {
-        toast.success("Coupon updated successfully");
-        setShowEditModal(false);
-        resetForm();
-        fetchCoupons();
-      }
+      await dispatch(updateCoupon({ couponId: selectedCoupon._id, couponData: formData })).unwrap();
+      toast.success("Coupon updated successfully");
+      setShowEditModal(false);
+      resetForm();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update coupon");
+      toast.error(error || "Failed to update coupon");
     }
   };
 
   const handleDelete = async (couponId) => {
     if (!window.confirm("Are you sure you want to delete this coupon?")) return;
-    
+
     try {
-      const { data } = await axios.delete(`${serverUrl}/api/coupon/delete/${couponId}`, {
-        withCredentials: true
-      });
-      if (data.success) {
-        toast.success("Coupon deleted successfully");
-        fetchCoupons();
-      }
+      await dispatch(deleteCoupon(couponId)).unwrap();
+      toast.success("Coupon deleted successfully");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete coupon");
+      toast.error(error || "Failed to delete coupon");
     }
   };
 
   const handleToggleStatus = async (couponId) => {
     try {
-      const { data } = await axios.patch(`${serverUrl}/api/coupon/toggle/${couponId}`, {}, {
-        withCredentials: true
-      });
-      if (data.success) {
-        toast.success(data.message);
-        fetchCoupons();
-      }
+      await dispatch(toggleCouponStatus(couponId)).unwrap();
+      toast.success("Coupon status updated successfully");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to toggle status");
+      toast.error(error || "Failed to toggle status");
     }
   };
 
@@ -248,7 +213,7 @@ const Coupons = () => {
 
             {/* Body */}
             <tbody>
-              {loading ? (
+              {couponsLoading ? (
                 <tr>
                   <td colSpan={isAdmin ? "7" : "6"} className={`text-center py-10 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     Loading...
@@ -324,7 +289,7 @@ const Coupons = () => {
 
       {/* Mobile Cards */}
       <div className="md:hidden max-w-7xl mx-auto space-y-4">
-        {loading ? (
+        {couponsLoading ? (
           <div className={`text-center py-10 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Loading...
           </div>

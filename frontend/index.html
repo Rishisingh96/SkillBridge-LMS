@@ -3,12 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/frontend/public/logo1.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>skillbridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="theme-color" content="#4F46E5" />
+    <meta name="description" content="Learn from industry experts with SkillBridge LMS. Access high-quality courses, track your progress, and earn certificates." />
+    <meta name="keywords" content="online learning, LMS, courses, education, skill development, e-learning" />
+    <meta name="author" content="SkillBridge LMS" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SkillBridge LMS - Master New Skills Online" />
+    <meta property="og:description" content="Learn from industry experts with SkillBridge LMS. Access high-quality courses, track your progress, and earn certificates." />
+    <meta property="og:image" content="/og-image.jpg" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SkillBridge LMS - Master New Skills Online" />
+    <meta name="twitter:description" content="Learn from industry experts with SkillBridge LMS. Access high-quality courses, track your progress, and earn certificates." />
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/main.jsx" as="script" crossorigin />
+    
+    <title>SkillBridge LMS - Master New Skills Online</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script src = "https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Defer Razorpay script to improve performance -->
+    <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </body>
 </html>

@@ -18,7 +18,8 @@ import { setModuleData } from "../../redux/slices/moduleSlice";
 import { setSelectedCourse } from "../../redux/slices/courseSlice";
 
 import ModuleList from "../../components/lecture/ModuleList";
-
+import SEO from "../../components/seo/SEO";
+import { courseSchema, breadcrumbSchema } from "../../components/seo/SchemaData";
 
 import img from "../../assets/Empty.png";
 import CheckoutPage from "../student/CheckoutPage";
@@ -297,12 +298,22 @@ const CourseDetail = () => {
   };
 
   return (
-    <div
-      className={`min-h-screen transition-all duration-500 ${isDark
-        ? "bg-[#050816] text-white"
-        : "bg-[#f5f7fb] text-black"
-        }`}
-    >
+    <>
+      {selectedCourse && (
+        <SEO
+          title={`${selectedCourse.title} - SkillBridge LMS`}
+          description={selectedCourse.description}
+          keywords={selectedCourse.tags?.join(", ") || "online course, learning, education"}
+          image={selectedCourse.thumbnail}
+          schema={courseSchema(selectedCourse)}
+        />
+      )}
+      <div
+        className={`min-h-screen transition-all duration-500 ${isDark
+          ? "bg-[#050816] text-white"
+          : "bg-[#f5f7fb] text-black"
+          }`}
+      >
       {/* ===================================================== */}
       {/* NAVBAR */}
       {/* ===================================================== */}
@@ -798,6 +809,7 @@ const CourseDetail = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

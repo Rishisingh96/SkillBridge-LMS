@@ -23,9 +23,11 @@ const EducatorDashboard = () => {
   const { stats, loading } = useSelector((state) => state.dashboard);
 
   useEffect(() => {
-    dispatch(fetchCreatorCourses());
-    dispatch(fetchDashboardStats());
-  }, [dispatch]);
+    if (userData) {
+      dispatch(fetchCreatorCourses());
+      dispatch(fetchDashboardStats());
+    }
+  }, [dispatch, userData]);
 
   const totalCourses = stats.totalCourses;
   const totalStudents = stats.totalStudents;

@@ -12,13 +12,15 @@ const Courses = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { creatorCourseData } = useSelector(state => state.course);
+  const { userData } = useSelector(state => state.user);
   const [visibleDescriptions, setVisibleDescriptions] = useState({});
   const { isDark } = useTheme();
 
   useEffect(() => {
-    // dispatch(getCreatorCourses());
-     dispatch(fetchCreatorCourses());
-  }, [dispatch]);
+    if (userData) {
+      dispatch(fetchCreatorCourses());
+    }
+  }, [dispatch, userData]);
 
   const toggleDescription = (courseId) => {
     setVisibleDescriptions(prev => ({

@@ -17,6 +17,7 @@ import enrollmentRouter from "./routes/enrollmentRoute.js";
 import notification from "./routes/notificationRoutes.js"
 import certificateRouter from "./routes/certificateRoute.js"
 import blogRouter from "./routes/blogRoute.js"
+import seoRouter from "./routes/seoRoute.js"
 
 // Socket
 import { initializeSocketServer } from "./sockets/index.js";
@@ -69,6 +70,7 @@ app.use("/api/coupon", couponRouter);
 app.use("/api/enrollment", enrollmentRouter);
 app.use("/api/notification", notification)
 app.use("/api/certificate", certificateRouter)
+app.use("/", seoRouter)
 app.use("/api/blog", blogRouter)
 
 

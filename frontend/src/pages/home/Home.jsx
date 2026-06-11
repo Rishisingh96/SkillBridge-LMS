@@ -1,4 +1,6 @@
 import React, { lazy, Suspense } from "react";
+import SEO from "../../components/seo/SEO";
+import { websiteSchema, organizationSchema } from "../../components/seo/SchemaData";
 
 // Critical above-fold section - load immediately
 import HeroSection from "../../components/home/sections/HeroSection";
@@ -47,6 +49,12 @@ const Footer = lazy(() => import("../../components/home/shared/Footer"));
 const Home = () => {
   return (
     <>
+      <SEO
+        title="SkillBridge LMS - Master New Skills Online"
+        description="Learn from industry experts with SkillBridge LMS. Access high-quality courses, track your progress, and earn certificates. Start your learning journey today."
+        keywords="online learning, LMS, courses, education, skill development, e-learning, online courses"
+        schema={websiteSchema(import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com')}
+      />
        <HeroSection />
         <Suspense fallback={null}>
         <TrustedCompanies />

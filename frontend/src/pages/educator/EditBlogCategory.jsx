@@ -6,6 +6,7 @@ import { fetchCreatorBlogCategories } from "../../redux/slices/blogSlice";
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { store } from "../../redux/slices/store";
 
 const BASE_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
@@ -47,7 +48,10 @@ const EditBlogCategory = () => {
       
       if (res.data.success) {
         toast.success("Category updated successfully");
-        dispatch(fetchCreatorBlogCategories());
+        const { userData } = store.getState().user;
+        if (userData) {
+          dispatch(fetchCreatorBlogCategories());
+        }
         navigate("/educator/my-blogs");
       }
     } catch (error) {

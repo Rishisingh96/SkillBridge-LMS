@@ -1,4 +1,6 @@
 import React from "react";
+import SEO from "../../components/seo/SEO";
+import { blogPostSchema } from "../../components/seo/SchemaData";
 
 import {
   useParams,
@@ -12,14 +14,26 @@ const Blog = () => {
   } = useParams();
 
   return (
-    <div
-      className="
-        min-h-screen
-        bg-gray-100
-        dark:bg-[#020617]
-        p-10
-      "
-    >
+    <>
+      <SEO
+        title={`${category} - SkillBridge LMS Blog`}
+        description="Read the latest articles and insights from SkillBridge LMS experts."
+        keywords="blog, articles, education, learning, skill development"
+        schema={blogPostSchema({
+          title: `${category} - Blog`,
+          description: "Read the latest articles and insights from SkillBridge LMS experts.",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        })}
+      />
+      <div
+        className="
+          min-h-screen
+          bg-gray-100
+          dark:bg-[#020617]
+          p-10
+        "
+      >
 
       <div
         className="
@@ -81,6 +95,7 @@ const Blog = () => {
       </div>
 
     </div>
+    </>
   );
 };
 

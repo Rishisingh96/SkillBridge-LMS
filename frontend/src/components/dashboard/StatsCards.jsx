@@ -210,4 +210,5 @@ const StatsCards = ({ stats = {} }) => {
   )
 }
 
+StatsCards.displayName = "StatsCards";
 export default StatsCards

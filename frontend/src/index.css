@@ -3,6 +3,23 @@
 @tailwind components;
 @tailwind utilities;
 
+
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body{
+  width: 100%;
+  overflow-x: clip;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 *{
   font-family: "Outfit"
 }

@@ -134,4 +134,5 @@ const ProfileCard = ({ userData, totalEarnings }) => {
   )
 }
 
+ProfileCard.displayName = "ProfileCard";
 export default ProfileCard

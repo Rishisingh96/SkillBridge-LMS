@@ -174,4 +174,5 @@ const AdminNavbar = ({
   );
 };
 
+AdminNavbar.displayName = "AdminNavbar";
 export default AdminNavbar;

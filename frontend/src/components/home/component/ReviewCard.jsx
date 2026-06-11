@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 
-const ReviewCard = ({
+const ReviewCard = React.memo(({
   comment = "",
   rating = 5,
   photoUrl,
@@ -97,6 +97,7 @@ const ReviewCard = ({
       )}
     </div>
   );
-};
+});
 
+ReviewCard.displayName = "ReviewCard";
 export default ReviewCard;

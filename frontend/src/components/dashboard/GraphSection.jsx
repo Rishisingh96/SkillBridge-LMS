@@ -187,6 +187,8 @@ const GraphSection = ({ enrollmentByCourse, creatorCourseData }) => {
       <div className="absolute left-0 top-0 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl"></div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+
+        
         {/* Course Progress */}
         <GlassCard
           glow="bg-indigo-500/20"

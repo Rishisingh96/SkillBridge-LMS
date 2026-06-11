@@ -103,4 +103,5 @@ const TestimonialCard = ({
   );
 };
 
+TestimonialCard.displayName = "TestimonialCard";
 export default TestimonialCard;

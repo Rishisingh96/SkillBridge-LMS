@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import EducatorSidebar from "./EducatorSidebar";
 import EducatorNavbar from "./EducatorNavbar";
@@ -32,4 +32,5 @@ const EducatorLayout = () => {
   );
 };
 
+EducatorLayout.displayName = "EducatorLayout";
 export default EducatorLayout;

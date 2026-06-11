@@ -140,4 +140,5 @@ const Sidebar = ({ isOpen, onClose }) => {
   );
 };
 
+Sidebar.displayName = "Sidebar";
 export default Sidebar;

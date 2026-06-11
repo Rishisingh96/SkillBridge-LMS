@@ -175,4 +175,5 @@ const EducatorNavbar = ({
   );
 };
 
+EducatorNavbar.displayName = "EducatorNavbar";
 export default EducatorNavbar;

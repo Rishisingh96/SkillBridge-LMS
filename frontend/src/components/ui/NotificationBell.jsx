@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSocket } from "../../context/SocketContext";
@@ -12,7 +12,7 @@ const NotificationBell = () => {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const response = await axios.get(`${serverUrl}/api/notification?limit=5`, {
         withCredentials: true,
@@ -21,24 +21,24 @@ const NotificationBell = () => {
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
     }
-  };
+  }, []);
 
-  const handleBellClick = async () => {
+  const handleBellClick = useCallback(async () => {
     if (!isOpen) {
       await fetchNotifications();
     }
     setIsOpen(!isOpen);
-  };
+  }, [isOpen, fetchNotifications]);
 
-  const handleNotificationClick = async (notification) => {
+  const handleNotificationClick = useCallback(async (notification) => {
     if (notification.actionUrl) {
       navigate(notification.actionUrl);
     }
     setIsOpen(false);
     setLatestNotification(null);
-  };
+  }, [navigate, setLatestNotification]);
 
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = useCallback(async (notificationId) => {
     try {
       await axios.patch(
         `${serverUrl}/api/notification/${notificationId}/read`,
@@ -49,9 +49,9 @@ const NotificationBell = () => {
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
     }
-  };
+  }, [fetchNotifications]);
 
-  const handleMarkAllAsRead = async () => {
+  const handleMarkAllAsRead = useCallback(async () => {
     try {
       await axios.patch(
         `${serverUrl}/api/notification/read-all`,
@@ -62,7 +62,7 @@ const NotificationBell = () => {
     } catch (error) {
       console.error("Failed to mark all as read:", error);
     }
-  };
+  }, [fetchNotifications]);
 
   return (
     <div className="relative">
@@ -205,4 +205,5 @@ const NotificationBell = () => {
   );
 };
 
+NotificationBell.displayName = "NotificationBell";
 export default NotificationBell;

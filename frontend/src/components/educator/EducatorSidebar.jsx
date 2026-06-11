@@ -181,4 +181,5 @@ const EducatorSidebar = ({ isOpen, onClose }) => {
   );
 };
 
+EducatorSidebar.displayName = "EducatorSidebar";
 export default EducatorSidebar;

@@ -337,4 +337,5 @@ const AdminSidebar = ({
   );
 };
 
+AdminSidebar.displayName = "AdminSidebar";
 export default AdminSidebar;

@@ -195,6 +195,8 @@ const HeroSection = React.memo(() => {
               <img
                 src={heroStudent}
                 alt="Student learning"
+                width="520"
+                height="520"
                 className="hero-image relative z-10 w-full max-w-[440px] lg:max-w-[500px] xl:max-w-[520px] object-contain drop-shadow-[0_40px_60px_rgba(0,0,0,0.6)] select-none"
                 draggable={false}
               />
@@ -276,15 +278,16 @@ const HeroSection = React.memo(() => {
                 <button
                   onClick={() => navigate("/allcourses")}
                   className="hero-btn group relative px-7 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 text-white font-bold text-sm md:text-base flex items-center gap-3 overflow-hidden shadow-[0_8px_32px_rgba(37,99,235,0.4)] hover:scale-105 hover:shadow-[0_12px_44px_rgba(37,99,235,0.55)] active:scale-[0.98] transition-all duration-300"
+                  aria-label="View all courses"
                 >
                   <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
                   View All Courses
                   <FaArrowRight className="group-hover:translate-x-1.5 transition-transform duration-200" />
                 </button>
 
-                <button className="hero-btn group relative px-7 py-3.5 rounded-2xl bg-white/95 dark:bg-gray-800 text-black dark:text-white font-bold text-sm md:text-base flex items-center gap-3 shadow-xl hover:scale-105 hover:bg-white dark:hover:bg-gray-700 active:scale-[0.98] transition-all duration-300">
+                <button className="hero-btn group relative px-7 py-3.5 rounded-2xl bg-white/95 dark:bg-gray-800 text-black dark:text-white font-bold text-sm md:text-base flex items-center gap-3 shadow-xl hover:scale-105 hover:bg-white dark:hover:bg-gray-700 active:scale-[0.98] transition-all duration-300" aria-label="Search with AI">
                   Search With AI
-                  <img src={ai} alt="AI" className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                  <img src={ai} alt="AI" width="20" height="20" className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                 </button>
               </div>
 
