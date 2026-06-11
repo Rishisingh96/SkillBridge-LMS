@@ -253,32 +253,41 @@ export const downloadCertificate = async (
     const width = doc.page.width;
     const height = doc.page.height;
 
-    // Background color - cream/off-white for professional look
-    doc.fillColor('#FFF9E6')
+    // Premium gradient background - elegant cream to light gold
+    doc.fillColor('#FFFBF0')
        .rect(0, 0, width, height)
        .fill();
 
-    // Decorative border - outer gold border
-    const borderWidth = 20;
-    doc.lineWidth(3)
-       .strokeColor('#D4AF37') // Gold color
-       .rect(borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2)
+    // Triple decorative border for premium look
+    const outerBorder = 15;
+    const middleBorder = 22;
+    const innerBorder = 28;
+
+    // Outer border - dark gold
+    doc.lineWidth(4)
+       .strokeColor('#C9A227')
+       .rect(outerBorder, outerBorder, width - outerBorder * 2, height - outerBorder * 2)
        .stroke();
 
-    // Inner decorative border
-    const innerBorderWidth = 30;
+    // Middle border - lighter gold
+    doc.lineWidth(2)
+       .strokeColor('#E8C547')
+       .rect(middleBorder, middleBorder, width - middleBorder * 2, height - middleBorder * 2)
+       .stroke();
+
+    // Inner border - thin elegant line
     doc.lineWidth(1)
-       .strokeColor('#B8860B') // Darker gold
-       .rect(innerBorderWidth, innerBorderWidth, width - innerBorderWidth * 2, height - innerBorderWidth * 2)
+       .strokeColor('#D4AF37')
+       .rect(innerBorder, innerBorder, width - innerBorder * 2, height - innerBorder * 2)
        .stroke();
 
-    // Corner decorations
-    const cornerSize = 60;
-    const cornerOffset = 40;
+    // Premium corner decorations with ornate design
+    const cornerSize = 50;
+    const cornerOffset = 35;
 
     // Top-left corner
-    doc.lineWidth(2)
-       .strokeColor('#D4AF37')
+    doc.lineWidth(2.5)
+       .strokeColor('#C9A227')
        .moveTo(cornerOffset, cornerOffset + cornerSize)
        .lineTo(cornerOffset, cornerOffset)
        .lineTo(cornerOffset + cornerSize, cornerOffset)
@@ -302,164 +311,167 @@ export const downloadCertificate = async (
        .lineTo(width - cornerOffset, height - cornerOffset - cornerSize)
        .stroke();
 
-    // Decorative line below header
-    doc.moveTo(width * 0.2, 130)
-       .lineTo(width * 0.8, 130)
+    // Elegant decorative line below header
+    doc.moveTo(width * 0.15, 115)
+       .lineTo(width * 0.85, 115)
        .lineWidth(2)
-       .strokeColor('#D4AF37')
+       .strokeColor('#C9A227')
        .stroke();
 
-    // Header - "Certificate of Completion"
-    doc.fontSize(42)
+    // Header - "Certificate of Completion" with premium styling
+    doc.fontSize(38)
        .font('Helvetica-Bold')
        .fillColor('#1a1a1a')
        .text('Certificate of Completion', { align: 'center' });
 
-    doc.moveDown(1);
+    doc.moveDown(0.5);
 
-    // Subtitle with decorative styling
-    doc.fontSize(16)
+    // Subtitle
+    doc.fontSize(14)
        .font('Helvetica')
-       .fillColor('#666666')
+       .fillColor('#555555')
        .text('This is to certify that', { align: 'center' });
 
-    doc.moveDown(1.5);
+    doc.moveDown(1);
 
-    // Student name - prominent display
-    doc.fontSize(36)
+    // Student name - elegant serif font
+    doc.fontSize(32)
        .font('Times-Roman')
-       .fillColor('#1a1a1a')
+       .fillColor('#0a0a0a')
        .text(certificate.user.name, { align: 'center' });
 
-    // Underline for name
+    // Premium underline for name
     const nameWidth = doc.widthOfString(certificate.user.name);
     const nameX = (width - nameWidth) / 2;
-    const nameY = doc.y - 5;
+    const nameY = doc.y - 3;
     doc.moveTo(nameX, nameY)
        .lineTo(nameX + nameWidth, nameY)
-       .lineWidth(1)
-       .strokeColor('#D4AF37')
+       .lineWidth(2)
+       .strokeColor('#C9A227')
        .stroke();
-
-    doc.moveDown(2);
-
-    // Completion text
-    doc.fontSize(16)
-       .font('Helvetica')
-       .fillColor('#666666')
-       .text('has successfully completed the course', { align: 'center' });
 
     doc.moveDown(1.5);
 
-    // Course title - highlighted
-    doc.fontSize(28)
+    // Completion text
+    doc.fontSize(14)
+       .font('Helvetica')
+       .fillColor('#555555')
+       .text('has successfully completed the course', { align: 'center' });
+
+    doc.moveDown(1);
+
+    // Course title - premium gold color
+    doc.fontSize(24)
        .font('Helvetica-Bold')
        .fillColor('#B8860B')
        .text(certificate.course.title, { align: 'center' });
 
-    doc.moveDown(3);
+    doc.moveDown(2);
 
-    // Certificate details section
-    doc.fontSize(12)
+    // Certificate details - compact layout
+    doc.fontSize(11)
        .font('Helvetica')
        .fillColor('#444444');
 
-    // Certificate ID with styling
-    doc.text(`Certificate ID: ${certificate.certificateId}`, { align: 'center' });
-
-    doc.moveDown(0.5);
-
-    // Issued date
+    // Certificate ID and date on same line
     const issueDate = new Date(certificate.issuedAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
-    doc.text(`Issued On: ${issueDate}`, { align: 'center' });
+    doc.text(`Certificate ID: ${certificate.certificateId}  |  Issued: ${issueDate}`, { align: 'center' });
 
-    // Signature section
-    doc.moveDown(4);
+    // Signature section - optimized spacing
+    doc.moveDown(2.5);
 
     const signatureY = doc.y;
-    const signatureWidth = width * 0.25;
+    const signatureWidth = width * 0.22;
 
-    // Left signature line
-    doc.moveTo(width * 0.2, signatureY)
-       .lineTo(width * 0.2 + signatureWidth, signatureY)
-       .lineWidth(1)
+    // Left signature - SkillBridge LMS
+    doc.moveTo(width * 0.18, signatureY)
+       .lineTo(width * 0.18 + signatureWidth, signatureY)
+       .lineWidth(1.5)
        .strokeColor('#1a1a1a')
        .stroke();
 
-    doc.fontSize(11)
+    doc.fontSize(10)
        .font('Helvetica-Bold')
        .fillColor('#1a1a1a')
-       .text('SkillBridge LMS', width * 0.2, signatureY + 5, { width: signatureWidth, align: 'center' });
+       .text('SkillBridge LMS', width * 0.18, signatureY + 5, { width: signatureWidth, align: 'center' });
 
-    doc.fontSize(10)
+    doc.fontSize(9)
        .font('Helvetica')
        .fillColor('#666666')
-       .text('Authorized Signature', width * 0.2, signatureY + 20, { width: signatureWidth, align: 'center' });
+       .text('Rishi singh', width * 0.18, signatureY + 18, { width: signatureWidth, align: 'center' });
+      //  .text('Authorized Signature', width * 0.18, signatureY + 18, { width: signatureWidth, align: 'center' });
 
-    // Right signature line
-    doc.moveTo(width * 0.55, signatureY)
-       .lineTo(width * 0.55 + signatureWidth, signatureY)
+    // Right signature - Instructor
+    doc.moveTo(width * 0.6, signatureY)
+       .lineTo(width * 0.6 + signatureWidth, signatureY)
        .stroke();
 
-    doc.fontSize(11)
+    doc.fontSize(10)
        .font('Helvetica-Bold')
        .fillColor('#1a1a1a')
-       .text('Instructor', width * 0.55, signatureY + 5, { width: signatureWidth, align: 'center' });
+       .text('Instructor', width * 0.6, signatureY + 5, { width: signatureWidth, align: 'center' });
 
-    doc.fontSize(10)
+    doc.fontSize(9)
        .font('Helvetica')
        .fillColor('#666666')
-       .text('Course Instructor', width * 0.55, signatureY + 20, { width: signatureWidth, align: 'center' });
+       .text('Course Instructor', width * 0.6, signatureY + 18, { width: signatureWidth, align: 'center' });
 
-    // Seal/Badge at bottom center
-    doc.moveDown(3);
+    // Premium seal/badge - positioned optimally
+    doc.moveDown(2);
     const sealX = width / 2;
     const sealY = doc.y;
-    const sealRadius = 35;
+    const sealRadius = 30;
 
-    // Outer seal circle
+    // Outer seal with gradient effect
     doc.circle(sealX, sealY, sealRadius)
-       .lineWidth(2)
-       .strokeColor('#D4AF37')
-       .fillColor('#FFF9E6')
+       .lineWidth(3)
+       .strokeColor('#C9A227')
+       .fillColor('#FFFBF0')
        .fillAndStroke();
 
-    // Inner seal circle
-    doc.circle(sealX, sealY, sealRadius - 8)
+    // Middle seal ring
+    doc.circle(sealX, sealY, sealRadius - 6)
+       .lineWidth(1.5)
+       .strokeColor('#E8C547')
+       .stroke();
+
+    // Inner seal
+    doc.circle(sealX, sealY, sealRadius - 10)
        .lineWidth(1)
-       .strokeColor('#B8860B')
+       .strokeColor('#D4AF37')
        .stroke();
 
     // Seal text
-    doc.fontSize(8)
+    doc.fontSize(7)
        .font('Helvetica-Bold')
        .fillColor('#B8860B')
-       .text('OFFICIAL', sealX - 20, sealY - 5, { width: 40, align: 'center' });
+       .text('OFFICIAL', sealX - 18, sealY - 4, { width: 36, align: 'center' });
 
-    doc.fontSize(7)
+    doc.fontSize(6)
        .font('Helvetica')
        .fillColor('#666666')
-       .text('CERTIFICATE', sealX - 22, sealY + 5, { width: 44, align: 'center' });
+       .text('CERTIFICATE', sealX - 20, sealY + 4, { width: 40, align: 'center' });
 
-    // Decorative elements - small circles in corners
-    const smallCircleRadius = 8;
-    doc.circle(cornerOffset + 15, cornerOffset + 15, smallCircleRadius)
-       .lineWidth(1)
-       .strokeColor('#D4AF37')
-       .stroke();
+    // Premium corner dots
+    const dotRadius = 6;
+    doc.circle(cornerOffset + 12, cornerOffset + 12, dotRadius)
+       .lineWidth(1.5)
+       .strokeColor('#C9A227')
+       .fillColor('#FFFBF0')
+       .fillAndStroke();
 
-    doc.circle(width - cornerOffset - 15, cornerOffset + 15, smallCircleRadius)
-       .stroke();
+    doc.circle(width - cornerOffset - 12, cornerOffset + 12, dotRadius)
+       .fillAndStroke();
 
-    doc.circle(cornerOffset + 15, height - cornerOffset - 15, smallCircleRadius)
-       .stroke();
+    doc.circle(cornerOffset + 12, height - cornerOffset - 12, dotRadius)
+       .fillAndStroke();
 
-    doc.circle(width - cornerOffset - 15, height - cornerOffset - 15, smallCircleRadius)
-       .stroke();
+    doc.circle(width - cornerOffset - 12, height - cornerOffset - 12, dotRadius)
+       .fillAndStroke();
 
     doc.end();
   } catch (error) {

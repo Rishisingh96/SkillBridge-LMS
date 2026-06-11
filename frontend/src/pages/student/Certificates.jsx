@@ -20,7 +20,7 @@ const Certificates = () => {
     const fetchCertificates = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/certificate",
+          `${import.meta.env.VITE_BACKEND_URL}/api/certificate`,
           { withCredentials: true }
         );
         setCertificates(response.data.certificates);
@@ -69,7 +69,7 @@ const Certificates = () => {
         <div className="max-w-7xl mx-auto text-center py-20">
           <p className="text-gray-500">Loading certificates...</p>
         </div>
-      ) : certificates.length === 0 ? (
+      ) : !certificates || certificates.length === 0 ? (
         <div
           className="
           max-w-3xl mx-auto bg-white border border-gray-200
@@ -150,7 +150,7 @@ const Certificates = () => {
                 </p>
 
                 <button
-                  onClick={() => window.open(`http://localhost:5000/api/certificate/download/${certificate.course._id}`, '_blank')}
+                  onClick={() => window.open(`${import.meta.env.VITE_BACKEND_URL}/api/certificate/download/${certificate.course._id}`, '_blank')}
                   className="
                   mt-5 w-full
                   bg-black text-white
