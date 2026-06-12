@@ -1254,7 +1254,7 @@ const Nav = () => {
                       {/* Profile */}
                       <button
                         onClick={() => {
-                          navigate("/profile");
+                          navigate("/student/dashboard");
                           setShowMobile(
                             false
                           );
