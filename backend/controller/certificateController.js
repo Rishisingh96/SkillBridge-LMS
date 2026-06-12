@@ -244,7 +244,7 @@ export const downloadCertificate = async (
     );
 
     // Set CORS headers explicitly for file download
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.setHeader("Access-Control-Allow-Origin", "process.env.FRONTEND_URL");
     res.setHeader("Access-Control-Allow-Credentials", "true");
 
     doc.pipe(res);

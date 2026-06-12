@@ -42,11 +42,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
-// ======================================
-// MIDDLEWARES
-// ======================================
-app.use(express.json());
 
+// MIDDLEWARES
+app.use(express.json());
 app.use(cookieParser());
 
 app.use(
