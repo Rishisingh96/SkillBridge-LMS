@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { setSelectedCourse } from "../../redux/slices/courseSlice";
 import { setModuleData } from "../../redux/slices/moduleSlice";
 import img from "../../assets/Empty.png";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import LecturePlayer from "../../components/lecture/LecturePlayer";
 import ModuleList from "../../components/lecture/ModuleList";
 import ResumeLearningButton from "../../components/progress/ResumeLearningButton";
@@ -62,7 +62,7 @@ const ViewLecture = () => {
   const fetchModules = async () => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/course-modules/${courseId}`,
+        `${BASE_URL}/api/course/course-modules/${courseId}`,
         { withCredentials: true }
       );
       dispatch(setModuleData(response.data.modules));
@@ -75,7 +75,7 @@ const ViewLecture = () => {
   const checkEnrollment = async () => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/check-enrollment/${courseId}`,
+        `${BASE_URL}/api/course/check-enrollment/${courseId}`,
         { withCredentials: true }
       );
       if (response.data.isEnrolled && response.data.isActive) {
@@ -217,7 +217,7 @@ const ViewLecture = () => {
       if (selectedCourse?.creator) {
         try {
           const result = await axios.post(
-            `${serverUrl}/api/course/creator`,
+            `${BASE_URL}/api/course/creator`,
             { userId: selectedCourse?.creator },
             { withCredentials: true }
           );
@@ -235,7 +235,7 @@ const ViewLecture = () => {
     if (user?._id && courseId && isEnrolled) {
       try {
         const response = await axios.get(
-          `${serverUrl}/api/course/progress/course/${courseId}`,
+          `${BASE_URL}/api/course/progress/course/${courseId}`,
           { withCredentials: true }
         );
         setCourseProgress(response.data);

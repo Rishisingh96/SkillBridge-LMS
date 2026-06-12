@@ -52,7 +52,7 @@ app.use(cookieParser());
 app.use(
   cors({
     // origin: "http://localhost:5173",
-    origin: process.env.FRONTEND_URL,
+    origin: [process.env.FRONTEND_URL],
     credentials: true,
   })
 );
@@ -75,10 +75,7 @@ app.use("/", seoRouter)
 app.use("/api/blog", blogRouter)
 
 
-// ======================================
 // HEALTH CHECK
-// ======================================
-
 app.get("/", (req, res) => {
   res.send("Hello from Server");
 });

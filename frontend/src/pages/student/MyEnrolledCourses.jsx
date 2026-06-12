@@ -9,7 +9,7 @@ import { MdOutlineOndemandVideo } from "react-icons/md";
 import img from "../../assets/Empty.png";
 import Nav from "../../components/navbar/Navbar";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 const MyEnrolledCourses = () => {
   const { userData } = useSelector((state) => state.user);
@@ -24,7 +24,7 @@ const MyEnrolledCourses = () => {
       setLoadingEnrollments(true);
       try {
         const response = await axios.get(
-          `${serverUrl}/api/course/user-enrollments`,
+          `${BASE_URL}/api/course/user-enrollments`,
           { withCredentials: true }
         );
         setEnrollments(response.data.enrollments || []);

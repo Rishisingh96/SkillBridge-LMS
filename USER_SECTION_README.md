@@ -152,7 +152,7 @@ const filteredCourses = useMemo(() => {
 const fetchModules = async () => {
   try {
     const response = await axios.get(
-      `${serverUrl}/api/course/course-modules/${courseId}`,
+      `${BASE_URL }/api/course/course-modules/${courseId}`,
       { withCredentials: true }
     );
     dispatch(setModuleData(response.data.modules));
@@ -167,7 +167,7 @@ const fetchModules = async () => {
 const checkEnrollment = async () => {
   try {
     const response = await axios.get(
-      `${serverUrl}/api/course/check-enrollment/${courseId}`,
+      `${BASE_URL }/api/course/check-enrollment/${courseId}`,
       { withCredentials: true }
     );
     
@@ -186,7 +186,7 @@ const checkEnrollment = async () => {
 const handleEnroll = async (courseId) => {
   try {
     const orderData = await axios.post(
-      serverUrl + "/api/order/razorpay-order",
+      BASE_URL  + "/api/order/razorpay-order",
       { courseId },
       { withCredentials: true }
     );
@@ -200,7 +200,7 @@ const handleEnroll = async (courseId) => {
       order_id: orderData.data.order.id,
       handler: async function (response) {
         const verifyPayment = await axios.post(
-          serverUrl + "/api/order/verifypayment",
+          BASE_URL  + "/api/order/verifypayment",
           { ...response, courseId },
           { withCredentials: true }
         );
@@ -309,7 +309,7 @@ const fetchCourseData = () => {
 const fetchModules = async () => {
   try {
     const response = await axios.get(
-      `${serverUrl}/api/course/course-modules/${courseId}`,
+      `${BASE_URL }/api/course/course-modules/${courseId}`,
       { withCredentials: true }
     );
     dispatch(setModuleData(response.data.modules));
@@ -324,7 +324,7 @@ const fetchModules = async () => {
 const checkEnrollment = async () => {
   try {
     const response = await axios.get(
-      `${serverUrl}/api/course/check-enrollment/${courseId}`,
+      `${BASE_URL }/api/course/check-enrollment/${courseId}`,
       { withCredentials: true }
     );
     
@@ -423,7 +423,7 @@ const fetchEnrollments = async () => {
   setLoadingEnrollments(true);
   try {
     const response = await axios.get(
-      `${serverUrl}/api/course/user-enrollments`,
+      `${BASE_URL }/api/course/user-enrollments`,
       { withCredentials: true }
     );
     setEnrollments(response.data.enrollments || []);
@@ -581,7 +581,7 @@ const applyCoupon = async () => {
     setCouponLoading(true);
     
     const { data } = await axios.post(
-      serverUrl + "/api/coupon/apply",
+      BASE_URL  + "/api/coupon/apply",
       {
         code: coupon,
         courseId: selectedCourse?._id,
@@ -615,7 +615,7 @@ const handlePayment = async () => {
     setLoading(true);
     
     const orderData = await axios.post(
-      serverUrl + "/api/order/razorpay-order",
+      BASE_URL  + "/api/order/razorpay-order",
       { 
         courseId: selectedCourse?._id,
         couponCode: coupon,
@@ -635,7 +635,7 @@ const handlePayment = async () => {
       handler: async function (response) {
         try {
           const verifyPayment = await axios.post(
-            serverUrl + "/api/order/verifypayment",
+            BASE_URL  + "/api/order/verifypayment",
             { ...response, courseId: selectedCourse?._id },
             { withCredentials: true }
           );
@@ -950,7 +950,7 @@ const handleKeyDown = (e) => {
 const handleLogout = async () => {
   try {
     await axios.get(
-      serverUrl + "/api/auth/logout",
+      BASE_URL  + "/api/auth/logout",
       {
         withCredentials: true,
       }

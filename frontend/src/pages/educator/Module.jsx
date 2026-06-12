@@ -12,7 +12,7 @@ import {
   deleteModule,
   clearError,
 } from "../../redux/slices/moduleSlice";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import axios from "axios";
 import { useTheme } from "../../context/ThemeContext";
 

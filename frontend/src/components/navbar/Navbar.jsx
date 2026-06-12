@@ -36,7 +36,7 @@ import axios from "axios";
 
 import { toast } from "react-toastify";
 
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 import {
   setUserData,
@@ -115,7 +115,7 @@ const Nav = () => {
     try {
 
       await axios.get(
-        serverUrl + "/api/auth/logout",
+        BASE_URL + "/api/auth/logout",
         {
           withCredentials: true,
         }

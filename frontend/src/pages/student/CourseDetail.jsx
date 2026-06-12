@@ -13,7 +13,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { setModuleData } from "../../redux/slices/moduleSlice";
 import { setSelectedCourse } from "../../redux/slices/courseSlice";
 
@@ -68,7 +68,7 @@ const CourseDetail = () => {
   const fetchModules = async () => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/course-modules/${courseId}`,
+        `${BASE_URL}/api/course/course-modules/${courseId}`,
         { withCredentials: true }
       );
 
@@ -83,7 +83,7 @@ const CourseDetail = () => {
   const checkEnrollment = async () => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/check-enrollment/${courseId}`,
+        `${BASE_URL}/api/course/check-enrollment/${courseId}`,
         { withCredentials: true }
       );
 
@@ -216,7 +216,7 @@ const CourseDetail = () => {
   const handleEnroll = async (courseId) => {
     try {
       const orderData = await axios.post(
-        serverUrl + "/api/order/razorpay-order",
+        BASE_URL + "/api/order/razorpay-order",
         { courseId },
         { withCredentials: true }
       );
@@ -232,7 +232,7 @@ const CourseDetail = () => {
         handler: async function (response) {
           try {
             const verifyPayment = await axios.post(
-              serverUrl + "/api/order/verifypayment",
+              BASE_URL + "/api/order/verifypayment",
               { ...response, courseId },
               { withCredentials: true }
             );
@@ -259,7 +259,7 @@ const CourseDetail = () => {
   const handleFreeEnroll = async (courseId) => {
     try {
       const response = await axios.post(
-        `${serverUrl}/api/course/enroll/${courseId}`,
+        `${BASE_URL}/api/course/enroll/${courseId}`,
         {},
         { withCredentials: true }
       );
@@ -281,7 +281,7 @@ const CourseDetail = () => {
 
     try {
       await axios.post(
-        serverUrl + "/api/review/createreview",
+        BASE_URL + "/api/review/createreview",
         { rating, comment, courseId },
         { withCredentials: true }
       );

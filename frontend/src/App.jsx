@@ -80,7 +80,7 @@ const SubjectDetail = lazy(() => import("./pages/Blog/SubjectDetail"));
 const CategoryBlog = lazy(() => import("./pages/Blog/CategoryBlog"));
 const Blog = lazy(() => import("./pages/Blog/Blog"));
 
-export const serverUrl = import.meta.env.VITE_SERVER_URL;
+// export const BASE_URL  = import.meta.env.VITE_SERVER_URL;
 
 function App() {
   const dispatch = useDispatch();

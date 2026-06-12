@@ -5,7 +5,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { useTheme } from "../../context/ThemeContext";
 
 const ResourcesUpload = ({ resources,
@@ -56,7 +56,7 @@ const ResourcesUpload = ({ resources,
 
     const result = await axios.post(
 
-      `${serverUrl}/api/course/upload-resource/${lectureId}`,
+      `${BASE_URL}/api/course/upload-resource/${lectureId}`,
 
       formData,
 
@@ -117,7 +117,7 @@ const ResourcesUpload = ({ resources,
 
       const result = await axios.delete(
 
-        `${serverUrl}/api/course/removeresource/${lectureId}/${resourceId}`,
+        `${BASE_URL}/api/course/removeresource/${lectureId}/${resourceId}`,
 
         {
           withCredentials: true,
@@ -158,7 +158,7 @@ const ResourcesUpload = ({ resources,
 
     const result = await axios.get(
 
-      `${serverUrl}/api/course/download-resource/${lectureId}/${resourceId}`,
+      `${BASE_URL}/api/course/download-resource/${lectureId}/${resourceId}`,
 
       {
         withCredentials: true,

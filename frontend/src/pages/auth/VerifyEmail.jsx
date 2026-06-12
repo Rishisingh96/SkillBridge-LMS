@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../redux/slices/userSlice";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { motion } from "framer-motion";
 
 const VerifyEmail = () => {
@@ -28,7 +28,7 @@ const VerifyEmail = () => {
     setLoading(true);
     try {
       const result = await axios.post(
-        serverUrl + "/api/auth/verifyotp",
+        BASE_URL + "/api/auth/verifyotp",
         { email, otp },
         { withCredentials: true }
       );
@@ -48,7 +48,7 @@ const VerifyEmail = () => {
     setResendLoading(true);
     try {
       await axios.post(
-        serverUrl + "/api/auth/sendotp",
+        BASE_URL + "/api/auth/sendotp",
         { email },
         { withCredentials: true }
       );

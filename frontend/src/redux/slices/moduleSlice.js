@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 // Async Thunks
 export const fetchModules = createAsyncThunk(
@@ -8,7 +8,7 @@ export const fetchModules = createAsyncThunk(
   async (courseId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/course-modules/${courseId}`,
+        `${BASE_URL}/api/course/course-modules/${courseId}`,
         { withCredentials: true },
       );
       return response.data;
@@ -25,7 +25,7 @@ export const createModule = createAsyncThunk(
   async ({ courseId, moduleData }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${serverUrl}/api/course/create-module/${courseId}`,
+        `${BASE_URL}/api/course/create-module/${courseId}`,
         moduleData,
         { withCredentials: true },
       );
@@ -43,7 +43,7 @@ export const updateModule = createAsyncThunk(
   async ({ moduleId, moduleData }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `${serverUrl}/api/course/update-module/${moduleId}`,
+        `${BASE_URL}/api/course/update-module/${moduleId}`,
         moduleData,
         { withCredentials: true },
       );
@@ -60,7 +60,7 @@ export const deleteModule = createAsyncThunk(
   "module/deleteModule",
   async (moduleId, { rejectWithValue }) => {
     try {
-      await axios.delete(`${serverUrl}/api/course/remove-module/${moduleId}`, {
+      await axios.delete(`${BASE_URL}/api/course/remove-module/${moduleId}`, {
         withCredentials: true,
       });
       return moduleId;

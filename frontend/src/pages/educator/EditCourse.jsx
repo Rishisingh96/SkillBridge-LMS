@@ -4,7 +4,7 @@ import { LuImagePlus } from "react-icons/lu";
 import { useNavigate, useParams } from "react-router-dom";
 import empty from "../../assets/Empty.png";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { toast } from "react-toastify";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -55,7 +55,7 @@ const EditCourse = () => {
       setLoading(true);
 
       const result = await axios.get(
-        `${serverUrl}/api/course/getcourse/${courseId}`,
+        `${BASE_URL}/api/course/getcourse/${courseId}`,
         {
           withCredentials: true,
         }
@@ -172,7 +172,7 @@ const getFormattedValidity = () => {
     }
 
     const result = await axios.put(
-      `${serverUrl}/api/course/editcourse/${courseId}`,
+      `${BASE_URL}/api/course/editcourse/${courseId}`,
       formData,
       {
         withCredentials: true,
@@ -208,7 +208,7 @@ const getFormattedValidity = () => {
     setLoading1(true);
 
     try {
-      const result = await axios.delete(serverUrl + `/api/course/remove/${courseId}`, { withCredentials: true })
+      const result = await axios.delete(BASE_URL + `/api/course/remove/${courseId}`, { withCredentials: true })
       console.log(result.data)
       setLoading1(false)
       toast.success("Course Removed")

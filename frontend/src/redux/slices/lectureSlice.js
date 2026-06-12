@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 // Async Thunks
 export const fetchLectures = createAsyncThunk(
@@ -8,7 +8,7 @@ export const fetchLectures = createAsyncThunk(
   async (moduleId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/courselecture/${moduleId}`,
+        `${BASE_URL}/api/course/courselecture/${moduleId}`,
         { withCredentials: true }
       );
       return response.data.lectures || [];
@@ -23,7 +23,7 @@ export const createLecture = createAsyncThunk(
   async ({ moduleId, lectureData }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${serverUrl}/api/course/createlecture/${moduleId}`,
+        `${BASE_URL}/api/course/createlecture/${moduleId}`,
         lectureData,
         { withCredentials: true }
       );
@@ -39,7 +39,7 @@ export const updateLecture = createAsyncThunk(
   async ({ lectureId, lectureData }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${serverUrl}/api/course/editlecture/${lectureId}`,
+        `${BASE_URL}/api/course/editlecture/${lectureId}`,
         lectureData,
         { withCredentials: true }
       );
@@ -55,7 +55,7 @@ export const deleteLecture = createAsyncThunk(
   async (lectureId, { rejectWithValue }) => {
     try {
       await axios.delete(
-        `${serverUrl}/api/course/removelecture/${lectureId}`,
+        `${BASE_URL}/api/course/removelecture/${lectureId}`,
         { withCredentials: true }
       );
       return lectureId;

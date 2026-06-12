@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 
 const BASE_URL =
-  (import.meta.env.VITE_SERVER_URL?.trim() || "http://localhost:8000") + "/api/enrollment";
+  (import.meta.env.VITE_SERVER_URL?.trim()) + "/api/enrollment";
 
 // ======================================================
 // 📦 INITIAL STATE

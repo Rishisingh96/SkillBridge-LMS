@@ -3,7 +3,7 @@ import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { useNavigate } from "react-router-dom";
 
 const NotificationBell = () => {
@@ -14,7 +14,7 @@ const NotificationBell = () => {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const response = await axios.get(`${serverUrl}/api/notification?limit=5`, {
+      const response = await axios.get(`${BASE_URL}/api/notification?limit=5`, {
         withCredentials: true,
       });
       setNotifications(response.data.notifications || []);
@@ -41,7 +41,7 @@ const NotificationBell = () => {
   const handleMarkAsRead = useCallback(async (notificationId) => {
     try {
       await axios.patch(
-        `${serverUrl}/api/notification/${notificationId}/read`,
+        `${BASE_URL}/api/notification/${notificationId}/read`,
         {},
         { withCredentials: true }
       );
@@ -54,7 +54,7 @@ const NotificationBell = () => {
   const handleMarkAllAsRead = useCallback(async () => {
     try {
       await axios.patch(
-        `${serverUrl}/api/notification/read-all`,
+        `${BASE_URL}/api/notification/read-all`,
         {},
         { withCredentials: true }
       );

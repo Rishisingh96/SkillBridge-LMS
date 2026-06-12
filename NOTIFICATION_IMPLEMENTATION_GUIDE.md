@@ -459,7 +459,7 @@ socketInstance.on("unread-count", (count) => {
 
 // 2. Bell click par notifications fetch karta hai
 const fetchNotifications = async () => {
-  const response = await axios.get(`${serverUrl}/api/notification`);
+  const response = await axios.get(`${BASE_URL }/api/notification`);
   setNotifications(response.data.notifications);
 };
 
@@ -472,13 +472,13 @@ const handleNotificationClick = (notification) => {
 
 // 4. Mark as read functionality
 const handleMarkAsRead = async (notificationId) => {
-  await axios.patch(`${serverUrl}/api/notification/${notificationId}/read`);
+  await axios.patch(`${BASE_URL }/api/notification/${notificationId}/read`);
   await fetchNotifications();
 };
 
 // 5. Mark all as read
 const handleMarkAllAsRead = async () => {
-  await axios.patch(`${serverUrl}/api/notification/read-all`);
+  await axios.patch(`${BASE_URL }/api/notification/read-all`);
   await fetchNotifications();
 };
 ```

@@ -14,7 +14,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import Nav from "../../components/navbar/Navbar.jsx";
 
 const CheckoutPage = () => {
@@ -174,7 +174,7 @@ const CheckoutPage = () => {
 
       const { data } =
         await axios.post(
-          serverUrl + "/api/coupon/apply",
+          BASE_URL + "/api/coupon/apply",
           {
             code: coupon,
             courseId:
@@ -221,7 +221,7 @@ const CheckoutPage = () => {
       setLoading(true);
 
       const orderData = await axios.post(
-        serverUrl + "/api/order/razorpay-order",
+        BASE_URL + "/api/order/razorpay-order",
         { 
           courseId: selectedCourse?._id,
           couponCode: coupon,
@@ -241,7 +241,7 @@ const CheckoutPage = () => {
         handler: async function (response) {
           try {
             const verifyPayment = await axios.post(
-              serverUrl + "/api/order/verifypayment",
+              BASE_URL + "/api/order/verifypayment",
               { 
                 ...response, 
                 courseId: selectedCourse?._id,

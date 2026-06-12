@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { ClipLoader } from "react-spinners";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -69,7 +69,7 @@ const QuizUpload = ({ quizData,
 
       const result = await axios.post(
 
-        `${serverUrl}/api/course/add-quiz/${lectureId}`,
+        `${BASE_URL}/api/course/add-quiz/${lectureId}`,
 
         {
           question,
@@ -126,7 +126,7 @@ const QuizUpload = ({ quizData,
 
       const response = await axios.delete(
 
-        `${serverUrl}/api/course/remove-quiz/${lectureId}/${quizId}`,
+        `${BASE_URL}/api/course/remove-quiz/${lectureId}/${quizId}`,
 
         {
           withCredentials: true,

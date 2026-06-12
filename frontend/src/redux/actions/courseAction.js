@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { fetchCreatorCourses } from "../slices/courseSlice";
 
-const BASE_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 // ── Create Course ──────────────────────────────────────────
 export const createCourse = (courseData, navigate) => async (dispatch) => {

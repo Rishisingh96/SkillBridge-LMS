@@ -12,7 +12,7 @@ import Comment from "../../pages/student/Comment";
 import { useTheme } from "../../context/ThemeContext";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 
 const LecturePlayer = ({
@@ -51,7 +51,7 @@ const LecturePlayer = ({
     const updateProgress = async (currentPosition) => {
       try {
         await axios.post(
-          `${serverUrl}/api/course/progress/update`,
+          `${BASE_URL}/api/course/progress/update`,
           { lectureId: lecture._id, currentPosition },
           { withCredentials: true }
         );
@@ -95,7 +95,7 @@ const LecturePlayer = ({
       // Mark lecture as completed in backend
       try {
         await axios.put(
-          `${serverUrl}/api/course/mark-lecture-completed/${lecture._id}`,
+          `${BASE_URL}/api/course/mark-lecture-completed/${lecture._id}`,
           {},
           { withCredentials: true }
         );

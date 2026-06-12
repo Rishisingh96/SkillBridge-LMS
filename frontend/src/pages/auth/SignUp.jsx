@@ -5,7 +5,7 @@ import { IoEye } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
@@ -43,7 +43,7 @@ const SignUp = () => {
 
     try {
       const result = await axios.post(
-        serverUrl + "/api/auth/signup",
+        BASE_URL + "/api/auth/signup",
         { name, password, email, role },
         { withCredentials: true },
       );
@@ -71,7 +71,7 @@ const SignUp = () => {
       let photoUrl = user.photoURL;
 
       const result = await axios.post(
-        serverUrl + "/api/auth/googleauth",
+        BASE_URL + "/api/auth/googleauth",
         { name, email, role, photoUrl },
         { withCredentials: true },
       );

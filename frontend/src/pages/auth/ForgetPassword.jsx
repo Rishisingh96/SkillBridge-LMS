@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { toast } from "react-toastify";
 
 
@@ -22,7 +22,7 @@ const ForgetPassword = () => {
   const sendOtp = async () => {
     setLoading(true)
     try {
-      const result = await axios.post(serverUrl + "/api/auth/sendotp", { email }, {withCredentials: true})
+      const result = await axios.post(BASE_URL + "/api/auth/sendotp", { email }, {withCredentials: true})
       console.log(result.data)
       setLoading(false)
       setStep(2)
@@ -38,7 +38,7 @@ const ForgetPassword = () => {
   const verifyOTP = async () => {
     setLoading(true)
     try {
-      const result = await axios.post(serverUrl + "/api/auth/verifyotp", { email, otp }, {withCredentials: true})
+      const result = await axios.post(BASE_URL + "/api/auth/verifyotp", { email, otp }, {withCredentials: true})
       console.log(result.data)
       setLoading(false)
       setStep(3)
@@ -56,7 +56,7 @@ const ForgetPassword = () => {
       if(newPassword !== conPassword){
         return toString.error("Password is not matched")
       }
-      const result = await axios.post(serverUrl + "/api/auth/resetpassword", { email, password:newPassword }, {withCredentials: true})
+      const result = await axios.post(BASE_URL + "/api/auth/resetpassword", { email, password:newPassword }, {withCredentials: true})
       console.log(result.data)
       setLoading(false)
       navigate("/login")

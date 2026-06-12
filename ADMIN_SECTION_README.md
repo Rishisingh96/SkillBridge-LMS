@@ -256,7 +256,7 @@ const handleTogglePublish = (courseId) => {
 const fetchCoupons = async () => {
   try {
     const token = localStorage.getItem("token");
-    const { data } = await axios.get(`${serverUrl}/api/coupon/all`, {
+    const { data } = await axios.get(`${BASE_URL }/api/coupon/all`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (data.success) {
@@ -275,7 +275,7 @@ const fetchCoupons = async () => {
 const fetchCourses = async () => {
   try {
     const token = localStorage.getItem("token");
-    const { data } = await axios.get(`${serverUrl}/api/course/all-courses`, {
+    const { data } = await axios.get(`${BASE_URL }/api/course/all-courses`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (data.success) {
@@ -293,7 +293,7 @@ const handleCreate = async (e) => {
   e.preventDefault();
   try {
     const token = localStorage.getItem("token");
-    const { data } = await axios.post(`${serverUrl}/api/coupon/create`, formData, {
+    const { data } = await axios.post(`${BASE_URL }/api/coupon/create`, formData, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (data.success) {
@@ -315,7 +315,7 @@ const handleUpdate = async (e) => {
   try {
     const token = localStorage.getItem("token");
     const { data } = await axios.put(
-      `${serverUrl}/api/coupon/update/${selectedCoupon._id}`,
+      `${BASE_URL }/api/coupon/update/${selectedCoupon._id}`,
       formData,
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -338,7 +338,7 @@ const handleDelete = async (couponId) => {
   
   try {
     const token = localStorage.getItem("token");
-    const { data } = await axios.delete(`${serverUrl}/api/coupon/delete/${couponId}`, {
+    const { data } = await axios.delete(`${BASE_URL }/api/coupon/delete/${couponId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (data.success) {
@@ -356,7 +356,7 @@ const handleDelete = async (couponId) => {
 const handleToggleStatus = async (couponId) => {
   try {
     const token = localStorage.getItem("token");
-    const { data } = await axios.patch(`${serverUrl}/api/coupon/toggle/${couponId}`, {}, {
+    const { data } = await axios.patch(`${BASE_URL }/api/coupon/toggle/${couponId}`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (data.success) {

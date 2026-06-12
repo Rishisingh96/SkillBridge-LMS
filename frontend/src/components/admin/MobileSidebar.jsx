@@ -25,7 +25,7 @@ import { toast } from "react-toastify";
 
 import { removeUserData } from "../../redux/slices/userSlice";
 
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 const MobileSidebar = ({
   sidebarOpen,
@@ -79,7 +79,7 @@ const MobileSidebar = ({
     try {
 
       const result = await axios.get(
-        `${serverUrl}/api/auth/logout`,
+        `${BASE_URL}/api/auth/logout`,
         {
           withCredentials: true,
         }

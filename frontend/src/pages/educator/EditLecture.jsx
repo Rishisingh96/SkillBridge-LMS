@@ -6,7 +6,7 @@ import { setLectureData, fetchLectures } from "../../redux/slices/lectureSlice";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import ResourcesUpload from "./ResourcesUpload";
 import QuizUpload from "./QuizUpload";
 import { useTheme } from "../../context/ThemeContext";
@@ -94,7 +94,7 @@ const EditLecture = () => {
       }
 
       const result = await axios.post(
-        `${serverUrl}/api/course/editlecture/${lectureId}`,
+        `${BASE_URL}/api/course/editlecture/${lectureId}`,
         formData,
         {
           withCredentials: true,
@@ -138,7 +138,7 @@ const EditLecture = () => {
       setLoading1(true);
 
       await axios.delete(
-        `${serverUrl}/api/course/removelecture/${lectureId}`,
+        `${BASE_URL}/api/course/removelecture/${lectureId}`,
         {
           withCredentials: true,
         }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { serverUrl } from '../../App';
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { useNavigate } from 'react-router-dom';
 import { Bell, Trash2, Check, Clock } from 'lucide-react';
 
@@ -12,7 +12,7 @@ const StudentNotification = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${serverUrl}/api/notification?limit=100`, {
+      const response = await axios.get(`${BASE_URL}/api/notification?limit=100`, {
         withCredentials: true,
       });
       setNotifications(response.data.notifications || []);
@@ -36,7 +36,7 @@ const StudentNotification = () => {
   const handleMarkAsRead = async (notificationId) => {
     try {
       await axios.patch(
-        `${serverUrl}/api/notification/${notificationId}/read`,
+        `${BASE_URL}/api/notification/${notificationId}/read`,
         {},
         { withCredentials: true }
       );
@@ -49,7 +49,7 @@ const StudentNotification = () => {
   const handleDelete = async (notificationId) => {
     try {
       await axios.delete(
-        `${serverUrl}/api/notification/${notificationId}`,
+        `${BASE_URL}/api/notification/${notificationId}`,
         { withCredentials: true }
       );
       await fetchNotifications();
@@ -61,7 +61,7 @@ const StudentNotification = () => {
   const handleMarkAllAsRead = async () => {
     try {
       await axios.patch(
-        `${serverUrl}/api/notification/read-all`,
+        `${BASE_URL}/api/notification/read-all`,
         {},
         { withCredentials: true }
       );

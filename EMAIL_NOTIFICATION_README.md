@@ -683,13 +683,13 @@ const NotificationBell = () => {
 ```javascript
 // Fetch notifications on bell click
 const handleBellClick = async () => {
-  const response = await axios.get(`${serverUrl}/api/notification?limit=5`);
+  const response = await axios.get(`${BASE_URL }/api/notification?limit=5`);
   setNotifications(response.data.notifications);
 };
 
 // Mark as read
 const handleMarkAsRead = async (notificationId) => {
-  await axios.patch(`${serverUrl}/api/notification/${notificationId}/read`);
+  await axios.patch(`${BASE_URL }/api/notification/${notificationId}/read`);
   await fetchNotifications();
 };
 

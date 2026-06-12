@@ -221,7 +221,7 @@ const getCourseById = async () => {
   try {
     setLoading(true);
     const result = await axios.get(
-      `${serverUrl}/api/course/getcourse/${courseId}`,
+      `${BASE_URL }/api/course/getcourse/${courseId}`,
       { withCredentials: true }
     );
     
@@ -293,7 +293,7 @@ const handleUpdateCourse = async (e) => {
     }
     
     const result = await axios.put(
-      `${serverUrl}/api/course/editcourse/${courseId}`,
+      `${BASE_URL }/api/course/editcourse/${courseId}`,
       formData,
       {
         withCredentials: true,
@@ -317,7 +317,7 @@ const handleRemoveCourse = async () => {
   setLoading1(true);
   try {
     const result = await axios.delete(
-      serverUrl + `/api/course/remove/${courseId}`,
+      BASE_URL  + `/api/course/remove/${courseId}`,
       { withCredentials: true }
     );
     toast.success("Course Removed");
@@ -623,7 +623,7 @@ const handleUpdateLecture = async () => {
     }
     
     const result = await axios.post(
-      `${serverUrl}/api/course/editlecture/${lectureId}`,
+      `${BASE_URL }/api/course/editlecture/${lectureId}`,
       formData,
       {
         withCredentials: true,
@@ -657,7 +657,7 @@ const handleRemoveLecture = async () => {
   try {
     setLoading1(true);
     await axios.delete(
-      `${serverUrl}/api/course/removelecture/${lectureId}`,
+      `${BASE_URL }/api/course/removelecture/${lectureId}`,
       { withCredentials: true }
     );
     
@@ -738,7 +738,7 @@ const handleUploadResources = async () => {
     });
     
     const result = await axios.post(
-      `${serverUrl}/api/course/upload-resource/${lectureId}`,
+      `${BASE_URL }/api/course/upload-resource/${lectureId}`,
       formData,
       {
         withCredentials: true,
@@ -767,7 +767,7 @@ const handleUploadResources = async () => {
 const handleRemoveResource = async (resourceId) => {
   try {
     const result = await axios.delete(
-      `${serverUrl}/api/course/removeresource/${lectureId}/${resourceId}`,
+      `${BASE_URL }/api/course/removeresource/${lectureId}/${resourceId}`,
       { withCredentials: true }
     );
     
@@ -784,7 +784,7 @@ const handleRemoveResource = async (resourceId) => {
 const handleViewResource = async (resourceId) => {
   try {
     const result = await axios.get(
-      `${serverUrl}/api/course/download-resource/${lectureId}/${resourceId}`,
+      `${BASE_URL }/api/course/download-resource/${lectureId}/${resourceId}`,
       { withCredentials: true }
     );
     
@@ -848,7 +848,7 @@ const handleAddQuiz = async () => {
   try {
     setLoading(true);
     const result = await axios.post(
-      `${serverUrl}/api/course/add-quiz/${lectureId}`,
+      `${BASE_URL }/api/course/add-quiz/${lectureId}`,
       { question, options, correctAnswer },
       { withCredentials: true }
     );
@@ -872,7 +872,7 @@ const handleAddQuiz = async () => {
 const handleRemoveQuiz = async (quizId) => {
   try {
     const response = await axios.delete(
-      `${serverUrl}/api/course/remove-quiz/${lectureId}/${quizId}`,
+      `${BASE_URL }/api/course/remove-quiz/${lectureId}/${quizId}`,
       { withCredentials: true }
     );
     
@@ -926,7 +926,7 @@ const handleRemoveQuiz = async (quizId) => {
 ```javascript
 const fetchCoupons = async () => {
   try {
-    const { data } = await axios.get(`${serverUrl}/api/coupon/my-coupons`, {
+    const { data } = await axios.get(`${BASE_URL }/api/coupon/my-coupons`, {
       withCredentials: true
     });
     if (data.success) {
@@ -945,7 +945,7 @@ const fetchCoupons = async () => {
 const handleCreate = async (e) => {
   e.preventDefault();
   try {
-    const { data } = await axios.post(`${serverUrl}/api/coupon/create`, formData, {
+    const { data } = await axios.post(`${BASE_URL }/api/coupon/create`, formData, {
       withCredentials: true
     });
     if (data.success) {
@@ -966,7 +966,7 @@ const handleUpdate = async (e) => {
   e.preventDefault();
   try {
     const { data } = await axios.put(
-      `${serverUrl}/api/coupon/update/${selectedCoupon._id}`,
+      `${BASE_URL }/api/coupon/update/${selectedCoupon._id}`,
       formData,
       { withCredentials: true }
     );
@@ -988,7 +988,7 @@ const handleDelete = async (couponId) => {
   if (!window.confirm("Are you sure you want to delete this coupon?")) return;
   
   try {
-    const { data } = await axios.delete(`${serverUrl}/api/coupon/delete/${couponId}`, {
+    const { data } = await axios.delete(`${BASE_URL }/api/coupon/delete/${couponId}`, {
       withCredentials: true
     });
     if (data.success) {
@@ -1005,7 +1005,7 @@ const handleDelete = async (couponId) => {
 ```javascript
 const handleToggleStatus = async (couponId) => {
   try {
-    const { data } = await axios.patch(`${serverUrl}/api/coupon/toggle/${couponId}`, {}, {
+    const { data } = await axios.patch(`${BASE_URL }/api/coupon/toggle/${couponId}`, {}, {
       withCredentials: true
     });
     if (data.success) {

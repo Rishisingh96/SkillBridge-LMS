@@ -20,7 +20,7 @@ import {
 } from "react-icons/fi";
 
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import Nav from "../../components/navbar/Navbar";
 
 const InfoCard = ({ icon, label, value }) => {
@@ -97,7 +97,7 @@ const Profile = () => {
       setLoadingEnrollments(true);
       try {
         const response = await axios.get(
-          `${serverUrl}/api/course/user-enrollments`,
+          `${BASE_URL}/api/course/user-enrollments`,
           { withCredentials: true }
         );
         setEnrollments(response.data.enrollments || []);

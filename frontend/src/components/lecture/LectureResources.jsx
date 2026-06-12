@@ -21,7 +21,7 @@ import axios from "axios";
 
 import { toast } from "react-toastify";
 
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 import { ClipLoader } from "react-spinners";
 
@@ -60,7 +60,7 @@ const LectureResources = ({ lecture }) => {
 
       const response = await axios.get(
 
-        `${serverUrl}/api/course/download-resource/${lectureId}/${resourceId}`,
+        `${BASE_URL}/api/course/download-resource/${lectureId}/${resourceId}`,
 
         {
           withCredentials: true,

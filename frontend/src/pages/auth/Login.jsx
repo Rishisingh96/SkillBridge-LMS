@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ClipLoader } from "react-spinners";
 
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 import { toast } from "react-toastify";
 
@@ -49,7 +49,7 @@ const Login = () => {
 
     try {
       const result = await axios.post(
-        serverUrl + "/api/auth/login",
+        BASE_URL + "/api/auth/login",
         { email, password },
         { withCredentials: true },
       );
@@ -108,7 +108,7 @@ const Login = () => {
       let role = "student";
 
       const result = await axios.post(
-        serverUrl + "/api/auth/googleauth",
+        BASE_URL + "/api/auth/googleauth",
         {
           name,
           email,

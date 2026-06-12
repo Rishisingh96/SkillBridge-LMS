@@ -28,7 +28,7 @@ import { clearUserData } from "../../redux/slices/userSlice";
 import { clearAllProgress } from "../../redux/slices/progressSlice";
 import { clearModuleData } from "../../redux/slices/moduleSlice";
 
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import logo from "../../assets/logo1.png"
 
 const AdminSidebar = ({
@@ -101,7 +101,7 @@ const AdminSidebar = ({
     try {
 
       const result = await axios.get(
-        `${serverUrl}/api/auth/logout`,
+        `${BASE_URL}/api/auth/logout`,
         {
           withCredentials: true,
         }

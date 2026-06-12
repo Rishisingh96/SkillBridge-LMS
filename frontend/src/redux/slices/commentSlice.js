@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 // =========================
 // GET COMMENTS
@@ -10,7 +10,7 @@ export const fetchLectureComments = createAsyncThunk(
   async (lectureId, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        `${serverUrl}/api/course/comment/${lectureId}`,
+        `${BASE_URL}/api/course/comment/${lectureId}`,
         { withCredentials: true }
       );
 
@@ -29,7 +29,7 @@ export const addComment = createAsyncThunk(
   async ({ lectureId, message }, { rejectWithValue }) => {
     try {
       const res = await axios.post(
-        `${serverUrl}/api/course/comment/${lectureId}`,
+        `${BASE_URL}/api/course/comment/${lectureId}`,
         { message },
         { withCredentials: true }
       );
@@ -49,7 +49,7 @@ export const deleteComment = createAsyncThunk(
   async ({ lectureId, commentId }, { rejectWithValue }) => {
     try {
       await axios.delete(
-        `${serverUrl}/api/course/comment/${lectureId}/${commentId}`,
+        `${BASE_URL}/api/course/comment/${lectureId}/${commentId}`,
         { withCredentials: true }
       );
 
@@ -68,7 +68,7 @@ export const addReply = createAsyncThunk(
   async ({ lectureId, commentId, message }, { rejectWithValue }) => {
     try {
       const res = await axios.post(
-        `${serverUrl}/api/course/comment/reply/${lectureId}/${commentId}`,
+        `${BASE_URL}/api/course/comment/reply/${lectureId}/${commentId}`,
         { message },
         { withCredentials: true }
       );
@@ -88,7 +88,7 @@ export const toggleCommentLike = createAsyncThunk(
   async ({ lectureId, commentId }, { rejectWithValue }) => {
     try {
       const res = await axios.put(
-        `${serverUrl}/api/course/comment/like/${lectureId}/${commentId}`,
+        `${BASE_URL}/api/course/comment/like/${lectureId}/${commentId}`,
         {},
         { withCredentials: true }
       );
@@ -111,7 +111,7 @@ export const deleteReply = createAsyncThunk(
   async ({ lectureId, commentId, replyId }, { rejectWithValue }) => {
     try {
       await axios.delete(
-        `${serverUrl}/api/course/comment/reply/${lectureId}/${commentId}/${replyId}`,
+        `${BASE_URL}/api/course/comment/reply/${lectureId}/${commentId}/${replyId}`,
         { withCredentials: true }
       );
 
@@ -130,7 +130,7 @@ export const toggleReplyLike = createAsyncThunk(
   async ({ lectureId, commentId, replyId }, { rejectWithValue }) => {
     try {
       const res = await axios.put(
-        `${serverUrl}/api/course/comment/reply/like/${lectureId}/${commentId}/${replyId}`,
+        `${BASE_URL}/api/course/comment/reply/like/${lectureId}/${commentId}/${replyId}`,
         {},
         { withCredentials: true }
       );
@@ -154,7 +154,7 @@ export const togglePinComment = createAsyncThunk(
   async ({ lectureId, commentId }, { rejectWithValue }) => {
     try {
       const res = await axios.put(
-        `${serverUrl}/api/course/comment/pin/${lectureId}/${commentId}`,
+        `${BASE_URL}/api/course/comment/pin/${lectureId}/${commentId}`,
         {},
         { withCredentials: true }
       );

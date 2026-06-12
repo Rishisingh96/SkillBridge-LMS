@@ -17,7 +17,7 @@ import {
 
 import { useTheme } from "../../context/ThemeContext";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { toast } from "react-toastify";
 
 const ModuleList = ({
@@ -46,13 +46,13 @@ const ModuleList = ({
     try {
 
       await axios.post(
-        `${serverUrl}/api/course/certificate/generate/${courseId}`,
+        `${BASE_URL}/api/course/certificate/generate/${courseId}`,
         {},
         { withCredentials: true }
       );
 
       const response = await axios.get(
-        `${serverUrl}/api/course/certificate/download/${courseId}`,
+        `${BASE_URL}/api/course/certificate/download/${courseId}`,
         {
           responseType: "blob",
           withCredentials: true,

@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { setUserData } from "../../redux/slices/userSlice";
 import { clearAllProgress } from "../../redux/slices/progressSlice";
 import { clearModuleData } from "../../redux/slices/moduleSlice";
@@ -55,7 +55,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     try {
 
       await axios.get(
-        serverUrl + "/api/auth/logout",
+        BASE_URL + "/api/auth/logout",
         {
           withCredentials: true,
         }

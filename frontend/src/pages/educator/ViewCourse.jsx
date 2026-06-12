@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { setSelectedCourse } from "../../redux/slices/courseSlice";
 import img from "../../assets/Empty.png";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import Card from "../../components/home/component/CourseCard";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
@@ -47,7 +47,7 @@ const ViewCourse = () => {
   const fetchModules = async () => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/course-modules/${courseId}`,
+        `${BASE_URL}/api/course/course-modules/${courseId}`,
         { withCredentials: true }
       );
       dispatch(setModuleData(response.data.modules));
@@ -60,7 +60,7 @@ const ViewCourse = () => {
   const checkEnrollment = async () => {
     try {
       const response = await axios.get(
-        `${serverUrl}/api/course/check-enrollment/${courseId}`,
+        `${BASE_URL}/api/course/check-enrollment/${courseId}`,
         { withCredentials: true }
       );
       if (response.data.isEnrolled && response.data.isActive) {
@@ -95,7 +95,7 @@ const ViewCourse = () => {
   const handleEnroll = async (courseId) => {
     try {
       const orderData = await axios.post(
-        serverUrl + "/api/order/razorpay-order",
+        BASE_URL + "/api/order/razorpay-order",
         { courseId },
         { withCredentials: true }
       );
@@ -110,7 +110,7 @@ const ViewCourse = () => {
         handler: async function (response) {
           try {
             const verifyPayment = await axios.post(
-              serverUrl + "/api/order/verifypayment",
+              BASE_URL + "/api/order/verifypayment",
               { ...response, courseId },
               { withCredentials: true }
             );
@@ -135,7 +135,7 @@ const ViewCourse = () => {
     setLoading(true);
     try {
       await axios.post(
-        serverUrl + "/api/review/createreview",
+        BASE_URL + "/api/review/createreview",
         { rating, comment, courseId },
         { withCredentials: true }
       );

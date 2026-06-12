@@ -11,7 +11,7 @@ import {
   deleteLecture,
   clearError,
 } from "../../redux/slices/lectureSlice";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { useTheme } from "../../context/ThemeContext";
 
 const CreateLecture = () => {

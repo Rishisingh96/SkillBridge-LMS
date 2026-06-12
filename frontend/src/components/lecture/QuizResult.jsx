@@ -18,7 +18,7 @@ import {
 
 import { useTheme } from "../../context/ThemeContext";
 import axios from "axios";
-import { serverUrl } from "../../App";
+const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { toast } from "react-toastify";
 
 const QuizResult = ({ lectureId, onQuizComplete }) => {
@@ -108,7 +108,7 @@ const QuizResult = ({ lectureId, onQuizComplete }) => {
 
     try {
       const response = await axios.put(
-        `${serverUrl}/api/course/mark-quiz-completed/${lectureId._id}`,
+        `${BASE_URL}/api/course/mark-quiz-completed/${lectureId._id}`,
         {},
         { withCredentials: true }
       );
