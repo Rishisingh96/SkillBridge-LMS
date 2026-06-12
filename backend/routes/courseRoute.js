@@ -134,7 +134,7 @@ courseRoute.get(
 courseRoute.options(
   "/certificate/download/:courseId",
   (req, res) => {
-    res.header("Access-Control-Allow-Origin", "process.env.FRONTEND_URL");
+    res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");

@@ -85,7 +85,7 @@ const sendWelcomeEmail = async(to, userName) => {
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="process.env.FRONTEND_URL/login" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
+            <a href="${process.env.FRONTEND_URL}/login" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
               Start Learning Now →
             </a>
           </div>
@@ -214,7 +214,7 @@ const sendEnrollmentConfirmationEmail = async (to, userName, courseTitle, startD
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="process.env.FRONTEND_URL/dashboard" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
+            <a href="${process.env.FRONTEND_URL}/dashboard" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px;">
               Start Learning Now →
             </a>
           </div>
