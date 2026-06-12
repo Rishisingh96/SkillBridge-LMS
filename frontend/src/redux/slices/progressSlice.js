@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
 
 // ======================================================
 // GET COURSE PROGRESS
