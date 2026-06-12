@@ -20,17 +20,26 @@ const isAuth = async (req, res, next) => {
       });
     }
 
+    console.log("===== AUTH DEBUG =====");
+    console.log("Cookies:", req.cookies);
+    console.log("Token from Cookie:", req.cookies?.token);
+    console.log("Authorization:", req.headers.authorization);
+
     // verify token
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET
     );
 
+    console.log("Decoded:", decoded);
+
     // find user
     const user = await User.findById(
       decoded.userId
     ).select("_id role isBanned currentSessionId sessionExpiresAt");
 
+    console.log("User Found:", user);
+    
     if (!user) {
       return res.status(404).json({
         success: false,

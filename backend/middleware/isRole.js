@@ -15,6 +15,10 @@ const isRole = (...roles) => {
       });
     }
 
+    console.log("===== ROLE DEBUG =====");
+    console.log("User:", req.user);
+    console.log("Required Roles:", roles);
+
     next();
   };
 };
