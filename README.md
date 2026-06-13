@@ -105,6 +105,7 @@ To democratize education by providing an accessible, feature-rich platform that 
 - 🔔 **Notifications**: Real-time updates on enrollments, progress, and more
 - 📈 **Purchase History**: Track all course purchases and subscriptions
 - 👤 **Profile Management**: Customize personal profile and preferences
+- 📋 **Blog Read**: User can read Blog Acording Topic and subject like Java , python etc
 
 ### 👨‍🏫 For Educators
 - 🎨 **Course Creation**: Create comprehensive courses with modules and lectures
