@@ -55,6 +55,7 @@ SkillBridge LMS provides a complete online learning ecosystem for Students, Educ
 * [📝 License](#-license)
 * [👨‍💻 Author](#-author)
 >>>>>>> ac4d467814e22a7adb7e08e8e2853c7e30f30bad
+>>>>>>> https://skillbridgelearnbyrishi.vercel.app/
 
 ---
 
@@ -68,6 +69,7 @@ SkillBridge LMS provides a complete online learning ecosystem for Students, Educ
 SkillBridge LMS is a full-featured Learning Management System designed to deliver an engaging and scalable online education experience. It enables educators to create and manage courses while helping students learn through structured modules, video lectures, quizzes, resources, and certificates.
 
 The platform is built with a modern MERN-based architecture and includes advanced features such as HLS video streaming, real-time notifications, payment processing, analytics dashboards, role-based access control, and cloud media management.
+https://skillbridgelearnbyrishi.vercel.app/
 
 ### Core Objectives
 
