@@ -20,7 +20,9 @@ import {
 } from "react-icons/fi";
 
 import axios from "axios";
+
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
+
 import Nav from "../../components/navbar/Navbar";
 
 const InfoCard = ({ icon, label, value }) => {

@@ -1,13 +1,40 @@
-import React from 'react';
+import axios from 'axios';
 import { BookOpen, Award, Clock, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const StatsCards = () => {
+
   const stats = [
     { icon: BookOpen, label: 'Enrolled Courses', value: '12', color: 'bg-blue-500' },
     { icon: Award, label: 'Certificates', value: '5', color: 'bg-green-500' },
     { icon: Clock, label: 'Hours Learned', value: '48', color: 'bg-purple-500' },
     { icon: TrendingUp, label: 'Completion Rate', value: '85%', color: 'bg-orange-500' },
   ];
+
+  const [enrollments, setEnrollments] = useState([]);
+  const [loadingEnrollments, setLoadingEnrollments] = useState(false);
+
+  // Fetch Enrollments
+  useEffect(()=>{
+    const fetchEnrollments = async () =>{
+      if(!userData) return;
+
+      setLoadingEnrollments(true);
+
+      try{
+        const response = await axios.get(
+         
+        )
+      }
+      catch(error){
+        console.error('Error fetching enrollments:', error);
+      }
+      finally{
+        setLoadingEnrollments(false);
+      }
+    }
+    fetchEnrollments();
+  }, [userData]);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">

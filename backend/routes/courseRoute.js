@@ -23,14 +23,14 @@ courseRoute.put("/editcourse/:courseId", isAuth, isRole("educator"), upload.sing
 courseRoute.get("/getcourse/:courseId", getCourseById)
 courseRoute.delete("/remove/:courseId", isAuth, isRole("educator"), deleteCourse)
 
-// only when free course for testing
-courseRoute.post("/enroll/:courseId", isAuth, enrollCourse);
 
-// Check enrollment status with validity
-courseRoute.get("/check-enrollment/:courseId", isAuth, checkEnrollmentStatus);
 
 // Get user enrollments with validity
 courseRoute.get("/user-enrollments", isAuth, getUserEnrollments);
+
+courseRoute.get("/recent-enrollments", isAuth, isRole("educator"), getRecentEnrollments);
+
+
 
 //published
 // ──────────────────────────────────────────
@@ -97,10 +97,7 @@ courseRoute.put("/comment/pin/:lectureId/:commentId", isAuth, togglePinComment);
 
 // Progress report 
 // ──────────────────────────────────────────
-courseRoute.post(
-  "/progress/update",
-  updateLectureProgress
-);
+courseRoute.post("/progress/update", updateLectureProgress);
 
 courseRoute.get(
   "/progress/course/:courseId",
@@ -145,8 +142,6 @@ courseRoute.options(
 // Dashboard stats
 // ──────────────────────────────────────────
 courseRoute.get("/dashboard-stats", isAuth, getDashboardStats);
-courseRoute.get("/recent-enrollments", isAuth, isRole("educator"), getRecentEnrollments);
-
 
 
 

@@ -6,10 +6,7 @@ import User from "../models/userModel.js";
 import { notifyCourseEnrollmentToCreatorAndAdmin } from "../helpers/notificationHelpers.js";
 import { sendEnrollmentConfirmationEmail } from "../config/sendMail.js";
 
-// ======================================================
 // 🔥 FREE COURSE ENROLLMENT
-// ======================================================
-
 export const enrollCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
@@ -149,10 +146,7 @@ export const enrollCourse = async (req, res) => {
   }
 };
 
-// ======================================================
 // 📦 GET USER ENROLLMENTS
-// ======================================================
-
 export const getUserEnrollments = async (req, res) => {
   try {
     const userId = req.userId;
@@ -239,10 +233,7 @@ export const getUserEnrollments = async (req, res) => {
   }
 };
 
-// ======================================================
 // 🔍 CHECK ENROLLMENT STATUS
-// ======================================================
-
 export const checkEnrollmentStatus = async (req, res) => {
   try {
     const { courseId } = req.params;

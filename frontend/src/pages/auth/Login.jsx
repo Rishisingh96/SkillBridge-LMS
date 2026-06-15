@@ -40,16 +40,14 @@ const Login = () => {
 
   const dispatch = useDispatch();
 
-  // ============================================
-  // LOGIN FUNCTION
-  // ============================================
 
+  // LOGIN FUNCTION
   const hangleLogin = async () => {
     setLoading(true);
 
     try {
       const result = await axios.post(
-        BASE_URL + "/api/auth/login",
+        BASE_URL + "/api/auth/login", 
         { email, password },
         { withCredentials: true },
       );
@@ -87,10 +85,7 @@ const Login = () => {
     }
   };
 
-  // ============================================
   // GOOGLE LOGIN
-  // ============================================
-
   const googleLogin = async () => {
     setLoading(true);
 
