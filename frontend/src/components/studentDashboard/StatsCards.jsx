@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { BookOpen, Award, Clock, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const StatsCards = () => {
+  const { userData } = useSelector((state) => state.user);
 
   const stats = [
     { icon: BookOpen, label: 'Enrolled Courses', value: '12', color: 'bg-blue-500' },

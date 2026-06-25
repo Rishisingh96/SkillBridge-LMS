@@ -3,6 +3,17 @@
 import Coupon from "../models/couponModel.js";
 import Course from "../models/courseModel.js";
 
+// Helper function to check and update coupon expiration status
+const updateCouponExpirationStatus = (coupons) => {
+  return coupons.map(coupon => {
+    const couponObj = coupon.toObject();
+    if (new Date() > coupon.expiryDate) {
+      couponObj.isActive = false;
+    }
+    return couponObj;
+  });
+};
+
 
 // ======================================================
 // ✅ CREATE COUPON
@@ -270,13 +281,7 @@ export const getAllCoupons =
           });
 
       // Auto-set isActive to false for expired coupons
-      const couponsWithStatus = coupons.map(coupon => {
-        const couponObj = coupon.toObject();
-        if (new Date() > coupon.expiryDate) {
-          couponObj.isActive = false;
-        }
-        return couponObj;
-      });
+      const couponsWithStatus = updateCouponExpirationStatus(coupons);
 
       res.status(200).json({
         success: true,
@@ -307,13 +312,7 @@ export const getMyCoupons =
         });
 
       // Auto-set isActive to false for expired coupons
-      const couponsWithStatus = coupons.map(coupon => {
-        const couponObj = coupon.toObject();
-        if (new Date() > coupon.expiryDate) {
-          couponObj.isActive = false;
-        }
-        return couponObj;
-      });
+      const couponsWithStatus = updateCouponExpirationStatus(coupons);
 
       res.status(200).json({
         success: true,

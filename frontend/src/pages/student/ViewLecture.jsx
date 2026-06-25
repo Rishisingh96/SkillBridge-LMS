@@ -75,7 +75,7 @@ const ViewLecture = () => {
   const checkEnrollment = async () => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/course/check-enrollment/${courseId}`,
+        `${BASE_URL}/api/enrollment/check/${courseId}`,
         { withCredentials: true }
       );
       if (response.data.isEnrolled && response.data.isActive) {

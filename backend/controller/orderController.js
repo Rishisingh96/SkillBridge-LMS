@@ -5,8 +5,7 @@ import User from "../models/userModel.js";
 import Enrollment from "../models/enrollmentModel.js";
 import Coupon from "../models/couponModel.js";
 import crypto from "crypto";
-import { sendEnrollmentConfirmationEmail } from "../config/sendMail.js";
-import { notifyCourseEnrollmentToCreatorAndAdmin } from "../helpers/notificationHelpers.js";
+import { calculateEnrollmentEndDate, sendEnrollmentNotifications } from "../helpers/enrollmentHelpers.js";
 
 dotenv.config();
 
@@ -133,14 +132,7 @@ export const VerifyPayment = async (req, res) => {
     // 4. VALIDITY CALCULATION
     // ======================================
 
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-
-    const { value = 6, unit = "month" } = course.validity || {};
-
-    if (unit === "day") endDate.setDate(endDate.getDate() + value);
-    if (unit === "month") endDate.setMonth(endDate.getMonth() + value);
-    if (unit === "year") endDate.setFullYear(endDate.getFullYear() + value);
+    const { startDate, endDate } = calculateEnrollmentEndDate(course.validity);
 
     // ======================================
     // 5. SAFE ENROLLMENT CREATE (NO DUPLICATE CRASH)
@@ -204,30 +196,13 @@ export const VerifyPayment = async (req, res) => {
       });
     }
 
-    // Send notification to educator and admin
-    await notifyCourseEnrollmentToCreatorAndAdmin({
-      studentName: user.name,
-      studentPhone: user.phone,
-      courseId: course._id,
-      courseTitle: course.title,
-      educatorId: course.creator,
+    // Send enrollment notifications
+    await sendEnrollmentNotifications({
+      user,
+      course,
+      startDate,
+      endDate,
     });
-
-    // Send enrollment confirmation email to student
-    try {
-      console.log("Sending enrollment email to:", user.email);
-      await sendEnrollmentConfirmationEmail(
-        user.email,
-        user.name,
-        course.title,
-        startDate.toLocaleDateString(),
-        endDate.toLocaleDateString()
-      );
-      console.log("Enrollment email sent successfully");
-    } catch (emailError) {
-      console.error("Failed to send enrollment email:", emailError);
-      // Don't fail the enrollment if email fails
-    }
 
     return res.status(200).json({
       success: true,

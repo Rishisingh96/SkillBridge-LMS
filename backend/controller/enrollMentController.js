@@ -3,8 +3,7 @@
 import Course from "../models/courseModel.js";
 import Enrollment from "../models/enrollmentModel.js";
 import User from "../models/userModel.js";
-import { notifyCourseEnrollmentToCreatorAndAdmin } from "../helpers/notificationHelpers.js";
-import { sendEnrollmentConfirmationEmail } from "../config/sendMail.js";
+import { calculateEnrollmentEndDate, createEnrollment, sendEnrollmentNotifications, updateExpiredEnrollments, calculateDaysRemaining } from "../helpers/enrollmentHelpers.js";
 
 // 🔥 FREE COURSE ENROLLMENT
 export const enrollCourse = async (req, res) => {
@@ -66,70 +65,24 @@ export const enrollCourse = async (req, res) => {
     }
 
     // CALCULATE VALIDITY
-    const startDate = new Date();
-    const endDate = new Date(startDate);
+    const { startDate, endDate } = calculateEnrollmentEndDate(course.validity);
 
-    const { value = 6, unit = "month" } = course.validity || {};
-
-    if (unit === "day") {
-      endDate.setDate(endDate.getDate() + value);
-    }
-
-    if (unit === "month") {
-      endDate.setMonth(endDate.getMonth() + value);
-    }
-
-    if (unit === "year") {
-      endDate.setFullYear(endDate.getFullYear() + value);
-    }
-
-    // ======================================================
     // CREATE NEW ENROLLMENT
-    // ======================================================
-
-    const enrollment = await Enrollment.create({
-      user: userId,
-      course: courseId,
+    const enrollment = await createEnrollment({
+      userId,
+      courseId,
       pricePaid: 0,
       startDate,
       endDate,
-      status: "active",
     });
 
-    // ======================================================
-    // UPDATE USER
-    // ======================================================
-
-    await User.findByIdAndUpdate(userId, {
-      $addToSet: {
-        enrolledCourses: courseId,
-      },
+    // SEND NOTIFICATIONS
+    await sendEnrollmentNotifications({
+      user,
+      course,
+      startDate,
+      endDate,
     });
-
-    // After line 119 (after User.findByIdAndUpdate)
-    await notifyCourseEnrollmentToCreatorAndAdmin({
-      studentName: user.name,
-      studentPhone: user.phone,
-      courseId: course._id,
-      courseTitle: course.title,
-      educatorId: course.creator,
-    });
-
-    // Send enrollment confirmation email to student
-    try {
-      console.log("Sending enrollment email to:", user.email);
-      await sendEnrollmentConfirmationEmail(
-        user.email,
-        user.name,
-        course.title,
-        startDate.toLocaleDateString(),
-        endDate.toLocaleDateString()
-      );
-      console.log("Enrollment email sent successfully");
-    } catch (emailError) {
-      console.error("Failed to send enrollment email:", emailError);
-      // Don't fail the enrollment if email fails
-    }
 
     return res.status(201).json({
       success: true,
@@ -152,46 +105,10 @@ export const getUserEnrollments = async (req, res) => {
     const userId = req.userId;
     const now = new Date();
 
-    // ======================================================
     // AUTO UPDATE EXPIRED ENROLLMENTS IN DATABASE
-    // ======================================================
+    await updateExpiredEnrollments(userId);
 
-    const updateResult = await Enrollment.updateMany(
-      {
-        user: userId,
-        endDate: { $lte: now },
-        status: "active",
-      },
-      {
-        $set: {
-          status: "expired",
-        },
-      }
-    );
-
-    console.log("Updated expired enrollments:", updateResult.modifiedCount);
-
-    // ======================================================
-    // REMOVE EXPIRED COURSE IDS FROM USER
-    // ======================================================
-
-    const expiredCourses = await Enrollment.find({
-      user: userId,
-      status: "expired",
-    });
-
-    for (const item of expiredCourses) {
-      await User.findByIdAndUpdate(userId, {
-        $pull: {
-          enrolledCourses: item.course,
-        },
-      });
-    }
-
-    // ======================================================
     // GET ALL ENROLLMENTS
-    // ======================================================
-
     const enrollments = await Enrollment.find({
       user: userId,
     })
@@ -201,14 +118,7 @@ export const getUserEnrollments = async (req, res) => {
 
     const result = enrollments.map((enrollment) => {
       const isExpired = now > new Date(enrollment.endDate);
-
-      const daysRemaining = Math.max(
-        0,
-        Math.ceil(
-          (new Date(enrollment.endDate) - now) /
-          (1000 * 60 * 60 * 24)
-        )
-      );
+      const daysRemaining = calculateDaysRemaining(enrollment.endDate);
 
       return {
         ...enrollment._doc,
@@ -239,19 +149,13 @@ export const checkEnrollmentStatus = async (req, res) => {
     const { courseId } = req.params;
     const userId = req.userId;
 
-    // ======================================================
     // FIND LATEST ENROLLMENT
-    // ======================================================
-
     const enrollment = await Enrollment.findOne({
       user: userId,
       course: courseId,
     }).sort({ createdAt: -1 });
 
-    // ======================================================
     // NO ENROLLMENT
-    // ======================================================
-
     if (!enrollment) {
       return res.status(200).json({
         success: true,
@@ -261,10 +165,7 @@ export const checkEnrollmentStatus = async (req, res) => {
       });
     }
 
-    // ======================================================
     // CHECK EXPIRY
-    // ======================================================
-
     const now = new Date();
     const isExpired = now > new Date(enrollment.endDate);
 
@@ -277,10 +178,7 @@ export const checkEnrollmentStatus = async (req, res) => {
       currentStatus: enrollment.status
     });
 
-    // ======================================================
     // AUTO UPDATE STATUS IN DATABASE
-    // ======================================================
-
     if (isExpired && enrollment.status !== "expired") {
       console.log("Updating enrollment to expired:", enrollment._id);
       await Enrollment.findByIdAndUpdate(enrollment._id, {
@@ -294,10 +192,7 @@ export const checkEnrollmentStatus = async (req, res) => {
       });
     }
 
-    // ======================================================
     // EXPIRED RESPONSE
-    // ======================================================
-
     if (isExpired) {
       return res.status(200).json({
         success: true,
@@ -308,22 +203,10 @@ export const checkEnrollmentStatus = async (req, res) => {
       });
     }
 
-    // ======================================================
     // DAYS REMAINING
-    // ======================================================
+    const daysRemaining = calculateDaysRemaining(enrollment.endDate);
 
-    const daysRemaining = Math.max(
-      0,
-      Math.ceil(
-        (new Date(enrollment.endDate) - now) /
-        (1000 * 60 * 60 * 24)
-      )
-    );
-
-    // ======================================================
     // ACTIVE RESPONSE
-    // ======================================================
-
     return res.status(200).json({
       success: true,
       isEnrolled: true,

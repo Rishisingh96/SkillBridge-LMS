@@ -47,7 +47,7 @@ courseRoute.post("/creator", isAuth, getCreatorById)
 courseRoute.post("/create-module/:courseId", isAuth, isRole("educator"), createModule);
 courseRoute.delete("/remove-module/:moduleId", isAuth, isRole("educator"), removeModule);
 courseRoute.delete("/remove-all-modules/:courseId", isAuth, isRole("educator"), removeAllModules);
-courseRoute.get("/course-modules/:courseId", isAuth, getCourseModules);
+courseRoute.get("/course-modules/:courseId", getCourseModules);
 
 
 //For lecture
