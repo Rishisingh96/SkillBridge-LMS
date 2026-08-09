@@ -5,7 +5,7 @@ import User from "../models/userModel.js";
 // Generate sitemap.xml
 export const generateSitemap = async (req, res) => {
   try {
-    const baseUrl = process.env.CLIENT_URL || "https://skillbridge-lms.com";
+    const baseUrl = process.env.FRONTEND_URL || "https://skillbridge-lms.com";
     
     const staticUrls = [
       { url: "/", lastmod: new Date().toISOString(), changefreq: "daily", priority: 1.0 },
@@ -90,7 +90,7 @@ ${allUrls
 // Generate robots.txt
 export const generateRobotsTxt = async (req, res) => {
   try {
-    const baseUrl = process.env.CLIENT_URL || "https://skillbridge-lms.com";
+    const baseUrl = process.env.FRONTEND_URL || "https://skillbridge-lms.com";
     
     const robotsTxt = `User-agent: *
 Allow: /

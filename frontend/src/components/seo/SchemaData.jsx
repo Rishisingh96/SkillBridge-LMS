@@ -3,8 +3,8 @@
 export const organizationSchema = {
   '@type': 'Organization',
   name: 'SkillBridge LMS',
-  url: 'https://skillbridge-lms.com',
-  logo: 'https://skillbridge-lms.com/logo.png',
+  url: import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com',
+  logo: `${import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com'}/logo.png`,
   description: 'SkillBridge LMS is a comprehensive online learning platform offering high-quality courses across various domains.',
   sameAs: [
     'https://www.facebook.com/skillbridge',
@@ -41,7 +41,7 @@ export const courseSchema = (course) => ({
   provider: {
     '@type': 'Organization',
     name: 'SkillBridge LMS',
-    url: 'https://skillbridge-lms.com'
+    url: import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com'
   },
   courseCode: course._id,
   offers: {
@@ -81,7 +81,7 @@ export const blogPostSchema = (blog) => ({
     name: 'SkillBridge LMS',
     logo: {
       '@type': 'ImageObject',
-      url: 'https://skillbridge-lms.com/logo.png'
+      url: `${import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com'}/logo.png`
     }
   }
 });
