@@ -380,18 +380,27 @@ const ModuleList = ({
                             lecture?._id;
 
                           // Check if previous lecture is fully completed (both lecture AND quiz)
-                          const previousLecture = lectureIndex > 0
-                            ? module.lectures[lectureIndex - 1]
-                            : null;
+                          let previousLecture = null;
+                          
+                          if (lectureIndex > 0) {
+                            // Previous lecture in same module
+                            previousLecture = module.lectures[lectureIndex - 1];
+                          } else if (moduleIndex > 0) {
+                            // First lecture of this module - check last lecture of previous module
+                            const previousModule = moduleData[moduleIndex - 1];
+                            if (previousModule?.lectures?.length > 0) {
+                              previousLecture = previousModule.lectures[previousModule.lectures.length - 1];
+                            }
+                          }
 
                           const isPreviousFullyCompleted = previousLecture
                             ? (previousLecture.isLectureCompleted === true &&
                               (previousLecture.quizQuestions?.length === 0 || previousLecture.isQuizCompleted === true))
-                            : true; // First lecture is always unlocked if enrolled
+                            : true; // First lecture of first module is always unlocked if enrolled
 
                           const isLocked =
                             (!isEnrolled && !lecture.isPreviewFree) ||
-                            (isEnrolled && lectureIndex > 0 && !isPreviousFullyCompleted);
+                            (isEnrolled && (lectureIndex > 0 || moduleIndex > 0) && !isPreviousFullyCompleted);
 
                           const isCompleted =
                             lectureProgress[lecture._id]?.completed || (lecture?.isLectureCompleted === true);

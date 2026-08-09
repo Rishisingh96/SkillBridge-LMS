@@ -1,6 +1,6 @@
 // src/components/course-player/ProgressBar.jsx
 
-import React from "react";
+
 import { useTheme } from "../../context/ThemeContext";
 
 const ProgressBar = ({ value = 0, height = 8, showLabel = true }) => {

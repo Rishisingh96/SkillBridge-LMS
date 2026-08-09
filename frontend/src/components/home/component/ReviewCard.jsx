@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 
-const ReviewCard = React.memo(({
+const ReviewCard = memo(({
   comment = "",
   rating = 5,
   photoUrl,

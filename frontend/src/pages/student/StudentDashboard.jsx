@@ -1,11 +1,10 @@
-import React from "react";
 import StatsCards from "../../components/studentDashboard/StatsCards";
-import ContinueLearning from "../../components/studentDashboard/ContinueLearning";
 import LearningStreak from "../../components/studentDashboard/LearningStreak";
 import TopBanner from "../../components/studentDashboard/TopBanner";
 import Calendar from "../../components/studentDashboard/Calendar";
 import Leaderboard from "../../components/studentDashboard/Leaderboard";
 import Nav from "../../components/navbar/Navbar";
+import FloatingChatWidget from "../../components/shared/FloatingChatWidget";
 
 const Dashboard = () => {
   return (
@@ -28,6 +27,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <FloatingChatWidget />
     </>
 
   );

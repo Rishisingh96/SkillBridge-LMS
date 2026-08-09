@@ -9,6 +9,7 @@ import React, {
 import LectureResources from "./LectureResources";
 import QuizResult from "./QuizResult";
 import Comment from "../../pages/student/Comment";
+import AIChatbot from "./AIChatbot";
 import { useTheme } from "../../context/ThemeContext";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -37,6 +38,11 @@ const LecturePlayer = ({
 
     // Direct MP4 playback
     video.src = lecture.video.fileUrl;
+
+    // Resume from saved position
+    if (lecture.currentPosition > 0) {
+      video.currentTime = lecture.currentPosition;
+    }
 
   }, [lecture]);
 
@@ -318,6 +324,16 @@ const LecturePlayer = ({
             Discussions
           </button>
 
+          <button
+            onClick={() => setActiveTab("chatbot")}
+            className={`pb-4 pt-2 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === "chatbot"
+                ? "border-blue-500 text-blue-500"
+                : `border-transparent ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
+              }`}
+          >
+            AI Chatbot
+          </button>
+
         </div>
       </div>
 
@@ -358,6 +374,10 @@ const LecturePlayer = ({
 
         {activeTab === "discussion" && (
           <Comment lectureId={lecture?._id} />
+        )}
+
+        {activeTab === "chatbot" && (
+          <AIChatbot lectureId={lecture?._id} lectureTitle={lecture?.lectureTitle} />
         )}
 
       </div>

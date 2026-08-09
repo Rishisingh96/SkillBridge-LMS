@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import Sidebar from "../studentDashboard/Sidebar";

@@ -9,9 +9,8 @@ const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { useTheme } from "../../context/ThemeContext";
 
 const ResourcesUpload = ({ resources,
-  setResources }) => {
+  setResources, lectureId }) => {
 
-  const { lectureId } = useParams();
   const { isDark } = useTheme();
 
   const [files, setFiles] = useState([]);

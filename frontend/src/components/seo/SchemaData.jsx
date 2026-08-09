@@ -3,8 +3,8 @@
 export const organizationSchema = {
   '@type': 'Organization',
   name: 'SkillBridge LMS',
-  url: import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com',
-  logo: `${import.meta.env.VITE_SERVER_URL || 'https://skillbridge-lms.com'}/logo.png`,
+  url: 'https://skillbridge-lms.com',
+  logo: 'https://skillbridge-lms.com/logo.png',
   description: 'SkillBridge LMS is a comprehensive online learning platform offering high-quality courses across various domains.',
   sameAs: [
     'https://www.facebook.com/skillbridge',

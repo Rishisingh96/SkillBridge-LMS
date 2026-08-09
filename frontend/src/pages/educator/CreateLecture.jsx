@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeft, FaPlus, FaTrash, FaVideo } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -107,6 +107,7 @@ const CreateLecture = () => {
             </div>
           </div>
           <button
+            key="add-lecture-btn"
             onClick={() => setShowCreateForm(!showCreateForm)}
             className="flex items-center gap-2 bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl font-semibold transition-all"
           >
@@ -160,15 +161,15 @@ const CreateLecture = () => {
                   className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-700 text-white py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
                 >
                   {loading ? (
-                    <>
+                    <React.Fragment key="loading-state">
                       <ClipLoader size={20} color="white" />
                       Creating...
-                    </>
+                    </React.Fragment>
                   ) : (
-                    <>
+                    <React.Fragment key="create-state">
                       <FaPlus />
                       Create Lecture
-                    </>
+                    </React.Fragment>
                   )}
                 </button>
               </div>

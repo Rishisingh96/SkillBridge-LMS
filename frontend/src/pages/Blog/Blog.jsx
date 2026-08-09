@@ -1,4 +1,4 @@
-import React from "react";
+
 import SEO from "../../components/seo/SEO";
 import { blogPostSchema } from "../../components/seo/SchemaData";
 

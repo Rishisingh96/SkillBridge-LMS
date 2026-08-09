@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Trophy, Medal, Award } from 'lucide-react';
 
 const Leaderboard = () => {

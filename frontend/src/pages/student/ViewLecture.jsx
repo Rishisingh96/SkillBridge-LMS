@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa6";
@@ -10,12 +10,10 @@ import img from "../../assets/Empty.png";
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import LecturePlayer from "../../components/lecture/LecturePlayer";
 import ModuleList from "../../components/lecture/ModuleList";
-import ResumeLearningButton from "../../components/progress/ResumeLearningButton";
 import { toast } from "react-toastify";
 import { useTheme } from "../../context/ThemeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { motion } from "framer-motion";
-import Nav from "../../components/navbar/Navbar";
 
 const ViewLecture = () => {
   const { courseId } = useParams();
@@ -23,20 +21,10 @@ const ViewLecture = () => {
   const dispatch = useDispatch();
   const { isDark, toggleTheme } = useTheme();
 
-  // Format seconds to "Xh Ym Zs"
-  const formatTime = (seconds) => {
-    if (!seconds) return "0h 0m 0s";
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${hours}h ${minutes}m ${secs}s`;
-  };
-
   const { selectedCourse, courseData } = useSelector((state) => state.course);
   const { moduleData } = useSelector((state) => state.module);
   const { userData: user } = useSelector((state) => state.user);
 
-  const [creatorData, setCreatorData] = useState(null);
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [courseProgress, setCourseProgress] = useState({
@@ -49,17 +37,17 @@ const ViewLecture = () => {
   });
 
   // Fetch Selected Course Data
-  const fetchCourseData = () => {
+  const fetchCourseData = useCallback(() => {
     courseData.map((course) => {
       if (course._id === courseId) {
         dispatch(setSelectedCourse(course));
       }
       return null;
     });
-  };
+  }, [courseData, courseId, dispatch]);
 
   // Fetch Modules
-  const fetchModules = async () => {
+  const fetchModules = useCallback(async () => {
     try {
       const response = await axios.get(
         `${BASE_URL}/api/course/course-modules/${courseId}`,
@@ -67,12 +55,12 @@ const ViewLecture = () => {
       );
       dispatch(setModuleData(response.data.modules));
     } catch (error) {
-      console.log(error);
+      console.log('Error fetching modules:', error);
     }
-  };
+  }, [courseId, dispatch]);
 
   // Check Enrollment
-  const checkEnrollment = async () => {
+  const checkEnrollment = useCallback(async () => {
     try {
       const response = await axios.get(
         `${BASE_URL}/api/enrollment/check/${courseId}`,
@@ -91,13 +79,25 @@ const ViewLecture = () => {
       toast.error("Please enroll in this course to access lectures");
       navigate(`/course/${courseId}`);
     }
-  };
+  }, [courseId, navigate]);
 
   useEffect(() => {
-    fetchCourseData();
-    fetchModules();
-    checkEnrollment();
-  }, [courseData, courseId]);
+    let isMounted = true;
+    
+    const initializeData = async () => {
+      await fetchCourseData();
+      await fetchModules();
+      if (isMounted) {
+        await checkEnrollment();
+      }
+    };
+    
+    initializeData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId, fetchCourseData, fetchModules, checkEnrollment]);
 
   // Auto-select first lecture
   useEffect(() => {
@@ -107,7 +107,8 @@ const ViewLecture = () => {
         setSelectedLecture(firstLecture);
       }
     }
-  }, [moduleData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moduleData, selectedLecture]);
 
   // Auto-switch to next lecture when current lecture completes
   const handleLectureComplete = async () => {
@@ -212,26 +213,8 @@ const ViewLecture = () => {
   };
 
   // Fetch Creator Data
-  useEffect(() => {
-    const handleCreator = async () => {
-      if (selectedCourse?.creator) {
-        try {
-          const result = await axios.post(
-            `${BASE_URL}/api/course/creator`,
-            { userId: selectedCourse?.creator },
-            { withCredentials: true }
-          );
-          setCreatorData(result.data);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
-    handleCreator();
-  }, [selectedCourse]);
-
   // Fetch Course Progress
-  const fetchCourseProgress = async () => {
+  const fetchCourseProgress = useCallback(async () => {
     if (user?._id && courseId && isEnrolled) {
       try {
         const response = await axios.get(
@@ -243,11 +226,11 @@ const ViewLecture = () => {
         console.log("Error fetching progress:", error);
       }
     }
-  };
+  }, [user?._id, courseId, isEnrolled]);
 
   useEffect(() => {
     fetchCourseProgress();
-  }, [user, courseId, isEnrolled]);
+  }, [user, courseId, isEnrolled, fetchCourseProgress]);
 
   // Refetch progress every 30 seconds while watching
   useEffect(() => {
@@ -258,7 +241,7 @@ const ViewLecture = () => {
     }, 30000); // Every 30 seconds
 
     return () => clearInterval(interval);
-  }, [user, courseId, isEnrolled]);
+  }, [user, courseId, isEnrolled, fetchCourseProgress]);
 
   // Auto-select first free lecture
   useEffect(() => {
@@ -272,7 +255,8 @@ const ViewLecture = () => {
         }
       }
     }
-  }, [moduleData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moduleData, selectedLecture]);
 
   return (
     <>

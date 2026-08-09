@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -330,7 +330,8 @@ const EditLecture = () => {
 
 
           <ResourcesUpload resources={resources}
-            setResources={setResources} />
+            setResources={setResources}
+            lectureId={lectureId} />
 
           <QuizUpload quizData={quizData}
             setQuizData={setQuizData} />

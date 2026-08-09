@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 
-const Videobg = React.memo(({ children }) => {
+const Videobg = memo(({ children }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {

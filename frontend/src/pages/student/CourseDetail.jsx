@@ -82,6 +82,12 @@ const CourseDetail = () => {
 
   const checkEnrollment = async () => {
     try {
+      if (!userData) {
+        setIsEnrolled(false);
+        setEnrollmentData(null);
+        return;
+      }
+
       const response = await axios.get(
         `${BASE_URL}/api/enrollment/check/${courseId}`,
         { withCredentials: true }
@@ -97,7 +103,11 @@ const CourseDetail = () => {
         setIsEnrolled(false);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Enrollment check error:", error);
+      if (error.response?.status === 401) {
+        console.log("User not authenticated, redirecting to login");
+        // User is not authenticated, will be handled by route protection
+      }
       setIsEnrolled(false);
       setEnrollmentData(null);
     }

@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import { motion } from "framer-motion";
 import {
   FaUsers,
@@ -8,7 +8,7 @@ import {
 
 import empty from "../../../assets/Empty.png";
 
-const InstructorCard = React.memo(({
+const InstructorCard = memo(({
   image,
   name,
   expertise,

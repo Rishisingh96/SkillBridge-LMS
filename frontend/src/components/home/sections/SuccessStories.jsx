@@ -48,83 +48,89 @@ const successStories = [
 const SuccessStories = () => {
   useEffect(() => {
     // Header animation
-    gsap.fromTo(
-      ".success-header",
-      {
-        opacity: 0,
-        y: 40,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".success-header",
-          start: "top 85%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-
-    // Stagger animation for stats
-    gsap.fromTo(
-      ".success-stat",
-      {
-        opacity: 0,
-        y: 30,
-        scale: 0.95,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "back.out(1.2)",
-        scrollTrigger: {
-          trigger: ".success-stat",
-          start: "top 85%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-
-    // Counter animation for stats
-    const statCounters = document.querySelectorAll(".success-stat h3");
-    statCounters.forEach((counter) => {
-      const text = counter.textContent;
-      const hasK = text.includes("K");
-      const hasPercent = text.includes("%");
-      const hasPlus = text.includes("+");
-      const numValue = parseFloat(text.replace(/[^0-9.]/g, ""));
-
+    const headerEl = document.querySelector(".success-header");
+    if (headerEl) {
       gsap.fromTo(
-        counter,
-        { innerText: 0 },
+        ".success-header",
         {
-          innerText: numValue,
-          duration: 2,
+          opacity: 0,
+          y: 40,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
           ease: "power2.out",
-          snap: { innerText: 1 },
           scrollTrigger: {
-            trigger: counter,
+            trigger: ".success-header",
             start: "top 85%",
-            once: true,
-          },
-          onUpdate: function() {
-            let current = parseFloat(this.targets()[0].innerText);
-            if (hasK) {
-              counter.textContent = Math.floor(current) + "K" + (hasPlus ? "+" : "");
-            } else if (hasPercent) {
-              counter.textContent = Math.floor(current) + "%";
-            } else {
-              counter.textContent = Math.floor(current) + (hasPlus ? "+" : "");
-            }
+            toggleActions: "play none none reverse",
           },
         }
       );
-    });
+    }
+
+    // Stagger animation for stats
+    const statEls = document.querySelectorAll(".success-stat");
+    if (statEls.length > 0) {
+      gsap.fromTo(
+        ".success-stat",
+        {
+          opacity: 0,
+          y: 30,
+          scale: 0.95,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "back.out(1.2)",
+          scrollTrigger: {
+            trigger: ".success-stat",
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Counter animation for stats
+      const statCounters = document.querySelectorAll(".success-stat h3");
+      statCounters.forEach((counter) => {
+        const text = counter.textContent;
+        const hasK = text.includes("K");
+        const hasPercent = text.includes("%");
+        const hasPlus = text.includes("+");
+        const numValue = parseFloat(text.replace(/[^0-9.]/g, ""));
+
+        gsap.fromTo(
+          counter,
+          { innerText: 0 },
+          {
+            innerText: numValue,
+            duration: 2,
+            ease: "power2.out",
+            snap: { innerText: 1 },
+            scrollTrigger: {
+              trigger: counter,
+              start: "top 85%",
+              once: true,
+            },
+            onUpdate: function() {
+              let current = parseFloat(this.targets()[0].innerText);
+              if (hasK) {
+                counter.textContent = Math.floor(current) + "K" + (hasPlus ? "+" : "");
+              } else if (hasPercent) {
+                counter.textContent = Math.floor(current) + "%";
+              } else {
+                counter.textContent = Math.floor(current) + (hasPlus ? "+" : "");
+              }
+            },
+          }
+        );
+      });
+    }
 
     // Stagger animation for story cards
     gsap.fromTo(

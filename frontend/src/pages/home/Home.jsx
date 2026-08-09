@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import SEO from "../../components/seo/SEO";
 import { websiteSchema, organizationSchema } from "../../components/seo/SchemaData";
+import FloatingChatWidget from "../../components/shared/FloatingChatWidget";
 
 // Critical above-fold section - load immediately
 import HeroSection from "../../components/home/sections/HeroSection";
@@ -73,6 +74,7 @@ const Home = () => {
         {/* <CTABanner /> */}
         <Footer />
       </Suspense>
+      <FloatingChatWidget />
     </>
   );
 };

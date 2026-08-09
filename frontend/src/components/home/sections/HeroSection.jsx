@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, memo } from "react";
 import Nav from "../../navbar/Navbar";
 import Videobg from "../shared/Videobg";
 import ai from "../../../assets/ai.png";
@@ -48,7 +48,7 @@ const StatCard = ({ icon, value, suffix, label, accent, border }) => (
 );
 
 // ═══════════════════════════════════════════════════════════════════════════
-const HeroSection = React.memo(() => {
+const HeroSection = memo(() => {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
 
@@ -59,99 +59,130 @@ const HeroSection = React.memo(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       // Badge
-      tl.fromTo(".hero-badge",
-        { opacity: 0, y: -20, scale: 0.88 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.55 }
-      );
+      const badgeEl = document.querySelector(".hero-badge");
+      if (badgeEl) {
+        tl.fromTo(".hero-badge",
+          { opacity: 0, y: -20, scale: 0.88 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.55 }
+        );
+      }
 
       // Student image from left
-      tl.fromTo(".hero-image",
-        { opacity: 0, x: -100, scale: 0.95 },
-        { opacity: 1, x: 0, scale: 1, duration: 1.1, ease: "power2.out" },
-        0.1
-      );
+      const imageEl = document.querySelector(".hero-image");
+      if (imageEl) {
+        tl.fromTo(".hero-image",
+          { opacity: 0, x: -100, scale: 0.95 },
+          { opacity: 1, x: 0, scale: 1, duration: 1.1, ease: "power2.out" },
+          0.1
+        );
+      }
 
       // Floating cards pop in
-      tl.fromTo(".floating-card",
-        { opacity: 0, scale: 0.5, rotate: -10 },
-        { opacity: 1, scale: 1, rotate: 0, duration: 0.5, stagger: 0.1, ease: "back.out(1.8)" },
-        "-=0.5"
-      );
+      const floatingCards = document.querySelectorAll(".floating-card");
+      if (floatingCards.length > 0) {
+        tl.fromTo(".floating-card",
+          { opacity: 0, scale: 0.5, rotate: -10 },
+          { opacity: 1, scale: 1, rotate: 0, duration: 0.5, stagger: 0.1, ease: "back.out(1.8)" },
+          "-=0.5"
+        );
+      }
 
       // Headings from right
-      tl.fromTo(".hero-heading",
-        { opacity: 0, x: 60 },
-        { opacity: 1, x: 0, duration: 0.7, stagger: 0.15 },
-        "-=0.7"
-      );
+      const headings = document.querySelectorAll(".hero-heading");
+      if (headings.length > 0) {
+        tl.fromTo(".hero-heading",
+          { opacity: 0, x: 60 },
+          { opacity: 1, x: 0, duration: 0.7, stagger: 0.15 },
+          "-=0.7"
+        );
+      }
 
       // Subtitle
-      tl.fromTo(".hero-subtitle",
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.55 },
-        "-=0.35"
-      );
+      const subtitles = document.querySelectorAll(".hero-subtitle");
+      if (subtitles.length > 0) {
+        tl.fromTo(".hero-subtitle",
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.55 },
+          "-=0.35"
+        );
+      }
 
       // Buttons
-      tl.fromTo(".hero-btn",
-        { opacity: 0, y: 16, scale: 0.94 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.14 },
-        "-=0.3"
-      );
+      const buttons = document.querySelectorAll(".hero-btn");
+      if (buttons.length > 0) {
+        tl.fromTo(".hero-btn",
+          { opacity: 0, y: 16, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.14 },
+          "-=0.3"
+        );
+      }
 
       // Stats slide up
-      tl.fromTo(".stat-card",
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 0.55, stagger: 0.1 },
-        "-=0.2"
-      );
+      const statCards = document.querySelectorAll(".stat-card");
+      if (statCards.length > 0) {
+        tl.fromTo(".stat-card",
+          { opacity: 0, y: 50 },
+          { opacity: 1, y: 0, duration: 0.55, stagger: 0.1 },
+          "-=0.2"
+        );
+      }
 
       // ── Floating bob loop ──────────────────────────────────────────
-      gsap.to(".floating-card", {
-        y: -14,
-        duration: 2.4,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        stagger: { each: 0.35, from: "random" },
-      });
+      if (floatingCards.length > 0) {
+        gsap.to(".floating-card", {
+          y: -14,
+          duration: 2.4,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          stagger: { each: 0.35, from: "random" },
+        });
+      }
 
       // Subtle image breathe
-      gsap.to(".hero-image", {
-        scale: 1.015,
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
+      if (imageEl) {
+        gsap.to(".hero-image", {
+          scale: 1.015,
+          duration: 4,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+      }
 
       // ── Counter animation ──────────────────────────────────────────
-      document.querySelectorAll(".stat-number").forEach((el) => {
+      const statNumbers = document.querySelectorAll(".stat-number");
+      statNumbers.forEach((el) => {
         const num = parseFloat(el.dataset.value);
         const suffix = el.dataset.suffix || "";
-        gsap.fromTo(el,
-          { innerText: 0 },
-          {
-            innerText: num,
-            duration: 2.2,
-            ease: "power2.out",
-            delay: 1.4,
-            snap: { innerText: 1 },
-            onUpdate() {
-              const v = parseFloat(this.targets()[0].innerText);
-              el.textContent = Math.round(v) + suffix;
-            },
-          }
-        );
+        if (!isNaN(num)) {
+          gsap.fromTo(el,
+            { innerText: 0 },
+            {
+              innerText: num,
+              duration: 2.2,
+              ease: "power2.out",
+              delay: 1.4,
+              snap: { innerText: 1 },
+              onUpdate() {
+                const v = parseFloat(this.targets()[0].innerText);
+                el.textContent = Math.round(v) + suffix;
+              },
+            }
+          );
+        }
       });
 
       // ── Sparkle shimmer on gradient text ─────────────────────────
-      gsap.to(".hero-gradient-text", {
-        backgroundPosition: "200% center",
-        duration: 3,
-        repeat: -1,
-        ease: "none",
-      });
+      const gradientText = document.querySelector(".hero-gradient-text");
+      if (gradientText) {
+        gsap.to(".hero-gradient-text", {
+          backgroundPosition: "200% center",
+          duration: 3,
+          repeat: -1,
+          ease: "none",
+        });
+      }
 
     }, sectionRef);
 

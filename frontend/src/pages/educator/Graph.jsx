@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import GraphSection from '../../components/dashboard/GraphSection'
 import { fetchDashboardStats } from '../../redux/slices/dashboardSlice'

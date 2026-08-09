@@ -1,4 +1,4 @@
-import React from "react";
+
 import { CheckCircle, PlayCircle, Lock } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { formatDuration } from "../../utils/formateDuration";

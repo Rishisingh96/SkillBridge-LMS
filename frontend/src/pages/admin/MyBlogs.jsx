@@ -1,4 +1,4 @@
-import React from "react";
+
 import MyBlogsList from "../../components/shared/MyBlogsList";
 
 const MyBlogs = () => {

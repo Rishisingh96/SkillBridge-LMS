@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import SEO from "./components/seo/SEO";
-import { websiteSchema, organizationSchema } from "./components/seo/SchemaData";
+import { websiteSchema } from "./components/seo/SchemaData";
 
 // Redux
 import { fetchCurrentUser } from "./redux/slices/userSlice";
@@ -84,7 +84,7 @@ const Blog = lazy(() => import("./pages/Blog/Blog"));
 
 function App() {
   const dispatch = useDispatch();
-  const { userData, loading, initialLoading } = useSelector(
+  const { userData } = useSelector(
     (state) => state.user,
   );
 
@@ -110,7 +110,7 @@ function App() {
     };
 
     deferDataFetch();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (userData) {
@@ -163,7 +163,7 @@ function App() {
       
       deferAdminData();
     }
-  }, [userData]);
+  }, [userData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <SocketProvider>
@@ -251,7 +251,10 @@ function App() {
           element={userData ? <MyEnrolledCourses /> : <Navigate to="/login" />}
         />
 
-        <Route path="/checkout/:courseId" element={<CheckoutPage />} />
+        <Route
+          path="/checkout/:courseId"
+          element={userData ? <CheckoutPage /> : <Navigate to="/login" />}
+        />
         <Route path="/student/notifications" element={<StudentNotification />} />
 
         {/* Student Dashboard */}

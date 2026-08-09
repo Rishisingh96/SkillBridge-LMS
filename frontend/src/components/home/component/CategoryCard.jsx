@@ -1,8 +1,8 @@
-import React from "react";
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-const CategoryCard = React.memo(({
+const CategoryCard = memo(({
   title,
   icon,
   courses = 0,

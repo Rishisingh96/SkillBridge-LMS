@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useState,
 } from "react";
@@ -38,7 +38,7 @@ const PurchaseHistory = () => {
   const navigate =
     useNavigate();
 
-  const {enrollments, loading, error,} = useSelector((state) => {
+  const {enrollments, loading,} = useSelector((state) => {
       console.log("Enrollment state:", state.enrollment);
       return state.enrollment;
     }

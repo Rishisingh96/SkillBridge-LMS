@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { motion } from "framer-motion";
 import {
   Calendar,
@@ -9,7 +9,7 @@ import {
 
 import empty from "../../../assets/Empty.png";
 
-const LiveClassCard = React.memo(({
+const LiveClassCard = memo(({
   thumbnail,
   title,
   instructor,

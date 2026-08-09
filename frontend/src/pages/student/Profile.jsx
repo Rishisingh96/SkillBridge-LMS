@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -18,10 +17,6 @@ import {
   FiShield,
   FiBookOpen,
 } from "react-icons/fi";
-
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 import Nav from "../../components/navbar/Navbar";
 
@@ -87,31 +82,6 @@ const Profile = () => {
   const { userData, loading, error } = useSelector(
     (state) => state.user
   );
-
-  const [enrollments, setEnrollments] = useState([]);
-  const [loadingEnrollments, setLoadingEnrollments] = useState(false);
-
-  // Fetch enrollments
-  useEffect(() => {
-    const fetchEnrollments = async () => {
-      if (!userData) return;
-
-      setLoadingEnrollments(true);
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/api/course/user-enrollments`,
-          { withCredentials: true }
-        );
-        setEnrollments(response.data.enrollments || []);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoadingEnrollments(false);
-      }
-    };
-
-    fetchEnrollments();
-  }, [userData]);
 
   // =========================================================
   // LOADING

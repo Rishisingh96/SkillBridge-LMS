@@ -141,7 +141,7 @@ const progressSlice = createSlice({
       .addCase(updateProgress.pending, (state) => {
         state.error = null;
       })
-      .addCase(updateProgress.fulfilled, (state, action) => {
+      .addCase(updateProgress.fulfilled, () => {
         // Progress updated successfully
       })
       .addCase(updateProgress.rejected, (state, action) => {

@@ -23,7 +23,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // Connect to socket when user is logged in
     if (userData?._id) {
-      const socketInstance = io(import.meta.env.VITE_SERVER_URL, {
+      const socketInstance = io(import.meta.env.VITE_SERVER_URL || "http://localhost:5000", {
         withCredentials: true,
         transports: ["websocket", "polling"],
       });

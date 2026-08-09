@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   NavLink,
   useNavigate,
@@ -11,7 +9,6 @@ import {
   BookOpen,
   BarChart3,
   LogOut,
-  ShieldCheck,
   X,
   Ticket,
 } from "lucide-react";

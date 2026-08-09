@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { Star, Play, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import empty from "../../../assets/Empty.png";
 
 
-const CourseCard = React.memo(({ thumbnail, title, category, price, id, reviews, enableMarquee = false }) => {
+const CourseCard = memo(({ thumbnail, title, category, price, id, reviews, enableMarquee = false }) => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
 

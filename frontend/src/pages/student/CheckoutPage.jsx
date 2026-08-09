@@ -218,11 +218,17 @@ const CheckoutPage = () => {
         return alert("Please fill all details");
       }
 
+      if (!userData) {
+        toast.error("Please login to continue");
+        navigate("/login");
+        return;
+      }
+
       setLoading(true);
 
       const orderData = await axios.post(
         BASE_URL + "/api/order/razorpay-order",
-        { 
+        {
           courseId: selectedCourse?._id,
           couponCode: coupon,
           discount: discount
@@ -237,13 +243,13 @@ const CheckoutPage = () => {
         name: "LEARN SKILLS",
         description: "COURSE ENROLLMENT",
         order_id: orderData.data.order.id,
-        
+
         handler: async function (response) {
           try {
             const verifyPayment = await axios.post(
               BASE_URL + "/api/order/verifypayment",
-              { 
-                ...response, 
+              {
+                ...response,
                 courseId: selectedCourse?._id,
                 name: formData.name,
                 email: formData.email,
@@ -259,7 +265,7 @@ const CheckoutPage = () => {
             toast.success(verifyPayment.data.message);
             navigate(`/viewlecture/${selectedCourse?._id}`);
           } catch (error) {
-            toast.error(error.response?.data?.message);
+            toast.error(error.response?.data?.message || "Payment verification failed");
           }
         },
       };
@@ -267,7 +273,13 @@ const CheckoutPage = () => {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Payment failed");
+      console.log("Payment error:", error);
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
+      } else {
+        toast.error(error.response?.data?.message || "Payment failed");
+      }
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
