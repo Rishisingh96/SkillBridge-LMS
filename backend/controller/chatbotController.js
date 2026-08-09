@@ -6,12 +6,18 @@ import { GoogleGenAI } from '@google/genai';
 // =========================
 export const chatWithAI = async (req, res) => {
   try {
+    console.log("===== CHATBOT DEBUG =====");
+    console.log("Request body:", req.body);
+    console.log("User:", req.user);
+    
     const { message, lectureId, lectureTitle, previousInteractionId } = req.body;
 
     if (!message || !lectureId) {
+      console.log("Validation failed - message:", message, "lectureId:", lectureId);
       return res.status(400).json({
         success: false,
         message: 'Message and lectureId are required',
+        received: { message, lectureId, lectureTitle }
       });
     }
 

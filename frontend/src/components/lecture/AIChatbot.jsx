@@ -199,18 +199,29 @@ const AIChatbot = ({ lectureId, lectureTitle }) => {
     setIsLoading(true);
 
     try {
+      console.log("===== CHATBOT FRONTEND DEBUG =====");
+      console.log("Sending data:", {
+        message: inputMessage,
+        lectureId,
+        lectureTitle,
+        chatHistory: messages,
+        previousInteractionId: interactionId,
+      });
+      
       // Call AI API with new Interactions API
       const response = await axios.post(
         `${BASE_URL}/api/chatbot/chat`,
         {
           message: inputMessage,
           lectureId,
-          lectureTitle,
+          lectureTitle: lectureTitle || "Unknown Lecture",
           chatHistory: messages,
           previousInteractionId: interactionId,
         },
         { withCredentials: true }
       );
+      
+      console.log("Response:", response.data);
 
       // Store the interaction ID for next request (stateful conversation)
       if (response.data.interactionId) {
@@ -226,7 +237,8 @@ const AIChatbot = ({ lectureId, lectureTitle }) => {
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
       console.log("Error sending message:", error);
-      toast.error("Failed to get response. Please try again.");
+      console.log("Error response:", error.response?.data);
+      toast.error(error.response?.data?.message || "Failed to get AI response");
       
       const errorMessage = {
         role: "assistant",
