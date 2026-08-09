@@ -52,6 +52,11 @@ const ViewLecture = () => {
     console.log("Course ID:", courseId);
     console.log("BASE_URL:", BASE_URL);
     
+    if (!courseId) {
+      console.log("No course ID provided");
+      return;
+    }
+    
     try {
       const response = await axios.get(
         `${BASE_URL}/api/course/course-modules/${courseId}`,
@@ -59,10 +64,18 @@ const ViewLecture = () => {
       );
       console.log("Modules response:", response.data);
       console.log("Modules array:", response.data.modules);
-      dispatch(setModuleData(response.data.modules));
+      console.log("Modules length:", response.data.modules?.length);
+      
+      if (response.data.success && response.data.modules) {
+        dispatch(setModuleData(response.data.modules));
+        console.log("Modules dispatched to Redux");
+      } else {
+        console.log("Invalid response format");
+      }
     } catch (error) {
       console.log('Error fetching modules:', error);
       console.log('Error response:', error.response?.data);
+      toast.error("Failed to load course content. Please try again.");
     }
   }, [courseId, dispatch]);
 
@@ -111,13 +124,24 @@ const ViewLecture = () => {
     console.log("===== AUTO SELECT LECTURE DEBUG =====");
     console.log("Module data:", moduleData);
     console.log("Selected lecture:", selectedLecture);
+    console.log("Module data length:", moduleData?.length);
     
     if (moduleData?.length > 0 && !selectedLecture) {
-      const firstLecture = moduleData[0]?.lectures?.[0];
-      console.log("First lecture found:", firstLecture);
-      if (firstLecture) {
-        setSelectedLecture(firstLecture);
-        console.log("Set selected lecture to:", firstLecture);
+      // Find first lecture from first module
+      for (const module of moduleData) {
+        if (module.lectures && module.lectures.length > 0) {
+          const firstLecture = module.lectures[0];
+          console.log("First lecture found:", firstLecture);
+          setSelectedLecture(firstLecture);
+          console.log("Set selected lecture to:", firstLecture);
+          break;
+        }
+      }
+      
+      // If no lectures found in any module
+      if (!selectedLecture) {
+        console.log("No lectures found in any module");
+        toast.info("No lectures available in this course yet.");
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

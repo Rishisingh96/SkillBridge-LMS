@@ -33,6 +33,21 @@ const LecturePlayer = ({
   console.log("Lecture ID:", lecture?._id || lecture?.id);
   console.log("Lecture Title:", lecture?.title || lecture?.lectureTitle);
 
+  // Show message if no lecture selected
+  if (!lecture) {
+    return (
+      <div className={`flex flex-col items-center justify-center p-8 text-center ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+        <div className="mb-4">
+          <svg className="w-16 h-16 mx-auto opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-semibold mb-2">No Lecture Selected</h3>
+        <p className="text-sm opacity-70">Please select a lecture from the module list to start watching</p>
+      </div>
+    );
+  }
+
   useEffect(() => {
 
     if (
@@ -301,33 +316,37 @@ const LecturePlayer = ({
           </button>
 
           <button
-            onClick={() => setActiveTab("resources")}
+            onClick={() => {
+              if (!lecture) {
+                toast.warning("Please select a lecture first to view resources");
+                return;
+              }
+              setActiveTab("resources");
+            }}
+            disabled={!lecture}
             className={`pb-4 pt-2 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === "resources"
                 ? "border-blue-500 text-blue-500"
                 : `border-transparent ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
-              }`}
+              } ${!lecture ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Resources
           </button>
 
           <button
-            onClick={() => setActiveTab("quiz")}
+            onClick={() => {
+              if (!lecture) {
+                toast.warning("Please select a lecture first to take quiz");
+                return;
+              }
+              setActiveTab("quiz");
+            }}
+            disabled={!lecture}
             className={`pb-4 pt-2 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === "quiz"
                 ? "border-blue-500 text-blue-500"
                 : `border-transparent ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
-              }`}
+              } ${!lecture ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Quiz
-          </button>
-
-          <button
-            onClick={() => setActiveTab("discussion")}
-            className={`pb-4 pt-2 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === "discussion"
-                ? "border-blue-500 text-blue-500"
-                : `border-transparent ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
-              }`}
-          >
-            Discussions
           </button>
 
           <button
@@ -345,6 +364,23 @@ const LecturePlayer = ({
               } ${!lecture ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             AI Chatbot
+          </button>
+
+          <button
+            onClick={() => {
+              if (!lecture) {
+                toast.warning("Please select a lecture first to view discussions");
+                return;
+              }
+              setActiveTab("discussion");
+            }}
+            disabled={!lecture}
+            className={`pb-4 pt-2 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === "discussion"
+                ? "border-blue-500 text-blue-500"
+                : `border-transparent ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
+              } ${!lecture ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            Discussions
           </button>
 
         </div>

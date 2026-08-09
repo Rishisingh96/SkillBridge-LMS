@@ -65,16 +65,9 @@ export const getCourseModules = async (req, res) => {
     console.log("Course ID:", courseId);
     console.log("User ID:", userId);
 
-    const course = await Course.findById(courseId).populate({
-      path: "modules",
-      populate: {
-        path: "lectures",
-      },
-    });
-
+    const course = await Course.findById(courseId);
     console.log("Course found:", course);
-    console.log("Course modules:", course?.modules);
-    console.log("Modules length:", course?.modules?.length);
+    console.log("Course modules raw:", course?.modules);
 
     if (!course) {
       return res.status(404).json({
@@ -83,48 +76,58 @@ export const getCourseModules = async (req, res) => {
       });
     }
 
-    let modules = course.modules;
-    
+    // Fetch modules separately and populate lectures
+    const modules = await Module.find({ course: courseId })
+      .populate({
+        path: "lectures",
+        select: "title description lectures course order",
+      })
+      .sort({ order: 1 });
+
+    console.log("Fetched modules:", modules);
+    console.log("Modules length:", modules?.length);
+
+    let modulesWithLectures = [];
+
+    for (const module of modules) {
+      console.log(`Module ${module._id} lectures:`, module.lectures);
+      
+      const moduleWithStats = {
+        ...module.toObject(),
+        totalLectures: module.lectures?.length || 0,
+        totalDuration: module.lectures?.reduce(
+          (sum, lecture) => sum + (lecture.video?.duration || 0),
+          0,
+        ) || 0,
+      };
+      
+      modulesWithLectures.push(moduleWithStats);
+    }
+
+    let totalCourseLectures = modulesWithLectures.reduce((sum, mod) => sum + mod.totalLectures, 0);
+    let totalCourseDuration = modulesWithLectures.reduce((sum, mod) => sum + mod.totalDuration, 0);
+
     // Merge user progress with modules if user is authenticated
-    if (userId && modules) {
+    let finalModules = modulesWithLectures;
+    if (userId && modulesWithLectures.length > 0) {
       try {
-        modules = await mergeUserProgressWithModules(modules, userId);
+        finalModules = await mergeUserProgressWithModules(modulesWithLectures, userId);
+        console.log("Progress merged modules:", finalModules);
       } catch (error) {
         console.error("Error merging progress:", error);
       }
     }
 
-    let totalCourseLectures = 0;
-    let totalCourseDuration = 0;
-
-    const modulesWithStats = modules.map((module) => {
-      const totalLectures = module.lectures ? module.lectures.length : 0;
-
-      const totalDuration = module.lectures ? module.lectures.reduce(
-        (sum, lecture) => sum + (lecture.video?.duration || 0),
-        0,
-      ) : 0;
-
-      totalCourseLectures += totalLectures;
-      totalCourseDuration += totalDuration;
-
-      return {
-        ...module,
-        totalLectures,
-        totalDuration,
-      };
-    });
-
-    console.log("Modules with stats:", modulesWithStats);
+    console.log("Final modules to send:", finalModules);
     console.log("Total lectures:", totalCourseLectures);
     console.log("Total duration:", totalCourseDuration);
 
     return res.status(200).json({
       success: true,
-      totalModules: course.modules.length,
+      totalModules: modules.length,
       totalLectures: totalCourseLectures,
       totalDuration: totalCourseDuration,
-      modules: modulesWithStats,
+      modules: finalModules,
     });
   } catch (error) {
     console.log("Get modules error:", error);
