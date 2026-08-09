@@ -48,14 +48,21 @@ const ViewLecture = () => {
 
   // Fetch Modules
   const fetchModules = useCallback(async () => {
+    console.log("===== FETCH MODULES DEBUG =====");
+    console.log("Course ID:", courseId);
+    console.log("BASE_URL:", BASE_URL);
+    
     try {
       const response = await axios.get(
         `${BASE_URL}/api/course/course-modules/${courseId}`,
         { withCredentials: true }
       );
+      console.log("Modules response:", response.data);
+      console.log("Modules array:", response.data.modules);
       dispatch(setModuleData(response.data.modules));
     } catch (error) {
       console.log('Error fetching modules:', error);
+      console.log('Error response:', error.response?.data);
     }
   }, [courseId, dispatch]);
 

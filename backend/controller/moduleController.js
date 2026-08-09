@@ -61,12 +61,20 @@ export const getCourseModules = async (req, res) => {
     const { courseId } = req.params;
     const userId = req.userId;
 
+    console.log("===== GET COURSE MODULES DEBUG =====");
+    console.log("Course ID:", courseId);
+    console.log("User ID:", userId);
+
     const course = await Course.findById(courseId).populate({
       path: "modules",
       populate: {
         path: "lectures",
       },
     });
+
+    console.log("Course found:", course);
+    console.log("Course modules:", course?.modules);
+    console.log("Modules length:", course?.modules?.length);
 
     if (!course) {
       return res.status(404).json({
@@ -107,6 +115,10 @@ export const getCourseModules = async (req, res) => {
       };
     });
 
+    console.log("Modules with stats:", modulesWithStats);
+    console.log("Total lectures:", totalCourseLectures);
+    console.log("Total duration:", totalCourseDuration);
+
     return res.status(200).json({
       success: true,
       totalModules: course.modules.length,
@@ -115,6 +127,7 @@ export const getCourseModules = async (req, res) => {
       modules: modulesWithStats,
     });
   } catch (error) {
+    console.log("Get modules error:", error);
     return res.status(500).json({
       success: false,
       message: `Get modules error ${error.message}`,
