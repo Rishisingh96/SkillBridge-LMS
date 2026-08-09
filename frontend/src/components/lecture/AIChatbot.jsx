@@ -148,6 +148,7 @@ const MarkdownRenderer = ({ content, isDark }) => {
 const AIChatbot = ({ lectureId, lectureTitle }) => {
   const { isDark } = useTheme();
   const { userData } = useSelector((state) => state.user);
+  const { selectedCourse } = useSelector((state) => state.course);
   
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -161,8 +162,39 @@ const AIChatbot = ({ lectureId, lectureTitle }) => {
   console.log("===== AI CHATBOT DEBUG =====");
   console.log("Props received:", { lectureId, lectureTitle });
   console.log("User data:", userData);
+  console.log("Selected course:", selectedCourse);
 
-  // Show error if lecture data is missing
+  // Check if user is enrolled in the course
+  const isEnrolled = selectedCourse?.enrolledStudents?.some(
+    enrollment => enrollment.toString() === userData?._id?.toString()
+  );
+
+  console.log("Is enrolled:", isEnrolled);
+
+  // Show enrollment prompt if not enrolled
+  if (!isEnrolled) {
+    return (
+      <div className={`p-6 text-center ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+        <div className="mb-4">
+          <FaRobot className="text-4xl mx-auto mb-2 opacity-50" />
+        </div>
+        <h3 className="text-lg font-semibold mb-2">AI Chatbot - Premium Feature</h3>
+        <p className="text-sm opacity-70 mb-4">Enroll in this course to unlock AI-powered learning assistance</p>
+        <button
+          onClick={() => window.location.href = `/course/${selectedCourse?._id}`}
+          className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+            isDark 
+              ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+              : 'bg-blue-500 hover:bg-blue-600 text-white'
+          }`}
+        >
+          Enroll Now
+        </button>
+      </div>
+    );
+  }
+
+  // Show error if lecture data is missing (but user is enrolled)
   if (!lectureId) {
     return (
       <div className={`p-6 text-center ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>

@@ -27,13 +27,22 @@ const LecturePlayer = ({
   const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState("about");
   const { userData: user } = useSelector((state) => state.user) || {};
+  const { selectedCourse } = useSelector((state) => state.course) || {};
 
   console.log("===== LECTURE PLAYER DEBUG =====");
   console.log("Lecture data:", lecture);
   console.log("Lecture ID:", lecture?._id || lecture?.id);
   console.log("Lecture Title:", lecture?.title || lecture?.lectureTitle);
+  console.log("Selected course:", selectedCourse);
 
-  // Show message if no lecture selected
+  // Check if user is enrolled
+  const isEnrolled = selectedCourse?.enrolledStudents?.some(
+    enrollment => enrollment.toString() === user?._id?.toString()
+  );
+
+  console.log("Is enrolled:", isEnrolled);
+
+  // Move early return after all hooks
   if (!lecture) {
     return (
       <div className={`flex flex-col items-center justify-center p-8 text-center ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -355,15 +364,19 @@ const LecturePlayer = ({
                 toast.warning("Please select a lecture first to use AI Chatbot");
                 return;
               }
+              if (!isEnrolled) {
+                toast.warning("Please enroll in this course to unlock AI Chatbot");
+                return;
+              }
               setActiveTab("chatbot");
             }}
-            disabled={!lecture}
+            disabled={!lecture || !isEnrolled}
             className={`pb-4 pt-2 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === "chatbot"
                 ? "border-blue-500 text-blue-500"
                 : `border-transparent ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
-              } ${!lecture ? 'opacity-50 cursor-not-allowed' : ''}`}
+              } ${(!lecture || !isEnrolled) ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            AI Chatbot
+            AI Chatbot {!isEnrolled && <span className="ml-1 text-xs">🔒</span>}
           </button>
 
           <button
