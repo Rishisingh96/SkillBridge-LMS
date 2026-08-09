@@ -27,6 +27,11 @@ const LecturePlayer = ({
   const [activeTab, setActiveTab] = useState("about");
   const { userData: user } = useSelector((state) => state.user) || {};
 
+  console.log("===== LECTURE PLAYER DEBUG =====");
+  console.log("Lecture data:", lecture);
+  console.log("Lecture ID:", lecture?._id || lecture?.id);
+  console.log("Lecture Title:", lecture?.title || lecture?.lectureTitle);
+
   useEffect(() => {
 
     if (
@@ -377,7 +382,10 @@ const LecturePlayer = ({
         )}
 
         {activeTab === "chatbot" && (
-          <AIChatbot lectureId={lecture?._id} lectureTitle={lecture?.lectureTitle} />
+          <AIChatbot 
+            lectureId={lecture?._id || lecture?.id} 
+            lectureTitle={lecture?.title || lecture?.lectureTitle || "Lecture"} 
+          />
         )}
 
       </div>
