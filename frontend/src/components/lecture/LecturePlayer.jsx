@@ -13,6 +13,7 @@ import AIChatbot from "./AIChatbot";
 import { useTheme } from "../../context/ThemeContext";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { toast } from "react-toastify";
 const BASE_URL = import.meta.env.VITE_SERVER_URL;
 
 
@@ -330,11 +331,18 @@ const LecturePlayer = ({
           </button>
 
           <button
-            onClick={() => setActiveTab("chatbot")}
+            onClick={() => {
+              if (!lecture) {
+                toast.warning("Please select a lecture first to use AI Chatbot");
+                return;
+              }
+              setActiveTab("chatbot");
+            }}
+            disabled={!lecture}
             className={`pb-4 pt-2 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 ${activeTab === "chatbot"
                 ? "border-blue-500 text-blue-500"
                 : `border-transparent ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`
-              }`}
+              } ${!lecture ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             AI Chatbot
           </button>

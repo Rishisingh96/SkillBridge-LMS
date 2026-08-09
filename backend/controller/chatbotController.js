@@ -16,7 +16,9 @@ export const chatWithAI = async (req, res) => {
       console.log("Validation failed - message:", message, "lectureId:", lectureId);
       return res.status(400).json({
         success: false,
-        message: 'Message and lectureId are required',
+        message: !lectureId 
+          ? 'Please select a lecture first. The AI needs lecture context to provide accurate answers.' 
+          : 'Please enter a message.',
         received: { message, lectureId, lectureTitle }
       });
     }

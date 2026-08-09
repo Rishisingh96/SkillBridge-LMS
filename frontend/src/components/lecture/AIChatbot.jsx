@@ -157,6 +157,23 @@ const AIChatbot = ({ lectureId, lectureTitle }) => {
   const [chatHistory, setChatHistory] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [interactionId, setInteractionId] = useState(null);
+
+  console.log("===== AI CHATBOT DEBUG =====");
+  console.log("Props received:", { lectureId, lectureTitle });
+  console.log("User data:", userData);
+
+  // Show error if lecture data is missing
+  if (!lectureId) {
+    return (
+      <div className={`p-6 text-center ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+        <div className="mb-4">
+          <FaRobot className="text-4xl mx-auto mb-2 opacity-50" />
+        </div>
+        <p className="text-lg">Please select a lecture to use the AI chatbot</p>
+        <p className="text-sm opacity-70 mt-2">The AI needs lecture context to provide accurate answers</p>
+      </div>
+    );
+  }
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);

@@ -101,10 +101,16 @@ const ViewLecture = () => {
 
   // Auto-select first lecture
   useEffect(() => {
+    console.log("===== AUTO SELECT LECTURE DEBUG =====");
+    console.log("Module data:", moduleData);
+    console.log("Selected lecture:", selectedLecture);
+    
     if (moduleData?.length > 0 && !selectedLecture) {
       const firstLecture = moduleData[0]?.lectures?.[0];
+      console.log("First lecture found:", firstLecture);
       if (firstLecture) {
         setSelectedLecture(firstLecture);
+        console.log("Set selected lecture to:", firstLecture);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
