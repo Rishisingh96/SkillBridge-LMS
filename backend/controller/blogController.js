@@ -2,7 +2,6 @@ import BlogCategory from "../models/blogCategoryModel.js";
 import BlogCourse from "../models/blogCourseModel.js";
 import BlogModel from "../models/blogModelModel.js";
 import BlogTopic from "../models/blogTopicModel.js";
-import User from "../models/userModel.js";
 import uploadOnCloudinary from "../config/cloudinary.js";
 
 // ── BLOG CATEGORY CONTROLLERS ──────────────────────────

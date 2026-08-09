@@ -244,7 +244,11 @@ export const downloadCertificate = async (
     );
 
     // Set CORS headers explicitly for file download
-    res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
+    const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:5173", "https://skillbridgelearnbyrishi.vercel.app"];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
     res.setHeader("Access-Control-Allow-Credentials", "true");
 
     doc.pipe(res);

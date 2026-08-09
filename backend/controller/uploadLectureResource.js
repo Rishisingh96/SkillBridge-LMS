@@ -1,13 +1,11 @@
 // Import Models
 import Course from "../models/courseModel.js";
 import Lecture from "../models/lectureModel.js";
-import User from "../models/userModel.js";
 import Module from "../models/moduleModel.js";
 
 // Cloudinary
 import uploadOnCloudinary from "../config/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
-import { isCourseActive } from "../utils/isCourseActive.js";
 
 
 // Upload Lecture Resources
@@ -255,13 +253,6 @@ export const downloadResource = async (
       });
 
     }
-
-    // =========================
-    // CHECK CREATOR
-    // =========================
-    const isCreator =
-      course.creator.toString()
-      === userId;
 
     // =========================
     // ACCESS CHECK - REMOVED ENROLLMENT RESTRICTION

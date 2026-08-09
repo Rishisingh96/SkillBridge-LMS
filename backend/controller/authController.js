@@ -33,7 +33,7 @@ export const signUP = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // ✅ User banao but isVerified false rakho
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashPassword,

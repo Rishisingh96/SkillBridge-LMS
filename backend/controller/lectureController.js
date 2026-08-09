@@ -2,7 +2,6 @@
 import Course from "../models/courseModel.js";
 import uploadOnCloudinary from "../config/cloudinary.js";
 import Lecture from "../models/lectureModel.js";
-import User from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
 import Module from "../models/moduleModel.js";
 import LectureProgress from "../models/lectureProgressModel.js";
@@ -185,7 +184,7 @@ export const editLecture = async (req, res) => {
 
       } catch (videoError) {
         console.error("Video upload error:", videoError);
-        throw new Error(`Video upload failed: ${videoError.message}`);
+        throw new Error(`Video upload failed: ${videoError.message}`, { cause: videoError });
       }
 
     }

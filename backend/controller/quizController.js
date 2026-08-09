@@ -1,11 +1,5 @@
 // Import Models
-import Course from "../models/courseModel.js";
 import Lecture from "../models/lectureModel.js";
-import User from "../models/userModel.js";
-
-// Cloudinary
-import uploadOnCloudinary from "../config/cloudinary.js";
-import { v2 as cloudinary } from "cloudinary";
 
 // Add Quiz Question
 export const addQuizQuestion = async (req, res) => {
