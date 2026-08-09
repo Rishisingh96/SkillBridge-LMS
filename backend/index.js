@@ -18,6 +18,7 @@ import notification from "./routes/notificationRoutes.js"
 import certificateRouter from "./routes/certificateRoute.js"
 import blogRouter from "./routes/blogRoute.js"
 import seoRouter from "./routes/seoRoute.js"
+import chatbotRouter from "./routes/chatbotRoute.js"
 
 // Socket
 import { initializeSocketServer } from "./sockets/index.js";
@@ -33,6 +34,7 @@ import "./models/blogCategoryModel.js";
 import "./models/blogCourseModel.js";
 import "./models/blogModelModel.js";
 import "./models/blogTopicModel.js";
+import "./models/chatboatModel.js";
 
 // Middleware
 import errorHandler from "./middleware/errorHandler.js";
@@ -69,6 +71,7 @@ app.use("/api/notification", notification)
 app.use("/api/certificate", certificateRouter)
 app.use("/", seoRouter)
 app.use("/api/blog", blogRouter)
+app.use("/api/chatbot", chatbotRouter)
 
 
 // HEALTH CHECK
