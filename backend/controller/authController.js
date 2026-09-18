@@ -2,9 +2,8 @@ import User from "../models/userModel.js"
 import validator from "validator"
 import bcrypt from "bcryptjs"
 import genToken from "../config/token.js"
-import sendMail, { sendWelcomeEmail } from "../config/sendMail.js"
+import sendMail from "../config/sendMail.js"
 import crypto from "crypto"
-import { notifyNewUserRegistration } from "../helpers/notificationHelpers.js";
 
 
 //Signup
@@ -29,29 +28,45 @@ export const signUP = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    // OTP generate karo
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // ✅ User banao but isVerified false rakho
-    await User.create({
+    // Create user with isVerified: true (no OTP required)
+    const user = await User.create({
       name,
       email,
       password: hashPassword,
       role: role || "student",
-      // role: "student",
-      isVerified: false,        // ✅
-      resetOtp: otp,            // ✅ OTP save karo
-      otpExpires: Date.now() + 5 * 60 * 1000, // ✅ 5 min
+      isVerified: true,
     });
 
-    // ✅ OTP email pe bhejo
-    await sendMail(email, otp);
+    // Create session (same as login)
+    const token = await genToken(user._id);
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    const currentSessionId = crypto.randomBytes(32).toString('hex');
+    const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
 
-    // ✅ Token mat do abhi — pehle verify kare
+    // Update user session info
+    user.currentSessionId = currentSessionId;
+    user.sessionDevice = userAgent.substring(0, 100);
+    user.sessionExpiresAt = sessionExpiresAt;
+    user.lastLogin = Date.now();
+    await user.save();
+
+    // Set httpOnly cookie (same as login)
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // Return safe user (exclude password)
+    const safeUser = await User.findById(user._id).select("-password");
+
     return res.status(201).json({
       success: true,
-      message: "OTP sent to your email. Please verify to continue.",
-      email, // frontend ko email chahiye verify ke liye
+      message: "Account created successfully",
+      user: safeUser,
+      token,
+      sessionId: currentSessionId,
     });
 
   } catch (error) {
@@ -69,23 +84,12 @@ export const login = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Verified check
+    // Auto-verify legacy users with isVerified: false
     if (!user.isVerified) {
-      // OTP dobara bhejo
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      user.resetOtp = otp;
-      user.otpExpires = Date.now() + 5 * 60 * 1000;
-      await user.save();
-      await sendMail(email, otp);
-
-      return res.status(403).json({
-        message: "Email not verified. New OTP sent to your email.",
-        email,
-        isVerified: false,
-      });
+      user.isVerified = true;
     }
 
-    // ✅ Banned check
+    // Banned check
     if (user.isBanned) {
       return res.status(403).json({ message: "Your account has been banned" });
     }
@@ -178,7 +182,7 @@ export const sendOtp = async (req, res) => {
     }
 }
 
-//verigyOTP
+//verigyOTP (used for Forgot Password only)
 export const varifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -194,49 +198,15 @@ export const varifyOTP = async (req, res) => {
       return res.status(400).json({ message: "OTP expired" });
     }
 
-    // ✅ Verify karo
-    user.isVerified = true;
+    // Mark OTP as verified (for password reset)
     user.isOtpVerifed = true;
     user.resetOtp = undefined;
     user.otpExpires = undefined;
-    
-    // Update session info
-    const userAgent = req.headers['user-agent'] || 'Unknown Device';
-    const currentSessionId = crypto.randomBytes(32).toString('hex');
-    const sessionExpiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
-    user.currentSessionId = currentSessionId;
-    user.sessionDevice = userAgent.substring(0, 100);
-    user.sessionExpiresAt = sessionExpiresAt;
-    user.lastLogin = Date.now();
     await user.save();
-
-    // Add this after user.save() in varifyOTP
-    await notifyNewUserRegistration({
-      userName: user.name,
-      userPhone: user.phone,
-      userEmail: user.email,
-      userRole: user.role,
-    });
-
-    // ✅ Send welcome email after successful verification
-    await sendWelcomeEmail(user.email, user.name);
-
-    // ✅ Ab token do — account verified ho gaya
-    const token = await genToken(user._id);
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
 
     return res.status(200).json({
       success: true,
-      message: "Email verified successfully",
-      user,
-      token,
-      sessionId: currentSessionId,
+      message: "OTP verified successfully",
     });
 
   } catch (error) {
@@ -264,35 +234,22 @@ export const resetPassword = async (req, res) =>{
 }
 
 
-//Google Singup 
+//Google Singup
 export const googleAuth = async (req, res) =>{
         try {
             const {name, email, photoUrl, role} = req.body
-            
+
             let user = await User.findOne({email})
-            
+
             if(!user){
                 // Create new user with role, default to 'student' if not provided
                 user = await User.create({
-                    name, 
-                    email , 
+                    name,
+                    email ,
                     photoUrl,
                     role: role || "student",
                     isVerified: true, // Google users are auto-verified
                 })
-                
-                // ✅ Send welcome email for Google signup
-                await sendWelcomeEmail(user.email, user.name);
-
-                // After line 276 (after sendWelcomeEmail for new users)
-if (!user.isVerified) { // Only for new users
-  await notifyNewUserRegistration({
-    userName: user.name,
-    userPhone: user.phone,
-    userEmail: user.email,
-    userRole: user.role,
-  });
-}
             } else {
                 // Update existing user with Google photo if not present
                 if(!user.photoUrl && photoUrl){
@@ -314,7 +271,7 @@ if (!user.isVerified) { // Only for new users
             let token = await genToken(user._id)
 
             res.cookie("token", token, {
-                httpOnly:true, 
+                httpOnly:true,
                 secure: process.env.NODE_ENV === "production",  // when we deploye than chage true
                 sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
                 maxAge: 7*24*60*60*1000 // chage in milisecont
@@ -325,7 +282,7 @@ if (!user.isVerified) { // Only for new users
                 token: token,
                 sessionId: currentSessionId,
             })
-            
+
         } catch (error) {
             return res.status(500).json({message: `Google auth error: ${error.message}`})
         }

@@ -42,7 +42,6 @@ const StudentDashboard = lazy(() => import("./pages/student/StudentDashboard"));
 const PurchaseHistory = lazy(() => import("./pages/student/PurchaseHistory"));
 const ForgetPassword = lazy(() => import("./pages/auth/ForgetPassword"));
 const EditProfile = lazy(() => import("./pages/student/EditProfile"));
-const VerifyEmail = lazy(() => import("./pages/auth/VerifyEmail"));
 const EducatorDashboard = lazy(() => import("./pages/educator/EducatorDashboard"));
 const Courses = lazy(() => import("./pages/educator/Courses"));
 const CreateCourse = lazy(() => import("./pages/educator/CreateCourse"));
@@ -193,9 +192,9 @@ function App() {
             ) : userData?.role === "admin" ? (
               <Navigate to="/admin/dashboard" />
             ) : userData?.role === "educator" ? (
-              <Navigate to="/" />
+              <Navigate to="/educator/dashboard" />
             ) : (
-              <Navigate to="/" />
+              <Navigate to="/student/dashboard" />
             )
           }
         />
@@ -215,15 +214,14 @@ function App() {
             ) : userData?.role === "admin" ? (
               <Navigate to="/admin/dashboard" />
             ) : userData?.role === "educator" ? (
-              <Navigate to="/" />
+              <Navigate to="/educator/dashboard" />
             ) : (
-              <Navigate to="/" />
+              <Navigate to="/student/dashboard" />
             )
           }
         />
 
         <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Protected - Student */}
         <Route
@@ -269,7 +267,7 @@ function App() {
             )
           }
         >
-          <Route index element={<Navigate to="stu-dashboard" replace />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
 
           <Route path="dashboard" element={<StudentDashboard />} />
 
@@ -311,7 +309,7 @@ function App() {
             !userData ? (
               <Navigate to="/login" />
             ) : userData?.role === "educator" ? (
-              <Navigate to="/educator/profile" />
+              <Navigate to="/educator/dashboard" />
             ) : (
               <Navigate to="/" />
             )
@@ -331,7 +329,7 @@ function App() {
             )
           }
         >
-          <Route index element={<Navigate to="profile" replace />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
 
           <Route path="profile" element={<EducatorProfile />} />
           <Route path="graph" element={<Graph />} />

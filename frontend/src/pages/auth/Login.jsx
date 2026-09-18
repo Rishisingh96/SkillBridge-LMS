@@ -69,7 +69,7 @@ const Login = () => {
       } else if (user.role === "educator") {
         navigate("/educator/dashboard");
       } else {
-        navigate("/");
+        navigate("/student/dashboard");
       }
 
       setLoading(false);
@@ -115,11 +115,19 @@ const Login = () => {
         },
       );
 
-      dispatch(setUserData(result.data.user || result.data));
+      const userData = result.data.user || result.data;
+      dispatch(setUserData(userData));
 
       toast.success("Login Successfully");
 
-      navigate("/");
+      // Role-based redirect
+      if (userData.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (userData.role === "educator") {
+        navigate("/educator/dashboard");
+      } else {
+        navigate("/student/dashboard");
+      }
 
       setLoading(false);
     } catch (error) {

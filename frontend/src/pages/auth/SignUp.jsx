@@ -50,7 +50,19 @@ const SignUp = () => {
 
       setLoading(false);
       toast.success(result.data.message);
-      navigate("/verify-email", { state: { email } }); // ✅ email pass karo
+
+      // Dispatch user data
+      const user = result.data.user || result.data;
+      dispatch(setUserData(user));
+
+      // Role-based redirect
+      if (user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (user.role === "educator") {
+        navigate("/educator/dashboard");
+      } else {
+        navigate("/student/dashboard");
+      }
     } catch (error) {
       setLoading(false);
       toast.error(error.response?.data?.message || "Something went wrong");
@@ -76,13 +88,21 @@ const SignUp = () => {
         { withCredentials: true },
       );
 
-      dispatch(setUserData(result.data));
+      const userData = result.data.user || result.data;
+      dispatch(setUserData(userData));
 
       setLoading(false);
 
       toast.success("Signup Successfully");
 
-      navigate("/");
+      // Role-based redirect
+      if (userData.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (userData.role === "educator") {
+        navigate("/educator/dashboard");
+      } else {
+        navigate("/student/dashboard");
+      }
     } catch (error) {
       console.log(error);
 
