@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import Lecture from "./models/lectureModel.js";
 import LectureProgress from "./models/lectureProgressModel.js";
 import Enrollment from "./models/enrollmentModel.js";
-import User from "./models/userModel.js";
 
 dotenv.config();
 

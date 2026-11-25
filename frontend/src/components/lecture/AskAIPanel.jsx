@@ -3,7 +3,7 @@
 
 // har tab render mein AskAI ke liye ek sparkle/bot icon add kar sakte ho
 // components/AskAI/AskAIPanel.jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Send, Maximize2, Minimize2, Bookmark } from 'lucide-react';
 import axios from '../../utils/axiosInstance'; // your existing axios instance
 

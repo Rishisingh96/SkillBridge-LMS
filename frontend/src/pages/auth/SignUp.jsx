@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import logo from "../../assets/logo1.png";
 import { FaRegEye } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";

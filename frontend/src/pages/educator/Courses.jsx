@@ -1,5 +1,5 @@
 import { FaArrowLeft } from "react-icons/fa6";
-import { FaEdit, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";

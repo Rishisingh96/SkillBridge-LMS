@@ -74,6 +74,15 @@ export const enrollCourse = async (req, res) => {
       pricePaid: 0,
       startDate,
       endDate,
+      paymentDetails: {
+        originalPrice: course.price || 0,
+        discountAmount: 0,
+        studentName: user.name || "Student",
+        studentEmail: user.email,
+        studentPhone: user.phone || "N/A",
+        paymentMethod: "free",
+        paymentStatus: "paid",
+      },
     });
 
     // SEND NOTIFICATIONS

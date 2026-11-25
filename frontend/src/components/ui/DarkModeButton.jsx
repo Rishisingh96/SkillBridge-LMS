@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi2";
 
 const DarkModeButton = () => {

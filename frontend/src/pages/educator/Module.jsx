@@ -28,7 +28,7 @@ const Module = () => {
   const [description, setDescription] = useState("");
   const [editingModule, setEditingModule] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   // Fetch Modules on component mount
   useEffect(() => {

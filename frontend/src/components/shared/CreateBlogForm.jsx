@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,11 +11,11 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 import { toast } from "react-toastify";
 
-const CreateBlogForm = ({ role, redirectPath }) => {
+const CreateBlogForm = ({ redirectPath }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isDark } = useTheme();
-  const { loading, error } = useSelector((state) => state.blog);
+  const { loading } = useSelector((state) => state.blog);
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSocket } from "../../context/SocketContext";
@@ -7,7 +7,7 @@ const BASE_URL = import.meta.env.VITE_SERVER_URL;
 import { useNavigate } from "react-router-dom";
 
 const NotificationBell = () => {
-  const { unreadCount, latestNotification, setLatestNotification } = useSocket();
+  const { unreadCount, setLatestNotification } = useSocket();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ const NotificationBell = () => {
     setLatestNotification(null);
   }, [navigate, setLatestNotification]);
 
-  const handleMarkAsRead = useCallback(async (notificationId) => {
+  const _handleMarkAsRead = useCallback(async (notificationId) => {
     try {
       await axios.patch(
         `${BASE_URL}/api/notification/${notificationId}/read`,

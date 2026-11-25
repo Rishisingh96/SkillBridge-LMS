@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express from "express";
 import { createCourse, deleteCourse, editCourse, getCourseById, getCreatorById, getCreatorCourses, getPublishedCourses, togglePublishCourse, getAllCourses } from "../controller/courseController.js";
 import upload from "../middleware/multer.js";
 import isAuth from "../middleware/isAuth.js";
@@ -6,7 +6,7 @@ import isRole from "../middleware/isRole.js";
 import { createLecture, editLecture, getCourseLectures, removeLecture, removeLectureVideo, markLectureCompleted, markQuizCompleted } from "../controller/lectureController.js";
 import { downloadResource, getLectureResources, removeResource, uploadLectureResource } from "../controller/uploadLectureResource.js";
 import { addQuizQuestion, removeQuizQuestion, getLectureQuiz } from "../controller/quizController.js";
-import { enrollCourse, checkEnrollmentStatus, getUserEnrollments } from "../controller/enrollMentController.js";
+import { getUserEnrollments } from "../controller/enrollMentController.js";
 import { getCourseProgress, resumeLecture, updateLectureProgress } from "../controller/progressController.js";
 import { createModule, getCourseModules, removeAllModules, removeModule } from "../controller/moduleController.js";
 import { getDashboardStats, getRecentEnrollments } from "../controller/dashboardController.js";
@@ -97,15 +97,17 @@ courseRoute.put("/comment/pin/:lectureId/:commentId", isAuth, togglePinComment);
 
 // Progress report 
 // ──────────────────────────────────────────
-courseRoute.post("/progress/update", updateLectureProgress);
+courseRoute.post("/progress/update", isAuth, updateLectureProgress);
 
 courseRoute.get(
   "/progress/course/:courseId",
+  isAuth,
   getCourseProgress
 );
 
 courseRoute.get(
   "/progress/resume/:courseId",
+  isAuth,
   resumeLecture
 );
 

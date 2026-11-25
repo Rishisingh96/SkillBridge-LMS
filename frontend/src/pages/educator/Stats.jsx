@@ -6,7 +6,7 @@ import { useTheme } from '../../context/ThemeContext'
 
 const Stats = () => {
   const dispatch = useDispatch()
-  const { stats, loading } = useSelector((state) => state.dashboard)
+  const { stats } = useSelector((state) => state.dashboard)
   const { isDark } = useTheme()
 
   useEffect(() => {

@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchAllBlogCategories, fetchBlogTopicById } from "../../redux/slices/blogSlice";
 import BlogSidebar from "../../components/blog/BlogSidebar";
 import BlogHero from "../../components/blog/BlogHero";
-import BlogSectionCard from "../../components/blog/BlogSectionCard";
-import BlogContent from "../../components/blog/BlogContent";
 
 const BlogPanel = () => {
   const dispatch = useDispatch();

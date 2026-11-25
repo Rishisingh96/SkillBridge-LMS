@@ -24,7 +24,7 @@ const StatsCards = () => {
       setLoadingEnrollments(true);
 
       try{
-        const response = await axios.get(
+        await axios.get(
          
         )
       }

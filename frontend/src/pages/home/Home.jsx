@@ -1,6 +1,6 @@
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import SEO from "../../components/seo/SEO";
-import { websiteSchema, organizationSchema } from "../../components/seo/SchemaData";
+import { websiteSchema } from "../../components/seo/SchemaData";
 import FloatingChatWidget from "../../components/shared/FloatingChatWidget";
 
 // Critical above-fold section - load immediately

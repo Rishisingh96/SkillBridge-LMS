@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import {
   FaArrowLeft,
   FaStar,
@@ -19,7 +19,7 @@ import { setSelectedCourse } from "../../redux/slices/courseSlice";
 
 import ModuleList from "../../components/lecture/ModuleList";
 import SEO from "../../components/seo/SEO";
-import { courseSchema, breadcrumbSchema } from "../../components/seo/SchemaData";
+import { courseSchema } from "../../components/seo/SchemaData";
 
 import img from "../../assets/Empty.png";
 import CheckoutPage from "../student/CheckoutPage";
@@ -65,7 +65,7 @@ const CourseDetail = () => {
 
   // ---------------- FETCH MODULES ----------------
 
-  const fetchModules = async () => {
+  const fetchModules = useCallback(async () => {
     try {
       const response = await axios.get(
         `${BASE_URL}/api/course/course-modules/${courseId}`,
@@ -80,7 +80,7 @@ const CourseDetail = () => {
 
   // ---------------- CHECK ENROLLMENT ----------------
 
-  const checkEnrollment = async () => {
+  const checkEnrollment = useCallback(async () => {
     try {
       if (!userData) {
         setIsEnrolled(false);
@@ -223,7 +223,7 @@ const CourseDetail = () => {
 
   // ---------------- ENROLL ----------------
 
-  const handleEnroll = async (courseId) => {
+  const _handleEnroll = async (courseId) => {
     try {
       const orderData = await axios.post(
         BASE_URL + "/api/order/razorpay-order",

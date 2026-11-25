@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Phone, MessageCircle, X } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 

@@ -1,6 +1,6 @@
 // src/components/course-player/ResumeLearningButton.jsx
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchResumeLecture } from "../../redux/slices/progressSlice";
 import { useTheme } from "../../context/ThemeContext";

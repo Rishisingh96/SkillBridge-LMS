@@ -1,5 +1,5 @@
 
-import { Play, BookOpen } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 const ContinueLearning = () => {
   const courses = [

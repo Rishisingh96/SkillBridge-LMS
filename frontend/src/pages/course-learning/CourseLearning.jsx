@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../context/ThemeContext";
@@ -17,13 +17,13 @@ const CourseLearning = () => {
   const { isDark } = useTheme();
   const dispatch = useDispatch();
 
-  const { userData: user } = useSelector((state) => state.user) || {};
+  useSelector((state) => state.user);
   const { moduleData, loading: modulesLoading } = useSelector((state) => state.module);
   const { selectedCourse, loading: courseLoading } = useSelector((state) => state.course);
-  const { courseProgress, loading: progressLoading } = useSelector((state) => state.progress);
+  const { courseProgress } = useSelector((state) => state.progress);
 
   const [selectedLecture, setSelectedLecture] = useState(null);
-  const [isEnrolled, setIsEnrolled] = useState(true);
+  const [isEnrolled] = useState(true);
 
   const progressData = courseProgress?.[courseId];
   const completed = progressData?.completedLectures || 0;

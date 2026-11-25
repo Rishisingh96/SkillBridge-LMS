@@ -20,7 +20,7 @@ const EducatorDashboard = () => {
   const { isDark } = useTheme();
 
   const { creatorCourseData } = useSelector((state) => state.course);
-  const { stats, loading } = useSelector((state) => state.dashboard);
+  const { stats } = useSelector((state) => state.dashboard);
 
   useEffect(() => {
     if (userData) {

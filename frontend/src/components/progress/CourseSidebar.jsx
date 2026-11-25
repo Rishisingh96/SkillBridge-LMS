@@ -1,6 +1,6 @@
 // src/components/course-player/CourseSidebar.jsx
 
-import React, { useState } from "react";
+import { useState } from "react";
 import ModuleAccordion from "./ModuleAccordion";
 import ResumeLearningButton from "./ResumeLearningButton";
 import ProgressCard from "./component/ProgressCard";
