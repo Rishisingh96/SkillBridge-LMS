@@ -1,10 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../app.js";
-import User from "../models/userModel.js";
 import Course from "../models/courseModel.js";
 import Module from "../models/moduleModel.js";
-import Lecture from "../models/lectureModel.js";
 
 describe("📚 Phase 2: Course Studio, Modules & Lectures Test Suite", () => {
   let educatorToken;

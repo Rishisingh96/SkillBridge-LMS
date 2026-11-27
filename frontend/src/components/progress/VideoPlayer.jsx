@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProgress } from "../../redux/slices/progressSlice";
 import { throttle } from "../../utils/throttle";

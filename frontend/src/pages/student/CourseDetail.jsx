@@ -76,7 +76,7 @@ const CourseDetail = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [courseId, dispatch]);
 
   // ---------------- CHECK ENROLLMENT ----------------
 
@@ -111,7 +111,7 @@ const CourseDetail = () => {
       setIsEnrolled(false);
       setEnrollmentData(null);
     }
-  };
+  }, [courseId, userData]);
 
   useEffect(() => {
     fetchModules();

@@ -93,7 +93,7 @@ const Nav = () => {
 
   }, [courseData]);
 
-  React.useEffect(() => {
+  useEffect(() => {
 
     if (
       categories.length > 0 &&

@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../app.js";
-import User from "../models/userModel.js";
 import Course from "../models/courseModel.js";
 import Module from "../models/moduleModel.js";
 import Lecture from "../models/lectureModel.js";
@@ -12,7 +11,6 @@ describe("💬 Phase 6: Discussions, Reviews & AI Tutor", () => {
   let student1Token;
   let student1Id;
   let student2Token;
-  let student2Id;
   let testCourse;
   let testLecture;
 
@@ -39,7 +37,6 @@ describe("💬 Phase 6: Discussions, Reviews & AI Tutor", () => {
         role: "student",
       });
     student2Token = s2Res.body.token;
-    student2Id = s2Res.body.user._id;
 
     // 3. Create Course & Lecture
     testCourse = await Course.create({

@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import crypto from "crypto";
 import app from "../app.js";
-import User from "../models/userModel.js";
 import Course from "../models/courseModel.js";
 import Coupon from "../models/couponModel.js";
 import Enrollment from "../models/enrollmentModel.js";
@@ -10,7 +9,6 @@ import Enrollment from "../models/enrollmentModel.js";
 describe("💳 Phase 3: Payments, Coupons & Enrollment Lifecycle", () => {
   let studentToken;
   let studentId;
-  let educatorToken;
   let educatorId;
   let freeCourse;
   let paidCourse;
@@ -37,7 +35,6 @@ describe("💳 Phase 3: Payments, Coupons & Enrollment Lifecycle", () => {
         password: "Password123#",
         role: "educator",
       });
-    educatorToken = educatorRes.body.token;
     educatorId = educatorRes.body.user._id;
 
     // 3. Create Free Course
@@ -171,7 +168,7 @@ describe("💳 Phase 3: Payments, Coupons & Enrollment Lifecycle", () => {
   describe("POST /api/coupon/apply", () => {
     it("should apply percentage coupon and calculate correct discounted price", async () => {
       // Create active coupon
-      const coupon = await Coupon.create({
+      await Coupon.create({
         code: "SUPER50",
         discountType: "percentage",
         discountValue: 50,
